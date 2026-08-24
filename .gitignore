@@ -1,0 +1,6 @@
+# локальный мусор, на сайт не нужен
+__pycache__/
+*.pyc
+Thumbs.db
+desktop.ini
+.vscode/

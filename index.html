@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS SMP — военно-политический Minecraft-сервер эпохи 1936</title>
+<meta name="description" content="AEGIS — военно-политический Minecraft-сервер: реальная карта Земли 1:2000, 102 державы по историческим границам 1936 года, нефть TFMG и артиллерия Create Big Cannons. Открытие — сентябрь 2026.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-in">
+    <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
+    <button class="burger" aria-label="Меню"><span></span></button>
+    <nav class="topnav" id="topnav">
+      <a href="#season">Сезон 1936</a>
+      <a href="#arsenal">Арсенал</a>
+      <a href="#join">Как зайти</a>
+      <a href="#news">Новости</a>
+      <a class="btn btn-primary btn-sm" href="donate.html">Донат</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-shade"></div>
+  <div class="mc-stage" data-skin3d="wave" aria-hidden="true"></div>
+  <div class="container hero-in">
+    <img class="hero-logo" src="assets/img/logo.png" alt="AEGIS SMP">
+    <div class="kicker">Военно-политический SMP · сезон «1936»</div>
+    <h1>Вся Земля. 102 державы. <span class="grad-text">Одна история.</span></h1>
+    <p class="lead">Реальная карта планеты в масштабе 1:2000, страны по историческим границам
+      1936 года, нефтяная промышленность TFMG и артиллерия Create Big Cannons.
+      Подними свою державу — или разбери чужую по кирпичу.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#join">Начать игру</a>
+      <a class="btn btn-dark" href="donate.html">Поддержать проект</a>
+    </div>
+    <div class="count-strip">
+      <div class="chip"><b id="cd">—</b>до открытия</div>
+      <!-- точного числа пока нет: овнер назвал вилку «12 или 19 сентября»
+           (перенос 22.08.2026). Короткая форма — чтобы плашка не разъехалась. -->
+      <div class="chip"><b>12 или 19.09</b>старт сезона</div>
+      <div class="chip"><b>1.21.1</b>NeoForge · Create</div>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="container stats-in">
+    <div class="stat"><div class="num">1:2000</div><div class="lbl">масштаб Земли</div></div>
+    <div class="stat"><div class="num">102</div><div class="lbl">державы 1936 года</div></div>
+    <div class="stat"><div class="num">431</div><div class="lbl">провинция</div></div>
+    <div class="stat"><div class="num">34</div><div class="lbl">месторождения нефти</div></div>
+  </div>
+</div>
+
+<section id="season">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Сезон «1936»</div>
+      <h2>Мир на пороге <span class="grad-text">большой игры</span></h2>
+      <p class="sub">Не арена и не анархия: живая политическая карта, где каждый чанк
+        принадлежит какой-то державе — а державы принадлежат игрокам.</p>
+    </div>
+    <div class="bento">
+      <div class="card card-map reveal">
+        <div class="shot"><img src="assets/img/map_1936.png" alt="Политическая карта мира 1936 года на сервере AEGIS" loading="lazy"></div>
+        <div class="card-body">
+          <h3>Реальная Земля 1:2000</h3>
+          <p>Вся планета — от Аляски до Австралии — сгенерирована по настоящему рельефу.
+            102 страны нарезаны по историческим границам 1936 года, внутри — 431 провинция
+            с реальными областями той эпохи. Земля уже поделена: выбирай, за кого играть.</p>
+        </div>
+      </div>
+      <div class="card reveal">
+        <div class="card-body">
+          <div class="icon-plate"><img src="assets/icons/shield.png" alt=""></div>
+          <h3>Возьми державу под крыло</h3>
+          <p>Столица, провинции, границы — всё по-настоящему. Дипломатия, союзы, ультиматумы
+            и войны: историю сезона пишут игроки, а не сценарий.</p>
+        </div>
+      </div>
+      <div class="card reveal">
+        <div class="card-body">
+          <div class="icon-plate"><img src="assets/icons/oil.png" alt=""></div>
+          <h3>Нефть — кровь войны</h3>
+          <p>34 месторождения на местах реальных промыслов 1936 года. Вышки, перегонка,
+            топливо TFMG — у кого нефть, у того и армия на ходу.</p>
+        </div>
+      </div>
+      <div class="card reveal">
+        <div class="card-body">
+          <div class="icon-plate"><img src="assets/icons/cannon_barrel_bronze.png" alt=""></div>
+          <h3>Артиллерия и техника</h3>
+          <p>Пушки Create Big Cannons — от полевых до осадных, бронетехника и механизмы Create.
+            Всё строится руками, заряжается порохом и стреляет по-настоящему.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="deco-strip" aria-hidden="true">
+  <div class="container deco-row">
+    <img class="deco float-a" src="assets/img/iso_gearbox.png" alt="" loading="lazy">
+    <img class="deco float-b" src="assets/img/iso_siren.png" alt="" loading="lazy">
+    <img class="deco float-c" src="assets/img/iso_vault.png" alt="" loading="lazy">
+    <img class="deco float-b" src="assets/img/iso_brass.png" alt="" loading="lazy">
+  </div>
+</div>
+
+<section id="arsenal">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Собственный мод AegisLive</div>
+      <h2>Свои <span class="grad-text">правила войны</span></h2>
+      <p class="sub">Сервер держит собственный мод: механики, которых нет ни в одной сборке —
+        и все они про эпоху, а не про магию.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card feature reveal">
+        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_concussion_shell.png" alt=""></div>
+        <h3>Контузия от взрывов</h3>
+        <p>Рядом рвануло — звон в ушах, глухота, рябь и тряска камеры. Считаются укрытие,
+          шлем, приседание и даже стены помещения. Артиллерия больше не «попал / не попал».</p>
+      </div>
+      <div class="card feature reveal">
+        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_star_shell.png" alt=""></div>
+        <h3>Осветительный снаряд</h3>
+        <p>Раскрывается в верхней точке траектории: звезда на парашюте по-настоящему освещает
+          местность и подсвечивает контуры целей. Ночная разведка и корректировка огня.</p>
+      </div>
+      <div class="card feature reveal">
+        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_salute_shell.png" alt=""></div>
+        <h3>Салютный снаряд</h3>
+        <p>Восемь цветных разрывов над городом — и ни одной воронки. Для парадов, побед
+          и объявлений войны. Грохот есть, разрушений нет.</p>
+      </div>
+      <div class="card feature reveal">
+        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_thermite_shell.png" alt=""></div>
+        <h3>Термитный снаряд</h3>
+        <p>Слабее фугаса по блокам, но место разрыва превращается в очаг пожара: языки огня,
+          белые искры термита и восемь секунд ада радиусом шесть блоков.</p>
+      </div>
+      <div class="card feature reveal">
+        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_gas_shell.png" alt=""></div>
+        <h3>Газовый снаряд</h3>
+        <p>Почти не трогает постройки — зато выпускает стойкое ядовитое облако, которое
+          ползёт по ветру той же розой ветров, что и погода сезона. Противогазов нет. Бегите.</p>
+      </div>
+      <div class="card feature reveal">
+        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_stock_module.png" alt=""></div>
+        <h3>Верстак склада</h3>
+        <p>Кнопка «3×3» прямо в терминале склада Create: крафт из остатков всей сети складов,
+          мгновенно и без посылок. Сервер сам проверяет права, остатки и честность рецепта.</p>
+      </div>
+    </div>
+    <div class="more-line reveal">А ещё: <b>сирены воздушной тревоги</b> с постами оповещения,
+      <b>региональная погода</b> и часовые пояса по широте, <b>точка смерти</b> с координатами в чате
+      и собственный лаунчер с проверкой файлов клиента.</div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Присоединяйся</div>
+      <h2>Как <span class="grad-text">зайти на сервер</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="n">01</div>
+        <h3>Скачай лаунчер</h3>
+        <p>Приложение для Windows — 44 МБ, Java внутри: ставить ничего не нужно.
+          Распакуй архив и запусти AEGIS.</p>
+      </div>
+      <div class="step reveal">
+        <div class="n">02</div>
+        <h3>Нажми «Установить»</h3>
+        <p>Лаунчер сам скачает сборку (около 310 МБ), проверит каждый файл по контрольной сумме
+          и подготовит профиль в официальном лаунчере Minecraft.</p>
+      </div>
+      <div class="step reveal">
+        <div class="n">03</div>
+        <h3>Дождись открытия</h3>
+        <p>Старт сезона «1936» — сентябрь 2026: целимся в 12 или 19, точное число
+        объявим заранее. Адрес сервера лаунчер добавит в список сам.</p>
+      </div>
+      <div class="step reveal">
+        <div class="n">04</div>
+        <h3>Выбери державу</h3>
+        <p>Заходи, осматривайся на карте и подавай заявку на свою страну сезона.</p>
+      </div>
+    </div>
+    <div class="join-note reveal">
+      <div class="txt"><b>Сборка:</b> Minecraft 1.21.1 · NeoForge · Create, TFMG, Create Big Cannons
+        и собственный мод AegisLive. Моды лаунчер качает сам и обновляет вместе с сервером.
+        Нужна купленная Minecraft: вход через официальный лаунчер.
+        <span class="muted">Если Java уже стоит, хватит одного файла —
+        <!-- ссылки постоянные: релиз с фиксированным тегом, меняется только содержимое -->
+        <a href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher.jar">AEGIS-Launcher.jar</a>
+        (260 КБ).</span></div>
+      <a class="btn btn-primary" href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-win.zip">Скачать лаунчер · 44 МБ</a>
+    </div>
+  </div>
+</section>
+
+<section id="news">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Devlog</div>
+      <h2>Новости <span class="grad-text">разработки</span></h2>
+    </div>
+    <div class="news-grid">
+      <div class="card news reveal">
+        <span class="date">01.08.2026</span>
+        <h3>Три боевых снаряда</h3>
+        <p>Термитный, газовый и контузионный — по типу фугаса CBC, но каждый бьёт по-своему.
+          Термит выжигает, газ ползёт по ветру, контузионный выключает гарнизон, не трогая стен.</p>
+      </div>
+      <div class="card news reveal">
+        <span class="date">01.08.2026</span>
+        <h3>Верстак склада</h3>
+        <p>Крафт прямо из сети складов Create: кнопка «3×3» в стоковом терминале, живые остатки,
+          мгновенный крафт без посылок — с честной проверкой на сервере.</p>
+      </div>
+      <div class="card news reveal">
+        <span class="date">29.07.2026</span>
+        <h3>Салютный снаряд</h3>
+        <p>Холостой боеприпас для парадов и объявлений войны: восемь цветных разрывов за три
+          секунды, звуки и частицы родные для CBC — и ноль разрушений.</p>
+      </div>
+      <div class="card news reveal">
+        <span class="date">25.07.2026</span>
+        <h3>Контузия от взрывов</h3>
+        <p>Звон, глухота, рябь и тряска — сервер считает дозу по 16 лучам с учётом укрытия,
+          шлема и приседания. Промах рядом с окопом теперь тоже работает.</p>
+      </div>
+      <div class="card news reveal">
+        <span class="date">25.07.2026</span>
+        <h3>Осветительный снаряд</h3>
+        <p>Первый собственный боеприпас AEGIS: звезда на парашюте, настоящий движущийся свет
+          и подсветка целей в радиусе 48 блоков. Ночь перестала прятать.</p>
+      </div>
+      <div class="card news reveal">
+        <span class="date">25.07.2026</span>
+        <h3>Огневая позиция у Вашингтона</h3>
+        <p>Испытательная батарея на господствующей высоте: лафет, рычаг «СБОРКА», кнопка «ОГОНЬ»
+          и сундук с боекомплектом. Первые стрельбы — осветительными.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="cta-band reveal">
+      <h2>Готов переписать <span class="grad-text">1936 год?</span></h2>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-win.zip">Скачать лаунчер</a>
+        <a class="btn btn-dark" href="donate.html">Военная казна</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-in">
+      <img src="assets/img/logo.png" alt="AEGIS SMP">
+      <div class="foot-links">
+        <a href="#season">Сезон 1936</a>
+        <a href="#join">Как зайти</a>
+        <a href="donate.html">Донат</a>
+        <a href="#news">Новости</a>
+      </div>
+    </div>
+    <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
+      и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/aegis3d.js"></script>
+</body>
+</html>
