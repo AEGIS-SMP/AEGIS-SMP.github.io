@@ -38,9 +38,10 @@ try:
 except Exception as e:
     print('map failed:', e)
 
-# 4. favicon
-shutil.copy(r'C:\Users\vine0\Downloads\AEGIS_logo_assets\server_icon_rounded.png',
+# 4. favicon — из эталона бренда, иначе прогон скрипта вернёт старый шеврон
+shutil.copy(r'E:\AEGIS\_shared\art\out\brand\emblem_v2_256_round.png',
             os.path.join(IMG, 'favicon.png'))
+shutil.copy(os.path.join(IMG, 'favicon.png'), os.path.join(SITE, 'favicon.ico'))
 
 # 5. рендеры предметов Create (готовые)
 srcdir = r'C:\Users\vine0\Downloads\AEGIS_logo_assets\items'
