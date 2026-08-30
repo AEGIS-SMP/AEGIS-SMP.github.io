@@ -2494,6 +2494,196 @@ footer {
   .cm-controls { flex-direction: column; align-items: stretch; }
 }
 
+/* ============================ регистрация (reg.html) ============================
+   Слева — короткая форма, справа — объяснение, почему проверка именно такая.
+   Тот же тёмный набор и один оранжевый акцент, никаких новых шрифтов. */
+
+.reg-sec { padding: 10px 0 80px; }
+.reg-wrap {
+  display: grid;
+  grid-template-columns: 460px minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+.reg-card {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 26px 26px 24px;
+  position: sticky;
+  top: 92px;
+}
+
+/* важное: один аккаунт на человека */
+.reg-hard {
+  display: flex;
+  gap: 14px;
+  background: rgba(245, 134, 32, .09);
+  border-left: 3px solid var(--or);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.reg-hard .mark {
+  flex: 0 0 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--or);
+  color: #14100b;
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.reg-hard b { color: var(--or); display: block; margin-bottom: 4px; }
+
+.reg-form label {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.reg-form input[type="text"],
+.reg-form input[type="password"] {
+  width: 100%;
+  background: var(--panel-2);
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  color: var(--ink);
+  font-family: var(--f-text);
+  font-size: 16.5px;
+  padding: 13px 16px;
+}
+.reg-form input[type="text"]:focus,
+.reg-form input[type="password"]:focus {
+  background: var(--panel-3);
+  box-shadow: inset 0 0 0 2px rgba(245, 134, 32, .5);
+}
+.reg-hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 8px 0 18px;
+}
+.reg-form input + label { margin-top: 0; }
+
+/* выбор службы проверки */
+.reg-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.reg-pick button {
+  text-align: left;
+  background: var(--panel-2);
+  border: none;
+  border-radius: 12px;
+  padding: 13px 15px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .16s ease, box-shadow .16s ease;
+}
+.reg-pick button b {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 3px;
+}
+.reg-pick button span { display: block; color: var(--muted); font-size: 12.5px; }
+.reg-pick button:hover:not([disabled]) { background: var(--panel-3); }
+.reg-pick button.on { background: var(--panel-3); box-shadow: inset 0 0 0 2px var(--or); }
+.reg-pick button.on b { color: var(--or); }
+.reg-pick button[disabled] { opacity: .45; cursor: default; }
+/* проверка разработчика: её видно только на этой машине, зато во всю ширину */
+.reg-pick button[data-p="local"] { grid-column: 1 / -1; }
+
+/* согласия */
+.reg-check {
+  display: flex !important;
+  gap: 11px;
+  align-items: flex-start;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-family: var(--f-text) !important;
+  font-weight: 400 !important;
+  font-size: 13.5px !important;
+  line-height: 1.5;
+  color: var(--muted) !important;
+  margin-bottom: 12px !important;
+  cursor: pointer;
+}
+.reg-check input {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin: 1px 0 0;
+  accent-color: var(--or);
+  cursor: pointer;
+}
+
+.reg-go { width: 100%; justify-content: center; margin-top: 10px; }
+.reg-go.is-wait { opacity: .6; cursor: default; }
+.reg-go[disabled] {
+  background: var(--panel-3);
+  color: var(--muted);
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+}
+.reg-say {
+  margin-top: 14px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  background: var(--panel-2);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.reg-say.is-bad { color: #dd7f68; }
+.reg-say.is-good { color: #93bf7c; }
+
+/* объяснение: почему именно так */
+.reg-side { display: grid; gap: 18px; }
+.reg-why {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 24px 26px 20px;
+}
+.reg-why h3 {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 19px;
+  margin: 0 0 12px;
+}
+.reg-why p { color: var(--muted); font-size: 14.5px; line-height: 1.65; margin: 0 0 12px; }
+.reg-why p:last-child { margin-bottom: 4px; }
+.reg-why b { color: var(--ink); }
+.reg-why ul { margin: 0 0 12px; padding-left: 20px; }
+.reg-why li { color: var(--muted); font-size: 14.5px; line-height: 1.6; margin-bottom: 6px; }
+.reg-why li::marker { color: var(--or); }
+.reg-why .reg-note {
+  background: var(--panel-2);
+  border-left: 2px solid rgba(245, 134, 32, .5);
+  border-radius: 10px;
+  padding: 13px 15px;
+  margin-top: 16px;
+}
+
+@media (max-width: 1000px) {
+  .reg-wrap { grid-template-columns: 1fr; }
+  .reg-card { position: static; }
+}
+@media (max-width: 640px) {
+  .reg-card, .reg-why { padding: 20px 18px; }
+  .reg-pick { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 640px) {
   .rk-grid, .tasks-grid, .cr-grid { grid-template-columns: 1fr; }
   .kits, .cases { grid-template-columns: 1fr; }
@@ -2504,4 +2694,82 @@ footer {
   .km-buy, .b-buy { justify-content: space-between; }
   .modal-wide { padding: 28px 20px 24px; }
   .km-head, .cm-head { flex-wrap: wrap; gap: 12px; }
+}
+
+/* ========================= профиль: скин (profile.html) =========================
+   Живёт на разметке страницы регистрации: та же карточка слева, объяснения справа.
+   Новое здесь только две вещи — место, куда кладут png, и предпросмотр игрока. */
+
+.pf-drop {
+  background: var(--panel-2);
+  border-radius: 12px;
+  padding: 18px 18px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: background .16s ease, box-shadow .16s ease;
+}
+.pf-drop b {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+.pf-drop span { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.pf-drop:hover { background: var(--panel-3); }
+.pf-drop.is-over { background: var(--panel-3); box-shadow: inset 0 0 0 2px var(--or); }
+.pf-drop.is-set { box-shadow: inset 0 0 0 2px rgba(245, 134, 32, .55); }
+.pf-drop.is-set b { color: var(--or); }
+.pf-drop.is-off { opacity: .45; cursor: default; }
+
+/* снять скин: действие обратное главной кнопке, поэтому и выглядит тише */
+.pf-drop-off {
+  width: 100%;
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--f-text);
+  font-size: 13.5px;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: color .16s ease;
+}
+.pf-drop-off:hover:not([disabled]) { color: #dd7f68; }
+.pf-drop-off[disabled] { opacity: .45; cursor: default; }
+
+/* предпросмотр: игрок спереди прямо из текстуры скина */
+.pf-view {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+}
+.pf-view-in {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+.pf-view canvas {
+  display: block;
+  width: 128px;
+  height: 256px;
+  background: var(--panel-2);
+  border-radius: 12px;
+  image-rendering: pixelated;
+}
+.pf-view-say h3 {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 19px;
+  margin: 0 0 10px;
+}
+.pf-view-say p { color: var(--muted); font-size: 14.5px; line-height: 1.65; margin: 0; }
+
+@media (max-width: 640px) {
+  .pf-view { padding: 20px 18px; }
+  .pf-view-in { grid-template-columns: 1fr; justify-items: center; gap: 18px; }
+  .pf-view-say { text-align: center; }
 }

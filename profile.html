@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Профиль и скин — AEGIS SMP</title>
+<meta name="description" content="Профиль игрока AEGIS SMP: поставь свой скин через сайт — и клиент из лаунчера сразу покажет его в игре. Лицензия Minecraft для этого не нужна.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-in">
+    <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
+    <button class="burger" aria-label="Меню"><span></span></button>
+    <nav class="topnav" id="topnav">
+      <a href="index.html#season">Сезон 1936</a>
+      <a href="index.html#arsenal">Арсенал</a>
+      <a href="index.html#join">Как зайти</a>
+      <a href="index.html#news">Новости</a>
+      <a class="btn btn-primary btn-sm" href="donate.html">Донат</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="kicker">Профиль игрока</div>
+    <h1>Свой скин — <span class="grad-text">в игре</span></h1>
+    <p class="lead">Поставь картинку здесь, и клиент из лаунчера покажет её в игре: тебе,
+      другим игрокам, в списке на TAB и на головах. Лицензия Minecraft для этого не нужна —
+      скин живёт на сервере AEGIS, а не у Mojang.</p>
+  </div>
+</div>
+
+<section class="reg-sec">
+  <div class="container reg-wrap">
+
+    <!-- ------------------------------- форма ------------------------------- -->
+    <div class="reg-card">
+      <form class="reg-form" id="pfForm" autocomplete="off">
+        <label for="pNick">Имя в игре</label>
+        <input id="pNick" type="text" maxlength="16" placeholder="VineZerro" spellcheck="false">
+        <div class="reg-hint">То самое, которым заходишь лаунчером.</div>
+
+        <label for="pPass">Пароль AEGIS</label>
+        <input id="pPass" type="password" maxlength="64" placeholder="пароль из лаунчера">
+        <div class="reg-hint">Нужен, чтобы скин тебе поставил ты, а не любой прохожий.
+          Это пароль проекта, а не Microsoft.</div>
+
+        <label>Картинка скина</label>
+        <div class="pf-drop" id="pDrop">
+          <input id="pFile" type="file" accept="image/png" hidden>
+          <b id="pDropName">Перетащи png сюда</b>
+          <span>или нажми и выбери файл — 64×64, старые 64×32 тоже подойдут</span>
+        </div>
+
+        <label>Руки</label>
+        <div class="reg-pick" id="pModel">
+          <button type="button" data-m="classic" class="on">
+            <b>Классические</b><span>как у Стива, 4 пикселя</span>
+          </button>
+          <button type="button" data-m="slim">
+            <b>Тонкие</b><span>как у Алекс, 3 пикселя</span>
+          </button>
+        </div>
+        <div class="reg-hint">Картинка у обоих одна и та же — отличается только толщина рук.</div>
+
+        <button class="btn btn-primary reg-go" type="submit" id="pGo">Поставить скин</button>
+        <button class="pf-drop-off" type="button" id="pOff">Снять скин и вернуть обычный вид</button>
+        <div class="reg-say" id="pSay">Введи имя и пароль, выбери картинку.</div>
+      </form>
+    </div>
+
+    <!-- --------------------------- предпросмотр и справка --------------------------- -->
+    <div class="reg-side">
+      <div class="pf-view">
+        <div class="pf-view-in">
+          <canvas id="pCanvas" width="128" height="256" aria-label="Как будет выглядеть скин"></canvas>
+          <div class="pf-view-say">
+            <h3 id="pViewTitle">Пока смотреть нечего</h3>
+            <p id="pViewText">Выбери картинку — покажу, как она сядет на игрока.
+              Здесь же видно, какой скин стоит на сервере сейчас.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="reg-why">
+        <h3>Как скин попадёт в игру</h3>
+        <p>Картинка ложится на сервер AEGIS рядом с твоим именем. Клиент из лаунчера
+          спрашивает её сам при заходе на сервер и ставит на игрока — ничего скачивать
+          и подкладывать в папки руками не надо.</p>
+        <p><b>Новый скин виден со следующего входа.</b> Поменял картинку, пока играешь —
+          выйди из мира и зайди снова, тогда её увидят все.</p>
+        <p class="reg-note">На других серверах и в одиночке скин не появится: он наш,
+          а не мировой. Обычный лицензионный скин от Mojang, если он у тебя есть,
+          от этого никуда не денется — просто на AEGIS поверх него встанет этот.</p>
+      </div>
+
+      <div class="reg-why">
+        <h3>Какая картинка нужна</h3>
+        <ul>
+          <li>png, <b>64×64</b> — обычный современный скин;</li>
+          <li>png, <b>64×32</b> — старый скин, вторые рука и нога достроятся сами;</li>
+          <li>второй слой (шапка, куртка, рукава, штанины) работает как в игре;</li>
+          <li>прозрачность на втором слое сохраняется, на самом теле — нет: там она
+            всё равно превратится в дырки, поэтому убираем её сразу.</li>
+        </ul>
+        <p>Сервер перезаписывает картинку своими руками и всегда в 64×64: так на игроков
+          не попадёт ни анимация, ни файл с чужой начинкой, ни огромный холст.</p>
+      </div>
+
+      <div class="reg-why">
+        <h3>Где взять скин</h3>
+        <p>Подойдёт любой скин из редакторов и галерей для Minecraft — они отдают ровно
+          такой же png 64×64. Можно нарисовать самому: сетка 64×64 в любом редакторе,
+          где нет размытия при масштабе.</p>
+        <p class="reg-note">Одежда сезона «1936» — дело вкуса, но военная форма и шинели
+          на AEGIS выглядят уместнее скинов из аниме. Знаки и символику запрещённых
+          организаций на скинах не носим: за это снимают скин и выдают наказание.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-in">
+      <img src="assets/img/logo.png" alt="AEGIS SMP">
+      <div class="foot-links">
+        <a href="index.html#season">Сезон 1936</a>
+        <a href="index.html#join">Как зайти</a>
+        <a href="donate.html">Донат</a>
+        <a href="index.html#news">Новости</a>
+      </div>
+    </div>
+    <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
+      и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/profile.js"></script>
+</body>
+</html>
