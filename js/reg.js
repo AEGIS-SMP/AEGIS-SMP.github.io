@@ -22,27 +22,13 @@
   var busy = false;
   var base = null;
 
-  /* Где живёт служба регистрации. Адрес задан в js/config.js — больше нигде.
-     Домашний сервер отвечает по http, поэтому с опубликованного сайта (https)
-     до него не дотянуться: такой запрос браузер режет молча, и мы его даже
-     не пробуем — лучше честная строка, чем кнопка в никуда.
-     Параметр ?svc= остался для отладки и работает ТОЛЬКО на своей машине:
-     иначе подсунутая ссылка увела бы имя и пароль игрока на чужой адрес. */
-  function isLocal(h) {
-    return h === '127.0.0.1' || h === 'localhost' || h === '[::1]' ||
-      h === '::1' || h === '';
-  }
-
+  /* Где живёт служба регистрации — спрашиваем у js/api.js, а не ищем сами.
+     Правила там одни на весь сайт: адрес берётся из js/config.js, http-служба
+     с https-страницы не дёргается (браузер режет такой запрос молча), а ?svc=
+     работает только на своей машине — иначе подсунутая ссылка увела бы имя и
+     пароль игрока на чужой адрес. При переезде правится один config.js. */
   function findBase() {
-    var local = isLocal(location.hostname);
-    var raw = '';
-    if (local) raw = new URLSearchParams(location.search).get('svc') || '';
-    if (!raw && window.AEGIS_REG_BASE) raw = String(window.AEGIS_REG_BASE);
-    raw = raw.trim().replace(/\/+$/, '');
-    if (!raw && local) raw = 'http://127.0.0.1:25580';
-    if (!/^https?:\/\/[^\s]+$/i.test(raw)) return null;
-    if (location.protocol === 'https:' && /^http:\/\//i.test(raw)) return null;
-    return raw;
+    return window.AegisApi ? window.AegisApi.base() : null;
   }
 
   /* Запрос к службе: крышка по времени и проверка ответа. Без них зависшая

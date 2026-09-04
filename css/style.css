@@ -5,6 +5,41 @@
    Без стеклянных панелей и белых окантовок — заливки и тени.
    ============================================================ */
 
+/* ---------- шрифты лежат у нас, а не на Google ----------
+   Раньше страница тянула Montserrat и Inter с fonts.googleapis.com.
+   У части игроков СНГ этот адрес не открывается (провайдер, DNS, школьный
+   Wi-Fi) — и сайт приезжал системным шрифтом, с поехавшими заголовками.
+   Теперь оба шрифта лежат рядом с сайтом, в assets/fonts. Файлы разрезаны
+   по алфавитам: браузер скачает кириллицу и латиницу и не тронет остальное.
+   Начертания переменные (400–700 и 700–900), поэтому файлов восемь,
+   а не двадцать восемь. */
+
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400 700; font-display:swap;
+  src:url(../assets/fonts/inter-cyrillic.woff2) format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400 700; font-display:swap;
+  src:url(../assets/fonts/inter-cyrillic-ext.woff2) format('woff2');
+  unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400 700; font-display:swap;
+  src:url(../assets/fonts/inter-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400 700; font-display:swap;
+  src:url(../assets/fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+
+@font-face { font-family:'Montserrat'; font-style:normal; font-weight:700 900; font-display:swap;
+  src:url(../assets/fonts/montserrat-cyrillic.woff2) format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+@font-face { font-family:'Montserrat'; font-style:normal; font-weight:700 900; font-display:swap;
+  src:url(../assets/fonts/montserrat-cyrillic-ext.woff2) format('woff2');
+  unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F; }
+@font-face { font-family:'Montserrat'; font-style:normal; font-weight:700 900; font-display:swap;
+  src:url(../assets/fonts/montserrat-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'Montserrat'; font-style:normal; font-weight:700 900; font-display:swap;
+  src:url(../assets/fonts/montserrat-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+
 :root {
   --bg:      #0E0E10;
   --panel:   #171616;
@@ -25,9 +60,8 @@
   --grad-h:  linear-gradient(90deg, var(--or), var(--gold-hi));
   --shadow:  0 14px 40px rgba(0, 0, 0, .5);
   --radius:  16px;
-  /* Шрифты тянутся с Google Fonts, а у части аудитории они не доезжают —
-     поэтому запасные подобраны так, чтобы страница не поплыла: похожая
-     ширина знаков и тот же вес заголовков. */
+  /* Запасные на случай, если woff2 почему-то не приехал: похожая ширина
+     знаков и тот же вес заголовков, чтобы вёрстка не поплыла. */
   --f-disp:  'Montserrat', 'Segoe UI Semibold', 'Segoe UI', system-ui, sans-serif;
   --f-text:  'Inter', 'Segoe UI', system-ui, 'Helvetica Neue', sans-serif;
 }
@@ -149,6 +183,11 @@ section { padding: 88px 0; }
 }
 
 .btn-sm { padding: 11px 20px; font-size: 13px; border-radius: 10px; }
+
+/* Пока идёт отправка кнопка выключена — она не должна при этом подпрыгивать
+   под курсором, иначе кажется, что по ней можно нажать ещё раз. */
+.btn[disabled] { opacity: .55; cursor: default; }
+.btn[disabled]:hover { transform: none; filter: none; box-shadow: none; }
 
 /* ---------- шапка ---------- */
 
@@ -462,6 +501,40 @@ section { padding: 88px 0; }
 .news h3 { font-size: 18px; }
 .news p { color: var(--muted); font-size: 14.5px; }
 
+/* Свежая новость — крупной карточкой во всю ширину ряда.
+   Отдельного «главного» поля нет и не надо: крупной становится просто первая
+   в списке, поэтому с выходом следующей эта сама уходит вниз к остальным. */
+.news-lead {
+  grid-column: 1 / -1;
+  position: relative;
+  padding: 32px 36px 34px;
+  gap: 14px;
+  background:
+    radial-gradient(120% 160% at 0% 0%, rgba(245, 134, 32, .10), transparent 58%),
+    var(--panel);
+}
+.news-lead::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--grad-h);
+}
+.news-lead h3 { font-size: clamp(22px, 3.2vw, 32px); line-height: 1.18; }
+.news-lead p { font-size: clamp(15px, 1.5vw, 17px); max-width: 66ch; color: #c3bfb7; }
+
+/* строка над заголовком: дата и пометка «свежее» */
+.news-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.news-top .date { align-self: auto; }
+.news-fresh {
+  font-family: var(--f-text);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
 /* ---------- CTA-полоса ---------- */
 
 .cta-band {
@@ -535,6 +608,13 @@ footer {
 }
 .page-hero h1 { font-size: clamp(34px, 5vw, 58px); }
 .page-hero .lead { margin-top: 18px; max-width: 660px; color: #d9d5cd; font-size: 17.5px; }
+
+/* Служебные страницы (управление): та же шапка, но без парадной высоты —
+   работать под ней, а не любоваться. */
+.page-hero.short { padding: 108px 0 40px; }
+.page-hero.short::before { background-position: center 34%; filter: saturate(.55); }
+.page-hero.short h1 { font-size: clamp(30px, 3.6vw, 42px); }
+.page-hero.short .lead { font-size: 16px; }
 
 .shop-tabs {
   position: sticky;
@@ -921,38 +1001,6 @@ footer {
   image-rendering: auto;
 }
 
-/* декор-полоса: изометрические блоки модов (лёгкие статичные рендеры) */
-
-.deco-strip {
-  background: #101012;
-  padding: 44px 0;
-  overflow: hidden;
-}
-
-.deco-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(18px, 4vw, 56px);
-}
-
-.deco {
-  width: 118px;
-  height: 118px;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 14px rgba(0, 0, 0, .45));
-  flex: 0 0 auto;
-}
-.deco-sm { width: 62px; height: 62px; }
-
-.float-a { animation: floaty 6s ease-in-out infinite; }
-.float-b { animation: floaty 7s ease-in-out infinite 1.2s; }
-.float-c { animation: floaty 8s ease-in-out infinite 2.4s; }
-@keyframes floaty {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-12px); }
-}
-
 /* режим съёмки макета (?shot=1) */
 .shotmode .hero { min-height: 880px; }
 .shotmode .reveal { opacity: 1; transform: none; transition: none; }
@@ -970,8 +1018,6 @@ footer {
 
 @media (max-width: 1020px) {
   .bento { grid-template-columns: repeat(2, 1fr); }
-  .deco { width: 84px; height: 84px; }
-  .deco-sm { width: 46px; height: 46px; }
   .bento .card-map { grid-column: span 2; }
   .grid-3, .news-grid, .kits { grid-template-columns: repeat(2, 1fr); }
   .ranks { grid-template-columns: repeat(2, 1fr); }
@@ -979,26 +1025,39 @@ footer {
   .stats-in { grid-template-columns: repeat(2, 1fr); gap: 28px; }
 }
 
-@media (max-width: 640px) {
-  section { padding: 64px 0; }
+/* Пунктов в шапке стало больше (вики, обращения, эфиры, кабинет), и на
+   ноутбучной ширине они начинали налезать на логотип. Поэтому меню
+   сворачивается в кнопку уже с 1080px, а не с телефонной ширины. */
+@media (max-width: 1080px) {
   .topnav {
     position: fixed;
     top: 72px;
     right: 0;
     left: 0;
     flex-direction: column;
+    align-items: stretch;
     background: #131316;
     padding: 26px 24px 30px;
     gap: 20px;
     transform: translateY(-130%);
     transition: transform .25s ease;
     box-shadow: 0 30px 40px rgba(0,0,0,.5);
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
   }
   .topnav.open { transform: none; }
+  .topnav .btn { justify-content: center; }
   .burger { display: block; }
+}
+
+@media (max-width: 640px) {
+  section { padding: 64px 0; }
   .bento, .grid-3, .news-grid, .kits, .ranks, .steps, .howto, .cases { grid-template-columns: 1fr; }
   .bento .card-map { grid-column: span 1; }
   .card-map .shot { height: 240px; }
+  /* На телефоне крупная карточка и так во всю ширину — лишние поля только
+     съедают строку, оставляем обычные. */
+  .news-lead { padding: 26px 24px 28px; }
   .bundle { grid-template-columns: 1fr; }
   .bundle-buy { text-align: left; }
   /* На телефоне сцена с персонажем скрыта, и низ героя оставался пустой
@@ -2476,10 +2535,9 @@ footer {
 
 @media (prefers-reduced-motion: reduce) {
   /* Человек попросил систему не двигать картинку — значит не двигаем ничего:
-     ни героя, ни плавающий декор, ни плавную прокрутку, ни выезд блоков. */
+     ни героя, ни плавную прокрутку, ни выезд блоков. */
   html { scroll-behavior: auto; }
-  .mc-char, .head-sway, .arm-wave,
-  .float-a, .float-b, .float-c { animation: none; }
+  .mc-char, .head-sway, .arm-wave { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .kit-tile, .case-tile, .coin-pack, .good, .rank, .bundle { transition: none; }
   .kit-tile:hover, .case-tile:hover, .coin-pack:hover,

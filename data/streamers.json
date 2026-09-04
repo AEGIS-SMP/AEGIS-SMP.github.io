@@ -1,0 +1,14 @@
+{
+  "_": "Кого сайт отслеживает на эфиры. Правится руками: добавил строку — и через десять минут канал появляется на live.html. Заявки от стримеров приходят обращением «Стать стримером проекта» (tickets.html#/streamer). platform: twitch | youtube | vkvideo. channel: для twitch — логин канала, для youtube — @handle или ID канала (UC...), для vkvideo — имя блога в адресе.",
+  "channels": [
+    {
+      "id": "yt_project",
+      "name": "AEGIS SMP",
+      "platform": "youtube",
+      "channel": "@AEGIS_SMP_WP",
+      "url": "https://www.youtube.com/@AEGIS_SMP_WP",
+      "note": "канал проекта: трейлеры, девлоги, эфиры открытия",
+      "official": true
+    }
+  ]
+}

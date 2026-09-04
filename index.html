@@ -27,9 +27,12 @@
 <meta name="twitter:title" content="AEGIS SMP — военно-политический Minecraft-сервер эпохи 1936">
 <meta name="twitter:description" content="Реальная карта Земли 1:1000, страны по границам 1936 года, нефть, заводы и артиллерия. Открытие — сентябрь 2026.">
 <meta name="twitter:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
+     игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
+     кириллические гарнитуры — остальные алфавиты браузер возьмёт сам,
+     только если они реально понадобятся. -->
+<link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -39,10 +42,13 @@
     <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
     <button class="burger" aria-label="Меню"><span></span></button>
     <nav class="topnav" id="topnav">
-      <a href="#season">Сезон 1936</a>
-      <a href="#arsenal">Арсенал</a>
-      <a href="#join">Как зайти</a>
-      <a href="#news">Новости</a>
+      <a class="active" href="#season">Сезон 1936</a>
+      <a class="active" href="#arsenal">Арсенал</a>
+      <a class="active" href="#join">Как зайти</a>
+      <a href="wiki.html">Вики</a>
+      <a href="tickets.html">Обращения</a>
+      <a href="live.html">Эфиры</a>
+      <a class="btn btn-dark btn-sm" href="cabinet.html">Кабинет</a>
       <a class="btn btn-primary btn-sm" href="donate.html">Донат</a>
     </nav>
   </div>
@@ -130,15 +136,6 @@
     </div>
   </div>
 </section>
-
-<div class="deco-strip" aria-hidden="true">
-  <div class="container deco-row">
-    <img class="deco float-a" src="assets/img/iso_gearbox.png" alt="" loading="lazy">
-    <img class="deco float-b" src="assets/img/iso_siren.png" alt="" loading="lazy">
-    <img class="deco float-c" src="assets/img/iso_vault.png" alt="" loading="lazy">
-    <img class="deco float-b" src="assets/img/iso_brass.png" alt="" loading="lazy">
-  </div>
-</div>
 
 <section id="arsenal">
   <div class="container">
@@ -246,8 +243,15 @@
       <h2>Новости <span class="grad-text">разработки</span></h2>
     </div>
     <div class="news-grid">
-      <div class="card news reveal">
-        <span class="date">01.08.2026</span>
+      <!-- Свежая новость идёт первой и крупной. Выйдет следующая — эта встанет
+           в общий ряд, а крупной станет новая: порядок задаётся списком
+           (data/news.json, а с сервером — админ-панелью), руками ничего
+           переставлять не надо. -->
+      <div class="card news news-lead reveal">
+        <div class="news-top">
+          <span class="date">01.08.2026</span>
+          <span class="news-fresh">Свежее</span>
+        </div>
         <h3>Три боевых снаряда</h3>
         <p>Термитный, газовый и контузионный — по типу фугаса CBC, но каждый бьёт по-своему.
           Термит выжигает, газ ползёт по ветру, контузионный выключает гарнизон, не трогая стен.</p>
@@ -305,6 +309,9 @@
       <div class="foot-links">
         <a href="#season">Сезон 1936</a>
         <a href="#join">Как зайти</a>
+        <a href="wiki.html">Вики</a>
+        <a href="tickets.html">Обращения</a>
+        <a href="live.html">Эфиры</a>
         <a href="donate.html">Донат</a>
         <a href="#news">Новости</a>
       </div>
@@ -314,6 +321,8 @@
   </div>
 </footer>
 
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
 <script src="js/main.js"></script>
 <script src="js/aegis3d.js"></script>
 </body>

@@ -1,0 +1,57 @@
+# Кто сейчас в эфире. Раз в десять минут GitHub сам запускает сборщик,
+# тот обходит площадки и кладёт результат в data/streams.json. Сайт читает
+# готовый файл — своего сервера у страницы нет, и не нужно.
+#
+# Что нужно, чтобы это работало:
+#   1. Репозиторий сайта должен быть ПУБЛИЧНЫМ — тогда запуски бесплатны
+#      и без ограничения по минутам.
+#   2. Настройки → Actions → General → Workflow permissions: «Read and write».
+#   3. Для Twitch — секреты TWITCH_ID и TWITCH_SECRET (Настройки → Secrets →
+#      Actions). Приложение заводится на dev.twitch.tv, тип «Confidential».
+#      Без них каналы Twitch показываются как «состояние неизвестно»,
+#      YouTube и VK Видео работают и без ключей.
+#
+# GitHub усыпляет расписание, если в репозитории 60 дней не было коммитов:
+# кнопка «Run workflow» будит его обратно.
+
+name: streams
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: streams
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Обойти площадки
+        env:
+          TWITCH_ID: ${{ secrets.TWITCH_ID }}
+          TWITCH_SECRET: ${{ secrets.TWITCH_SECRET }}
+        run: python tools/streams_fetch.py
+
+      - name: Записать, если что-то изменилось
+        run: |
+          if [ -z "$(git status --porcelain data/streams.json)" ]; then
+            echo "эфиры не менялись"
+            exit 0
+          fi
+          git config user.name  "aegis-streams"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/streams.json
+          git commit -m "эфиры: обновление состояния каналов"
+          git push

@@ -906,15 +906,36 @@ if (modal) {
   const mPromoLabel = modal.querySelector('label[for="mPromo"]');
 
   let mode = 'topup';
+  let order = null;          /* текущий заказ на сервере, пока ждём оплату */
+  let payUrl = '';           /* его страница оплаты — чтобы открыть повторно */
+  let poll = 0;              /* таймер опроса; гасим при закрытии окна */
+
+  /* Три состояния приёма денег, от лучшего к худшему:
+       'api'    — служба сервера жива: заказ заводится на сервере, и червонцы
+                  прилетают на счёт сами, как только платёжка подтвердит перевод;
+       'manual' — службы нет, но есть страница приёма переводов: платим туда,
+                  ник пишем в комментарии, зачисляет человек;
+       'off'    — принимать деньги пока некуда, и врать об этом нельзя. */
+  const payMode = () => {
+    if (window.AegisApi && AegisApi.base()) return 'api';
+    if (DONATE_READY) return 'manual';
+    return 'off';
+  };
+
+  const NICK_RE = /^[A-Za-z0-9_]{3,16}$/;
 
   const openTopup = (item, rub, coin) => {
     mode = 'topup';
+    order = null;
+    payUrl = '';
+    stopPoll();
+    mGo.hidden = false;
     mTitle.textContent = 'Пополнение казны';
     mItem.textContent = item;
+    mItem.dataset.sku = item;
+    mItem.dataset.rub = rub;
+    mItem.dataset.coin = coin;
     mPrice.innerHTML = `${rub} ₽ <small>→ ${coin} червонцев</small>`;
-    mSteps.innerHTML = 'В комментарии к переводу — <b>игровой ник</b>, а следом промокод, ' +
-      'если он есть. Скидка по промокоду и −5% премиума считаются при зачислении. ' +
-      'Баланс в игре: <b>/казна</b>.';
     mLabel.hidden = false;
     mNick.hidden = false;
     mPromoLabel.hidden = false;
@@ -923,11 +944,19 @@ if (modal) {
     mGo.disabled = false;
     mAlt.hidden = true;
 
-    /* Страница приёма доната ещё не заведена (DONATE_READY в main.js). Пускать
-       посетителя на заглушку нельзя, поэтому вместо оплаты показываем честную
-       строку и убираем поля ника/промокода — вводить их пока некуда.
-       Появится настоящая ссылка — ветка отключится сама. */
-    if (!DONATE_READY) {
+    const how = payMode();
+    if (how === 'api') {
+      mSteps.innerHTML = 'Укажи <b>игровой ник</b> — червонцы придут на этот счёт ' +
+        'автоматически, сразу после оплаты. Промокод и −5% премиума посчитаются ' +
+        'в заказе. Баланс в игре: <b>/казна</b>.';
+    } else if (how === 'manual') {
+      mSteps.innerHTML = 'В комментарии к переводу — <b>игровой ник</b>, а следом промокод, ' +
+        'если он есть. Скидка по промокоду и −5% премиума считаются при зачислении. ' +
+        'Баланс в игре: <b>/казна</b>.';
+    } else {
+      /* Пускать человека на несуществующую страницу оплаты нельзя: живая
+         кнопка, ведущая в никуда, хуже честной строки. Поля ника и промокода
+         тоже убираем — вводить их пока некуда. */
       mSteps.innerHTML = 'Приём платежей <b>ещё не открыт</b> — страница оплаты появится ' +
         'к старту сезона. Цены и состав уже окончательные, так что выбрать можно заранее.';
       mLabel.hidden = true;
@@ -944,6 +973,8 @@ if (modal) {
 
   const openItem = (item, coin) => {
     mode = 'item';
+    stopPoll();
+    mGo.hidden = false;
     mTitle.textContent = 'Покупка за червонцы';
     mItem.textContent = item;
     mPrice.innerHTML = `${coin} <small>червонцев</small>`;
@@ -973,8 +1004,10 @@ if (modal) {
     else openItem(buy, coin);
   });
 
-  const closeAll = () =>
+  const closeAll = () => {
     document.querySelectorAll('.modal-wrap.open').forEach(m => m.classList.remove('open'));
+    if (poll) { clearInterval(poll); poll = 0; }
+  };
 
   document.querySelectorAll('.modal-wrap').forEach(wrap => {
     const x = wrap.querySelector('.m-close');
@@ -983,27 +1016,109 @@ if (modal) {
   });
   addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
 
+  /* Опрос заказа. Платёжка подтверждает перевод не мгновенно и не браузеру,
+     а серверу, поэтому окно ждёт и само переписывает строку состояния.
+     Опрос конечный: пять минут, дальше человеку предлагается проверить
+     /казна в игре — вечно крутящаяся надпись хуже честного «проверь сам». */
+  const stopPoll = () => { if (poll) { clearInterval(poll); poll = 0; } };
+
+  const watchOrder = id => {
+    let left = 60;
+    stopPoll();
+    poll = setInterval(() => {
+      if (--left < 0) {
+        stopPoll();
+        mSteps.innerHTML = 'Оплату пока не видно. Если деньги ушли — червонцы придут ' +
+          'сами, проверь <b>/казна</b> в игре через пару минут или напиши в ' +
+          '<a href="tickets.html">обращения</a>.';
+        return;
+      }
+      AegisApi.call('/shop/order?id=' + encodeURIComponent(id)).then(r => {
+        if (r.status === 'paid') {
+          stopPoll();
+          mGo.hidden = true;
+          mSteps.innerHTML = '<b>Оплачено.</b> На счёт зачислено ' +
+            AegisApi.esc(String(r.coins || '')) + ' червонцев — они уже в игре, ' +
+            'команда <b>/казна</b>.';
+        } else if (r.status === 'failed') {
+          stopPoll();
+          mGo.hidden = false;
+          mGo.disabled = false;
+          mGo.textContent = 'Попробовать ещё раз';
+          mSteps.innerHTML = 'Платёж не прошёл. Деньги, если списались, вернёт ' +
+            'платёжная служба — с нашей стороны заказ отменён.';
+        }
+      }, () => { /* сеть моргнула — просто ждём следующего круга */ });
+    }, 5000);
+  };
+
   mGo.addEventListener('click', () => {
     if (mode === 'item') {
       closeAll();
       document.getElementById('treasury').scrollIntoView({ behavior: CALM ? 'auto' : 'smooth' });
       return;
     }
+
+    /* Заказ уже заведён — второе нажатие открывает ту же оплату, а не плодит
+       новый заказ (окно платёжки часто закрывают случайно). */
+    if (order && payUrl) { open(payUrl, '_blank', 'noopener'); return; }
+
     const nick = mNick.value.trim();
-    if (!nick) { mNick.focus(); mNick.placeholder = 'Сначала укажи ник!'; return; }
+    if (!NICK_RE.test(nick)) {
+      mNick.focus();
+      mNick.value = '';
+      mNick.placeholder = 'Ник: 3–16 знаков, латиница и цифры';
+      return;
+    }
     const promo = mPromo.value.trim();
+
+    /* Ник и промокод помним, чтобы во второй раз не набирать. */
     try {
       localStorage.setItem('aegis_nick', nick);
       if (promo) localStorage.setItem('aegis_promo', promo);
-      const orders = JSON.parse(localStorage.getItem('aegis_orders') || '[]');
-      orders.push({
-        item: mItem.textContent, price: mPrice.textContent,
-        nick, promo, at: new Date().toISOString()
-      });
-      localStorage.setItem('aegis_orders', JSON.stringify(orders));
     } catch (err) { /* приватный режим — не критично */ }
-    if (!DONATE_READY) return;                 /* страховка: кнопка уже отключена выше */
-    open(DONATE_URL, '_blank', 'noopener');
+
+    const how = payMode();
+    if (how === 'off') return;                 /* кнопка уже отключена выше */
+
+    if (how === 'manual') {
+      /* Службы нет: ведём на страницу переводов, зачисление — руками. */
+      open(AegisApi.link('donate') || DONATE_URL, '_blank', 'noopener');
+      mSteps.innerHTML = 'Открылась страница оплаты. Не забудь <b>ник в комментарии</b> — ' +
+        'без него зачисление задержится до разбора вручную.';
+      return;
+    }
+
+    /* Служба жива: заказ заводит сервер, он же считает скидки и он же
+       зачисляет червонцы, когда платёжка подтвердит перевод. Сайт цену
+       не считает и на баланс не влияет — иначе её можно было бы подправить
+       прямо в браузере. */
+    mGo.disabled = true;
+    mGo.textContent = 'Готовим заказ…';
+    AegisApi.call('/shop/order', {
+      body: {
+        sku: mItem.dataset.sku || mItem.textContent,
+        rub: Number(mItem.dataset.rub) || 0,
+        nick: nick,
+        promo: promo
+      }
+    }).then(r => {
+      order = r.order || '';
+      payUrl = r.pay || '';
+      if (payUrl) open(payUrl, '_blank', 'noopener');
+      mGo.textContent = 'Открыть оплату ещё раз';
+      mGo.disabled = false;
+      mSteps.innerHTML = 'Заказ <b>№' + AegisApi.esc(order) + '</b> на ' +
+        AegisApi.esc(String(r.rub != null ? r.rub : mItem.dataset.rub)) + ' ₽ ' +
+        (r.coins ? '(' + AegisApi.esc(String(r.coins)) + ' червонцев) ' : '') +
+        'ждёт оплату. Окно можно не закрывать — как оплатишь, здесь появится ' +
+        'подтверждение.';
+      if (order) watchOrder(order);
+    }, e => {
+      mGo.disabled = false;
+      mGo.textContent = 'Перейти к оплате';
+      mSteps.textContent = AegisApi.textOf(e);
+    });
   });
 
   mAlt.addEventListener('click', closeAll);

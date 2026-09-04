@@ -12,9 +12,12 @@
      вложенном адресе страница приедет без оформления. -->
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
 <meta name="theme-color" content="#0E0E10">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
+     игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
+     кириллические гарнитуры — остальные алфавиты браузер возьмёт сам,
+     только если они реально понадобятся. -->
+<link rel="preload" href="/assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -27,7 +30,10 @@
       <a href="/index.html#season">Сезон 1936</a>
       <a href="/index.html#arsenal">Арсенал</a>
       <a href="/index.html#join">Как зайти</a>
-      <a href="/index.html#news">Новости</a>
+      <a href="/wiki.html">Вики</a>
+      <a href="/tickets.html">Обращения</a>
+      <a href="/live.html">Эфиры</a>
+      <a class="btn btn-dark btn-sm" href="/cabinet.html">Кабинет</a>
       <a class="btn btn-primary btn-sm" href="/donate.html">Донат</a>
     </nav>
   </div>
@@ -74,6 +80,9 @@
       <div class="foot-links">
         <a href="/index.html#season">Сезон 1936</a>
         <a href="/index.html#join">Как зайти</a>
+        <a href="/wiki.html">Вики</a>
+        <a href="/tickets.html">Обращения</a>
+        <a href="/live.html">Эфиры</a>
         <a href="/donate.html">Донат</a>
         <a href="/index.html#news">Новости</a>
       </div>
@@ -83,6 +92,8 @@
   </div>
 </footer>
 
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
 <script src="/js/main.js"></script>
 </body>
 </html>
