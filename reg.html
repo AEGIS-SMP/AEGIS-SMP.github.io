@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Регистрация — AEGIS SMP</title>
+<meta name="description" content="Регистрация на AEGIS SMP: одно имя на человека. Проверка личности через VK ID или Яндекс ID — так требует закон об авторизации на сайтах (149-ФЗ, ст. 10.1-1). Ни телефона, ни документов сервер не видит.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="canonical" href="https://aegis-smp.github.io/reg.html">
+<meta name="theme-color" content="#0E0E10">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AEGIS SMP">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="https://aegis-smp.github.io/reg.html">
+<meta property="og:title" content="Регистрация — AEGIS SMP">
+<meta property="og:description" content="Одно имя на человека. Проверка через VK ID или Яндекс ID — так требует закон. Ни телефона, ни документов сервер не видит.">
+<meta property="og:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta property="og:image:width" content="1920">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Регистрация — AEGIS SMP">
+<meta name="twitter:description" content="Одно имя на человека. Проверка через VK ID или Яндекс ID — так требует закон. Ни телефона, ни документов сервер не видит.">
+<meta name="twitter:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-in">
+    <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
+    <button class="burger" aria-label="Меню"><span></span></button>
+    <nav class="topnav" id="topnav">
+      <a href="index.html#season">Сезон 1936</a>
+      <a href="index.html#arsenal">Арсенал</a>
+      <a href="index.html#join">Как зайти</a>
+      <a href="index.html#news">Новости</a>
+      <a class="btn btn-primary btn-sm" href="donate.html">Донат</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="kicker">Регистрация</div>
+    <h1>Одно имя — <span class="grad-text">один человек</span></h1>
+    <p class="lead">Имя на AEGIS заводится один раз и остаётся за тобой. Регистрация занимает
+      минуту: придумай имя и пароль, подтверди, что ты — живой человек, и заходи лаунчером.
+      Ни документов, ни сканов, ни телефона сервер не увидит.</p>
+  </div>
+</div>
+
+<section class="reg-sec">
+  <div class="container reg-wrap">
+
+    <!-- ------------------------------- форма ------------------------------- -->
+    <div class="reg-card">
+      <div class="reg-hard">
+        <span class="mark">!</span>
+        <div>
+          <b>На AEGIS возможен только один аккаунт на человека.</b>
+          Второе имя не «запрещено правилами» — его физически не выйдет завести: проверка
+          личности узнаёт того же человека, и регистрация останавливается. Это работает
+          в обе стороны: тебя не подставит чужой, набравший сто аккаунтов, и наказание
+          нельзя стряхнуть, перезайдя под новым ником.
+        </div>
+      </div>
+
+      <form class="reg-form" id="regForm" autocomplete="off">
+        <label for="rNick">Имя в игре</label>
+        <input id="rNick" type="text" maxlength="16" placeholder="VineZerro" spellcheck="false"
+               autocomplete="username">
+        <div class="reg-hint" id="rNickHint">3–16 знаков: латиница, цифры, подчёркивание.
+          Менять его потом нельзя.</div>
+
+        <label for="rPass">Пароль AEGIS</label>
+        <input id="rPass" type="password" maxlength="64" placeholder="не меньше шести знаков"
+               autocomplete="new-password">
+        <div class="reg-hint">Это пароль проекта, а не Microsoft и не VK. Им ты входишь
+          в лаунчер.</div>
+
+        <label for="rPass2">Пароль ещё раз</label>
+        <input id="rPass2" type="password" maxlength="64" placeholder="повтори пароль"
+               autocomplete="new-password">
+
+        <label>Как подтвердим, что ты живой человек</label>
+        <div class="reg-pick" id="rPick">
+          <button type="button" data-p="vk">
+            <b>VK&nbsp;ID</b><span>вход как во «ВКонтакте»</span>
+          </button>
+          <button type="button" data-p="ya">
+            <b>Яндекс&nbsp;ID</b><span>вход как в Яндекс</span>
+          </button>
+          <button type="button" data-p="local" hidden>
+            <b>С этой машины</b><span>проверка разработчика</span>
+          </button>
+        </div>
+        <div class="reg-hint">Откроется окно самой службы. Пароль от VK или Яндекса
+          вводится там же, у них — к нам он не попадает.</div>
+
+        <label class="reg-check"><input type="checkbox" id="rOk1">
+          <span>Согласен на обработку данных в объёме, описанном ниже, — чтобы AEGIS мог
+          держать правило «одно имя на человека».</span></label>
+        <label class="reg-check"><input type="checkbox" id="rOk2">
+          <span>Мне есть 14 лет; если меньше — регистрацию видит кто-то из родителей.</span></label>
+
+        <button class="btn btn-primary reg-go" type="submit" id="rGo">Пройти проверку
+          и занять имя</button>
+        <div class="reg-say" id="rSay">Проверь имя и пароль, выбери службу проверки.</div>
+      </form>
+    </div>
+
+    <!-- ---------------------- почему именно эти способы ---------------------- -->
+    <div class="reg-side">
+      <div class="reg-why">
+        <h3>Почему именно VK ID и Яндекс ID</h3>
+        <p>Это не выбор администрации и не «удобно так». С <b>1 июня 2025 года</b> действует
+          статья <b>10.1-1 Федерального закона № 149-ФЗ</b> «Об информации, информационных
+          технологиях и о защите информации» (введена законом <b>№ 303-ФЗ от 08.08.2024</b>).
+          Сайт, работающий на Россию, обязан пускать людей к себе одним из способов:</p>
+        <ul>
+          <li>номер телефона российского оператора;</li>
+          <li>Госуслуги (ЕСИА);</li>
+          <li>единая биометрическая система;</li>
+          <li>иная информационная система российской компании, умеющая узнавать человека, —
+            это как раз <b>VK ID</b> и <b>Яндекс ID</b>.</li>
+        </ul>
+        <p>Из этого списка мы выбрали самое безобидное. Просить у игрока номер телефона —
+          значит хранить номера; Госуслуги и биометрия для входа на майнкрафт-сервер —
+          дикость. VK ID и Яндекс ID уже есть почти у каждого, вход в один клик, и нам
+          не достаётся ни номера, ни почты.</p>
+        <p class="reg-note">Discord, Telegram и обычная почта на роль такой проверки
+          по закону не годятся: это не российские информационные системы и они никого
+          не узнаю́т — под них можно наделать сколько угодно ящиков. Поэтому Discord у нас
+          остаётся для тикетов и ролей, а не пропуском.</p>
+      </div>
+
+      <div class="reg-why">
+        <h3>А если я не из России</h3>
+        <p>Регистрируйся так же. И VK ID, и Яндекс ID принимают номера всех стран СНГ —
+          Беларуси, Казахстана, Армении, Кыргызстана, Узбекистана, Азербайджана,
+          Молдовы, Таджикистана — и работают без российского номера. Гражданство мы
+          не спрашиваем и не узнаём: сервер видит только «это тот же человек» или
+          «это новый человек».</p>
+        <p>Если ни одной из этих служб у тебя нет — напиши в тикет в Discord, разберём
+          отдельно, без второго аккаунта.</p>
+      </div>
+
+      <div class="reg-why">
+        <h3>Что сервер о тебе хранит</h3>
+        <p><b>Хранится:</b> имя в игре, пароль в виде необратимого хэша (сам пароль
+          не хранится нигде), пометка «проверен через VK ID / Яндекс ID» и одно
+          непрозрачное число — отпечаток личности. По этому числу нельзя узнать
+          человека, но по нему видно, что второе имя заводит тот же самый.</p>
+        <p><b>Не хранится и не запрашивается:</b> телефон, почта, фамилия, дата рождения,
+          адрес, документы, пароль от VK или Яндекса, их токены доступа.</p>
+        <p>Данные лежат на сервере проекта в России и никуда не передаются: ни рекламе,
+          ни аналитике, ни третьим лицам. Удалить своё имя вместе с отпечатком можно
+          в любой момент — тикетом в Discord.</p>
+      </div>
+
+      <div class="reg-why">
+        <h3>Зачем такая строгость</h3>
+        <p>AEGIS — военно-политический сезон: державы, войны, договоры и репутация.
+          Всё это держится на том, что за именем стоит человек, а не десять «мультов»
+          для голосований, заявок на страны, обхода банов и ферм из червонцев.
+          Один аккаунт на человека — это не недоверие, а условие, при котором честная
+          игра вообще возможна.</p>
+        <p>Вдобавок лаунчер запоминает, с какого компьютера ты играешь: если с одной
+          машины попытаются войти два разных игрока, сервер спросит. Компьютер и правда
+          общий — брат, семья, один класс — напиши в тикет, разрешим руками.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-in">
+      <img src="assets/img/logo.png" alt="AEGIS SMP">
+      <div class="foot-links">
+        <a href="index.html#season">Сезон 1936</a>
+        <a href="index.html#join">Как зайти</a>
+        <a href="donate.html">Донат</a>
+        <a href="index.html#news">Новости</a>
+      </div>
+    </div>
+    <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
+      и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/reg.js"></script>
+</body>
+</html>

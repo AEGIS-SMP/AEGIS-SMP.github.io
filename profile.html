@@ -6,6 +6,22 @@
 <title>Профиль и скин — AEGIS SMP</title>
 <meta name="description" content="Профиль игрока AEGIS SMP: поставь свой скин через сайт — и клиент из лаунчера сразу покажет его в игре. Лицензия Minecraft для этого не нужна.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="canonical" href="https://aegis-smp.github.io/profile.html">
+<meta name="theme-color" content="#0E0E10">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AEGIS SMP">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="https://aegis-smp.github.io/profile.html">
+<meta property="og:title" content="Профиль и скин — AEGIS SMP">
+<meta property="og:description" content="Поставь свой скин через сайт — клиент из лаунчера покажет его в игре. Лицензия Minecraft для этого не нужна.">
+<meta property="og:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta property="og:image:width" content="1920">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Профиль и скин — AEGIS SMP">
+<meta name="twitter:description" content="Поставь свой скин через сайт — клиент из лаунчера покажет его в игре. Лицензия Minecraft для этого не нужна.">
+<meta name="twitter:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -44,11 +60,13 @@
     <div class="reg-card">
       <form class="reg-form" id="pfForm" autocomplete="off">
         <label for="pNick">Имя в игре</label>
-        <input id="pNick" type="text" maxlength="16" placeholder="VineZerro" spellcheck="false">
+        <input id="pNick" type="text" maxlength="16" placeholder="VineZerro" spellcheck="false"
+               autocomplete="username">
         <div class="reg-hint">То самое, которым заходишь лаунчером.</div>
 
         <label for="pPass">Пароль AEGIS</label>
-        <input id="pPass" type="password" maxlength="64" placeholder="пароль из лаунчера">
+        <input id="pPass" type="password" maxlength="64" placeholder="пароль из лаунчера"
+               autocomplete="current-password">
         <div class="reg-hint">Нужен, чтобы скин тебе поставил ты, а не любой прохожий.
           Это пароль проекта, а не Microsoft.</div>
 
@@ -143,6 +161,7 @@
   </div>
 </footer>
 
+<script src="js/config.js"></script>
 <script src="js/main.js"></script>
 <script src="js/profile.js"></script>
 </body>

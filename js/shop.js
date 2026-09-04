@@ -315,7 +315,12 @@ if (kitModal) {
   });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
-    const tile = e.target.closest && e.target.closest('.kit-tile');
+    const t = e.target;
+    if (!t || !t.closest) return;
+    /* Кнопки тиров лежат ВНУТРИ плитки и нажимаются сами: перехватив их здесь,
+       мы гасили бы их клик и с клавиатуры всегда открывался бы первый тир. */
+    if (t.closest('a, button, input, select, textarea')) return;
+    const tile = t.closest('.kit-tile');
     if (tile) { e.preventDefault(); openKit(+tile.dataset.kit, 0); }
   });
 

@@ -32,18 +32,47 @@
   var live = null;        /* что стоит на сервере: {img, w, h, model, at} */
   var FILE_MAX = 160 * 1024;
 
-  /* Где живёт служба. Домашний сервер отвечает по http, поэтому с опубликованного
-     сайта (https) до него не дотянуться — там адрес придёт через AEGIS_REG_BASE,
-     когда встанет прокси. Локально это просто петля. Один в один как в reg.js. */
+  /* Где живёт служба. Адрес задан в js/config.js — больше нигде. Домашний сервер
+     отвечает по http, поэтому с опубликованного сайта (https) до него не
+     дотянуться: смешанный запрос браузер режет молча, и мы его не пробуем.
+     Параметр ?svc= остался для отладки и работает ТОЛЬКО на своей машине:
+     иначе подсунутая ссылка увела бы имя и пароль игрока на чужой адрес.
+     Один в один как в reg.js. */
+  function isLocal(h) {
+    return h === '127.0.0.1' || h === 'localhost' || h === '[::1]' ||
+      h === '::1' || h === '';
+  }
+
   function findBase() {
-    var q = new URLSearchParams(location.search).get('svc');
-    if (q) return q.replace(/\/+$/, '');
-    if (window.AEGIS_REG_BASE) return String(window.AEGIS_REG_BASE).replace(/\/+$/, '');
-    var h = location.hostname;
-    if (h === '127.0.0.1' || h === 'localhost' || h === '[::1]' || h === '') {
-      return 'http://127.0.0.1:25580';
+    var local = isLocal(location.hostname);
+    var raw = '';
+    if (local) raw = new URLSearchParams(location.search).get('svc') || '';
+    if (!raw && window.AEGIS_REG_BASE) raw = String(window.AEGIS_REG_BASE);
+    raw = raw.trim().replace(/\/+$/, '');
+    if (!raw && local) raw = 'http://127.0.0.1:25580';
+    if (!/^https?:\/\/[^\s]+$/i.test(raw)) return null;
+    if (location.protocol === 'https:' && /^http:\/\//i.test(raw)) return null;
+    return raw;
+  }
+
+  /* Запрос к службе: крышка по времени и проверка ответа. Без них зависшая
+     служба держала бы кнопку «занята» вечно, а страница ошибки от прокси
+     (там HTML, а не JSON) роняла бы разбор — человек видел бы пустоту. */
+  function ask(url, opts, ms) {
+    opts = opts || {};
+    opts.cache = 'no-store';
+    var timer = null;
+    if (typeof AbortController === 'function') {
+      var ctl = new AbortController();
+      opts.signal = ctl.signal;
+      timer = setTimeout(function () { ctl.abort(); }, ms || 12000);
     }
-    return null;
+    function done() { if (timer) clearTimeout(timer); }
+    return fetch(url, opts).then(function (r) {
+      done();
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.json();
+    }, function (e) { done(); throw e; });
   }
 
   function say(text, kind) {
@@ -232,8 +261,7 @@
     live = null;
     view();
     if (!/^[A-Za-z0-9_]{3,16}$/.test(nick)) return;
-    fetch(base + '/skin/state?nick=' + encodeURIComponent(nick), { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
+    ask(base + '/skin/state?nick=' + encodeURIComponent(nick))
       .then(function (s) {
         if (!s || !s.ok || !s.has) return;
         if (s.model === 'slim' || s.model === 'classic') {
@@ -280,11 +308,13 @@
 
   function send(door, body, good) {
     lock(true);
-    fetch(base + door, {
+    /* Картинка уходит целиком в теле запроса, поэтому срок больше: на слабом
+       канале 160 КБ в base64 успевают не всегда за общие двенадцать секунд. */
+    ask(base + door, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
-    }).then(function (r) { return r.json(); }).then(function (s) {
+    }, 25000).then(function (s) {
       lock(false);
       if (!s || !s.ok) {
         say((s && s.text) || 'Не вышло. Попробуй ещё раз.', 'bad');
@@ -349,6 +379,16 @@
   if (!base) {
     dead('Скины включатся вместе с сервером — сезон ещё готовится. Следи за новостями AEGIS.');
   } else {
-    loadState();
+    /* Сначала спрашиваем службу, жива ли она вообще. Без этой проверки страница
+       выглядела бы рабочей: человек вводил бы имя с паролем, выбирал картинку
+       и только по нажатию кнопки узнавал, что сервер выключен. Спрашиваем
+       /reg/state — служба на сервере одна, этот ответ приходит без имени
+       и ничего не меняет. Важен сам факт ответа, а не что в нём. */
+    ask(base + '/reg/state', null, 8000).then(function () {
+      loadState();
+    }, function () {
+      dead('Служба скинов сейчас не отвечает. Это на нашей стороне — попробуй позже '
+        + 'или напиши в тикет в Discord.');
+    });
   }
 })();
