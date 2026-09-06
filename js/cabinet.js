@@ -19,9 +19,11 @@
         -> {ok, nick, uuid, role, admin, coins, online, firstAt, lastAt,
             playedMin, country, countryName,
             skin:{has, model}, link:{provider, name},
-            punish:[P], prizes:[Z], orders:[O]}
+            punish:[P], prizes:[Z], orders:[O], lands:{n, debt}}
    GET  /cab/coins?limit=60                           (Bearer)
-        -> {ok, coins, rows:[{at, delta, why, by}]}
+        -> {ok, coins, paid, rows:[{at, delta, why, by}]}
+   GET  /cab/lands                                    (Bearer)
+        -> {ok, max, taxPct, debt, nextAt, rows:[L]}
    POST /cab/password {old, new}                      (Bearer)  -> {ok, text}
    POST /cab/prize {id}                               (Bearer)  -> {ok, text, coins}
 
@@ -39,6 +41,10 @@
    POST /cab/admin/give {nick, coins, why}               -> {ok, text, coins}
 
    P = {id, kind:"warn|mute|kick|ban", reason, at, until, by, active}
+   L = {id, name, country, chunks, price, tax, boughtAt, nextAt, debt, cutAt}
+       price и tax считает игра, сайт их только показывает: два счёта в двух
+       местах разойдутся, и на сайте будет одна сумма, а спишется другая.
+       debt — недоимка по этой земле, cutAt — когда её заберут (0, если долга нет)
    Z = {id, name, text, coins, at, taken}
    O = {id, name, rub, coin, at, status:"wait|paid|failed"}  — те же слова,
        что отдаёт GET /shop/order, чтобы у заказа было одно состояние на всё
@@ -60,6 +66,7 @@
   var showPass = false;
 
   var coins = null;     // история червонцев
+  var lands = null;     // свои провинции: цена, налог, сроки
   var players = null;   // список игроков для команды
   var bans = null;      // действующие наказания
   var pcard = null;     // карточка одного игрока
@@ -70,6 +77,7 @@
   var NAV = [
     ['me', 'Профиль'],
     ['coins', 'Червонцы'],
+    ['lands', 'Провинции'],
     ['punish', 'Наказания'],
     ['prizes', 'Награды']
   ];
@@ -133,6 +141,15 @@
     try {
       return new Date(ts).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
     } catch (e) { return ''; }
+  }
+
+  /* «Через сколько». У налога и конфискации важен день, а не час: человеку
+     нужно понять, успевает он до выходных или нет. */
+  function leftDays(ts) {
+    var ms = (Number(ts) || 0) - Date.now();
+    if (ms <= 0) return 'уже сегодня';
+    var d = Math.ceil(ms / 86400000);
+    return 'через ' + d + ' ' + plural(d, ['день', 'дня', 'дней']);
   }
 
   function clock(ts) {
@@ -203,6 +220,13 @@
     return A.call('/cab/coins?limit=60').then(function (d) { coins = d; });
   }
 
+  /* Свои провинции. Ни цену, ни налог, ни сроки сайт не считает: их знает
+     игра, а два счёта в двух местах однажды разойдутся — и человек увидит
+     на сайте одну сумму, а в игре спишется другая. */
+  function loadLands() {
+    return A.call('/cab/lands').then(function (d) { lands = d; });
+  }
+
   function loadPlayers(q) {
     return A.call('/cab/admin/players?limit=60&q=' + encodeURIComponent(q || ''))
       .then(function (d) { players = d; players.q = q || ''; });
@@ -240,6 +264,7 @@
   function need() {
     if (view === 'exam' && !exam) return loadExam();
     if (view === 'coins' && !coins) return loadCoins();
+    if (view === 'lands' && !lands) return loadLands();
     if (view === 'players' && !players) return loadPlayers('');
     if (view === 'bans' && !bans) return loadBans();
     if (view === 'chat' && !chat.at) return loadChat(true);
@@ -349,6 +374,9 @@
     NAV.forEach(function (t) {
       var b = '';
       if (t[0] === 'coins') b = money(me.coins);
+      /* Значок у «Провинций» — восклицательный знак при недоимке: это
+         единственное место в кабинете, где промедление стоит земли. */
+      if (t[0] === 'lands') b = me.lands && me.lands.debt ? '!' : String(me.lands && me.lands.n || '');
       if (t[0] === 'punish') b = String(actives(me.punish).length || '');
       if (t[0] === 'prizes') b = String(unTaken(me.prizes).length || '');
       n += btn(t[0], t[1], b);
@@ -644,15 +672,110 @@
       if (d > 0) got += d; else spent -= d;
     });
 
+    /* paid — сколько из баланса куплено за рубли. Такие червонцы тратятся
+       последними, и человек имеет право видеть, сколько их у него осталось. */
+    var paid = coins && coins.paid != null ? Number(coins.paid) || 0 : 0;
+
     return '<div class="cab-tiles">' +
       tile('На счету', money(bal),
-        plural(bal, ['червонец', 'червонца', 'червонцев']) +
+        (paid > 0 ? money(paid) + ' куплено за рубли' :
+          plural(bal, ['червонец', 'червонца', 'червонцев'])) +
         ' · <a href="donate.html">пополнить</a>') +
       tile('Пришло', money(got), 'за последние ' + rows.length + ' ' +
         plural(rows.length, ['движение', 'движения', 'движений'])) +
       tile('Потрачено', money(spent), 'покупки в лавке и списания') +
       '</div>' +
-      '<div class="cab-block"><h2>История</h2>' + list + '</div>';
+      '<div class="cab-block"><h2>История</h2>' +
+      '<p class="cab-hint">Червонцы <b>переживают вайп</b>: счёт остаётся с ' +
+      'тобой и в новом сезоне. Вещи, постройки и земля — нет, их выдаёт мир, ' +
+      'а мир начинается заново.' +
+      (paid > 0 ? ' Купленные за рубли червонцы списываются последними — ' +
+        'сначала уходит заработанное в игре.' : '') + '</p>' + list + '</div>';
+  }
+
+  function landRow(r) {
+    var debt = Number(r.debt) || 0;
+    var sub = [];
+    if (r.country) sub.push(esc(r.country));
+    if (r.chunks) {
+      sub.push(money(r.chunks) + ' ' + plural(r.chunks, ['чанк', 'чанка', 'чанков']));
+    }
+    if (r.boughtAt) sub.push('куплена ' + esc(day(r.boughtAt)));
+    /* Пока есть долг, дата конфискации важнее даты следующего налога:
+       она и решает, останется земля за человеком или нет. */
+    if (debt && r.cutAt) {
+      sub.push('заберут ' + esc(day(r.cutAt)) + ', ' + leftDays(r.cutAt));
+    } else if (r.nextAt) {
+      sub.push('налог спишется ' + esc(day(r.nextAt)) + ', ' + leftDays(r.nextAt));
+    }
+
+    return '<div class="row r2"><div>' +
+      '<div class="rw-t">' + esc(r.name || 'Провинция') +
+      (debt ? ' <span class="pill red">недоимка ' + money(debt) + ' Ч</span>' : '') +
+      '</div><div class="rw-s">' + sub.join(' · ') + '</div></div>' +
+      '<div class="rw-r ln-r"><b>' + money(r.price) + ' Ч</b>' +
+      '<span>налог ' + money(r.tax) + ' Ч в неделю</span></div></div>';
+  }
+
+  /* «Провинции». Земля — единственное в кабинете, что можно потерять,
+     ничего не нарушив: просто не хватило червонцев на налог. Поэтому здесь
+     на виду две вещи — сколько списывать и сколько осталось до изъятия. */
+  function viewLands() {
+    var d = lands || {};
+    var rows = d.rows || [];
+    var max = Number(d.max) || 3;
+    var pct = Number(d.taxPct) || 3;
+
+    if (!rows.length) {
+      return empty('Своей земли пока нет',
+        'Провинции покупаются на сервере у государства: свободная стоит от ' +
+        '100 червонцев, а новичку при первом заходе выдают 150 подъёмных — ' +
+        'на первую землю хватает сразу. Что где стоит, видно в списке ' +
+        '<a href="lands.html">земель и налогов</a>.');
+    }
+
+    var tax = 0, debt = 0, next = 0;
+    rows.forEach(function (r) {
+      tax += Number(r.tax) || 0;
+      debt += Number(r.debt) || 0;
+      var n = Number(r.nextAt) || 0;
+      if (n && (!next || n < next)) next = n;
+    });
+    if (d.debt != null) debt = Number(d.debt) || 0;
+    if (d.nextAt) next = Number(d.nextAt) || next;
+
+    var weeks = tax > 0 ? Math.floor((Number(me.coins) || 0) / tax) : 0;
+
+    var tiles =
+      tile('Провинций', rows.length + ' из ' + max,
+        max > 3 ? 'больше даёт звание' : 'звание Офицера даёт +1, Маршала +2') +
+      tile('Налог в неделю', money(tax) + ' Ч',
+        pct + '% от цены каждой земли') +
+      /* Крупно — «через сколько», мелко — дата: человеку сначала важно,
+         успевает он или нет, и только потом — какое это число. */
+      tile('Ближайшее списание', next ? leftDays(next) : '—',
+        next ? esc(day(next)) : 'сроки придут с сервера') +
+      (debt
+        ? tile('Недоимка', money(debt) + ' Ч',
+          'погаси, иначе землю заберут · <a href="donate.html">пополнить</a>')
+        : tile('Хватит червонцев', weeks
+          ? 'на ' + weeks + ' ' + plural(weeks, ['неделю', 'недели', 'недель'])
+          : 'меньше недели',
+          weeks ? 'при нынешнем налоге' : 'налог спишется не полностью'));
+
+    var hint = debt
+      ? '<p class="cab-hint">Недоимка растёт, пока на счету не хватает на налог. ' +
+        'Через 14 дней земля возвращается государству: за неё вернут 75% цены, ' +
+        'а постройки достанутся новому хозяину. Гасится она сама, как только ' +
+        'червонцы появятся на счету.</p>'
+      : '<p class="cab-hint">Налог списывается со счёта сам, раз в неделю. ' +
+        'Не хватило — копится недоимка, и через 14 дней землю забирают. ' +
+        'Все правила: цена, продажа, переезд — на странице ' +
+        '<a href="lands.html">Земли и налоги</a>.</p>';
+
+    return '<div class="cab-tiles">' + tiles + '</div>' +
+      '<div class="cab-block"><h2>Мои провинции</h2>' + hint +
+      '<div class="row-list">' + rows.map(landRow).join('') + '</div></div>';
   }
 
   /* nick нужен для кнопки «снять»: без него строка только показывает.
@@ -939,6 +1062,7 @@
   function main() {
     if (view === 'exam') return viewExam();
     if (view === 'coins') return viewCoins();
+    if (view === 'lands') return viewLands();
     if (view === 'punish') return viewPunish();
     if (view === 'prizes') return viewPrizes();
     if (view === 'players') return viewPlayers();
