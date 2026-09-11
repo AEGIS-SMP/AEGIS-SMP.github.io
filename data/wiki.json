@@ -733,29 +733,41 @@
    "title": "Сборка модов",
    "type": "modpack",
    "intro": "Сборку целиком ставит лаунчер AEGIS — руками ничего скачивать не нужно. Список нужен, чтобы заранее понимать, во что играем, и чтобы было видно: скрытых модов нет.",
-   "total": 123,
+   "total": 124,
    "groups": [
     {
      "name": "Create и дополнения",
      "items": [
       {
-       "name": "Create",
-       "version": "6.0.10"
-      },
-      {
-       "name": "Create: Access Denied",
-       "version": "6.0.10"
-      },
-      {
-       "name": "Create: Aeronautics (дирижабли)",
-       "version": "1.3.0"
-      },
-      {
-       "name": "Create: Aeronautics — передачи и тяги",
+       "name": "Aeronautics: Transmission & Linkage — передачи и тяги",
        "version": "0.2.8"
       },
       {
-       "name": "Create: Aeroworks (надстройки к дирижаблям)",
+       "name": "CBC Advanced Technology — нарезные стволы и новые калибры",
+       "version": "0.1.4"
+      },
+      {
+       "name": "CBC Neo Warfare — современное вооружение к Big Cannons",
+       "version": "0.0.6"
+      },
+      {
+       "name": "CBCAT Fix — заплатка совместимости Advanced Technology",
+       "version": "1.0.1"
+      },
+      {
+       "name": "Create — механизмы и автоматизация",
+       "version": "6.0.10"
+      },
+      {
+       "name": "Create: Access Denied — замки и права на механизмы",
+       "version": "6.0.10"
+      },
+      {
+       "name": "Create: Aeronautics — самолёты и дирижабли",
+       "version": "1.3.0"
+      },
+      {
+       "name": "Create: Aeroworks — детали к самолётам Aeronautics",
        "version": "1.5.0"
       },
       {
@@ -763,16 +775,8 @@
        "version": "1.0.0"
       },
       {
-       "name": "Create: Big Cannons",
+       "name": "Create: Big Cannons — артиллерия и снаряды",
        "version": "5.11.7"
-      },
-      {
-       "name": "Create: Big Cannons AT — заплатка совместимости",
-       "version": "1.0.1"
-      },
-      {
-       "name": "Create: Big Cannons — Advanced Technology",
-       "version": "0.1.4"
       },
       {
        "name": "Create: Cardboard Things",
@@ -799,7 +803,7 @@
        "version": "8.1.3"
       },
       {
-       "name": "Create: Deco",
+       "name": "Create: Deco — декоративные блоки в стиле Create",
        "version": "2.1.3"
       },
       {
@@ -807,7 +811,7 @@
        "version": "2.2.4"
       },
       {
-       "name": "Create: Diesel Generators",
+       "name": "Create: Diesel Generators — дизельные генераторы",
        "version": "1.3.14"
       },
       {
@@ -815,7 +819,7 @@
        "version": "1.1.1"
       },
       {
-       "name": "Create: Fast Schematic Cannon",
+       "name": "Create: Fast Schematic Cannon — быстрая стройка по чертежу",
        "version": "1.4.1"
       },
       {
@@ -831,16 +835,16 @@
        "version": "0.6.1"
       },
       {
-       "name": "Create: Linear Bearing (линейный подшипник)",
+       "name": "Create: Linear Bearing — подшипник прямого хода",
        "version": "1.3.5"
-      },
-      {
-       "name": "Create: Linear Bearings — исправления",
-       "version": "1.0.3"
       },
       {
        "name": "Create: Netherless",
        "version": "2.0.0"
+      },
+      {
+       "name": "Create: Nuclear — уран, реактор и радиация",
+       "version": "1.3.2"
       },
       {
        "name": "Create: Numismatics (деньги)",
@@ -851,11 +855,11 @@
        "version": "1.1.0"
       },
       {
-       "name": "Create: Propulsion Simulated (двигатели и топливо)",
+       "name": "Create: Propulsion — тяга и двигатели для машин",
        "version": "1.1.5"
       },
       {
-       "name": "Create: Radar",
+       "name": "Create: Radar — радары и обнаружение",
        "version": "0.4.9.4"
       },
       {
@@ -863,15 +867,15 @@
        "version": "1.2.1"
       },
       {
-       "name": "Create: Schematic Checker",
+       "name": "Create: Schematic Checker — сверка чертежа с постройкой",
        "version": "6.0"
       },
       {
-       "name": "Create: Schematic Helper (обмен чертежами)",
+       "name": "Create: Schematic Helper — обмен чертежами между игроками",
        "version": "2.0.3"
       },
       {
-       "name": "Create: Security (охрана механизмов)",
+       "name": "Create: Security — охрана построек от чужих",
        "version": "2.01"
       },
       {
@@ -903,16 +907,32 @@
        "version": "2.2.4"
       },
       {
-       "name": "Drive-By-Sable — управление техникой",
-       "version": "1.5.2"
+       "name": "Linear Bearings Fix — заплатка к подшипнику",
+       "version": "1.0.3"
       },
       {
-       "name": "Sable: Destructive (разрушаемость)",
+       "name": "Sable — физика подвижных построек (движок)",
+       "version": "2.0.3"
+      },
+      {
+       "name": "Sable: Destructive — постройки ломаются от попаданий",
        "version": "2.2.0"
       },
       {
-       "name": "Sable: MassView (масса блоков в подсказке)",
+       "name": "Sable: Drive-By — управление техникой за рулём",
+       "version": "1.5.2"
+      },
+      {
+       "name": "Sable: MassView — масса блоков в подсказке",
        "version": "1.0.0"
+      },
+      {
+       "name": "Sable: Photomancy — снимок постройки",
+       "version": "1.0.1"
+      },
+      {
+       "name": "Sable: Scoped Links — связь механизмов внутри постройки",
+       "version": "1.4.0"
       },
       {
        "name": "Synaxis — команды физического движка",
@@ -952,7 +972,7 @@
        "version": "9.5.1"
       },
       {
-       "name": "Decobuild (декор)",
+       "name": "Decobuild — мебель и отделка",
        "version": "2.0.5"
       },
       {
@@ -968,7 +988,7 @@
        "version": "1.1.42"
       },
       {
-       "name": "EMI — просмотр рецептов",
+       "name": "EMI — поиск по рецептам и дерево крафта",
        "version": "1.1.24"
       },
       {
@@ -992,7 +1012,7 @@
        "version": "3.6"
       },
       {
-       "name": "JEI — просмотр рецептов",
+       "name": "JEI — справочник рецептов",
        "version": "19.39.0.368"
       },
       {
@@ -1036,27 +1056,27 @@
        "version": "3.2.0"
       },
       {
-       "name": "Ragdoll Reactions",
-       "version": "0.7.0"
-      },
-      {
-       "name": "Reliable Advancements",
+       "name": "Reliable Advancements — свои достижения датапаком",
        "version": "4.0.2"
       },
       {
-       "name": "Reliable Recipes",
+       "name": "Reliable Recipes — свои рецепты датапаком",
        "version": "2.2.0"
       },
       {
-       "name": "Reliable Remover",
+       "name": "Reliable Remover — убирает лишние рецепты и предметы",
        "version": "2.9.4"
+      },
+      {
+       "name": "Sable: Ragdolls — тело игрока падает физически",
+       "version": "0.7.5"
       },
       {
        "name": "Simple Voice Chat — голосовой чат",
        "version": "2.6.22"
       },
       {
-       "name": "Simple Voice Chat: Radios (рации)",
+       "name": "Simple Voice Chat: Radios — рации и частоты",
        "version": "1.0.0"
       },
       {
@@ -1145,28 +1165,12 @@
        "version": "2.0.4"
       },
       {
-       "name": "Player Ragdoll",
-       "version": "0.7.5"
-      },
-      {
        "name": "Rhino — движок скриптов KubeJS",
        "version": "2101.2.8"
       },
       {
        "name": "Ritchie's Projectile Library",
        "version": "2.1.2"
-      },
-      {
-       "name": "Sable — физика подвижных построек",
-       "version": "2.0.3"
-      },
-      {
-       "name": "Sable: Photomancy (снимок постройки)",
-       "version": "1.0.1"
-      },
-      {
-       "name": "Sable: Scoped Links (связь внутри постройки)",
-       "version": "1.4.0"
       },
       {
        "name": "Sophisticated Core",
