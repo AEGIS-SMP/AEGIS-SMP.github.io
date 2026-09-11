@@ -1,4 +1,15 @@
 {
- "at": 0,
- "channels": []
+ "at": 1789086466171,
+ "channels": [
+  {
+   "id": "yt_project",
+   "name": "AEGIS SMP",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/@AEGIS_SMP_WP",
+   "note": "канал проекта: трейлеры, девлоги, эфиры открытия",
+   "official": true,
+   "live": false,
+   "known": true
+  }
+ ]
 }
