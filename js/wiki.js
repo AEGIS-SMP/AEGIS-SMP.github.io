@@ -88,6 +88,13 @@
      начнут править не мы. */
   function href(u) {
     u = String(u || '').trim();
+    /* Свои абсолютные ссылки — в относительные: с 18.10.2026 сайт живет на
+       GitHub Pages, а домен смотрит на выключенный сервер. Текст вики не трогаем. */
+    var own = /^https?:\/\/(www\.)?aegis-smp\.com\/?/i;
+    if (own.test(u)) {
+      u = u.replace(own, '');
+      if (!u || u.charAt(0) === '#') u = 'index.html' + u;
+    }
     if (/^https:\/\//i.test(u)) return u;
     if (/^[\w./#?=&%-]+$/.test(u)) return u;
     return '';
