@@ -6,41 +6,48 @@
 <title>Вики AEGIS SMP — правила, ответы, сборка модов</title>
 <meta name="description" content="Вики AEGIS SMP: правила игрового сервера и Discord с мерами за нарушения, ответы на частые вопросы, состав сборки модов и обязанности команды. Те же тексты, что выдаёт бот в Discord, с поиском по словам.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="canonical" href="https://aegis-smp.github.io/wiki.html">
+<link rel="canonical" href="https://www.aegis-smp.com/wiki.html">
 <meta name="theme-color" content="#0E0E10">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AEGIS SMP">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:url" content="https://aegis-smp.github.io/wiki.html">
+<meta property="og:url" content="https://www.aegis-smp.com/wiki.html">
 <meta property="og:title" content="Вики AEGIS SMP">
 <meta property="og:description" content="Правила, ответы на частые вопросы, сборка модов и состав команды — в одном месте, с поиском.">
-<meta property="og:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta property="og:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Вики AEGIS SMP">
 <meta name="twitter:description" content="Правила, ответы на частые вопросы, сборка модов и состав команды — в одном месте, с поиском.">
-<meta name="twitter:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta name="twitter:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/style.css?v=0925p">
+<link rel="stylesheet" href="css/pages.css?v=20260925">
+<link rel="stylesheet" href="css/wiki-media.css?v=0926">
+<link rel="stylesheet" href="css/wiki-edit.css?v=1003">
+<noscript><style>/* Скрипт выключен — точки загрузки крутились бы вечно. */
+  .loading { display: none; }</style></noscript>
 </head>
 <body>
+<a class="skip-link" href="#content">К содержанию</a>
 
 <header class="topbar">
   <div class="container topbar-in">
     <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
-    <button class="burger" aria-label="Меню"><span></span></button>
-    <nav class="topnav" id="topnav">
+    <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
+    <nav class="topnav" id="topnav" aria-label="Основное меню">
       <a href="index.html#season">Сезон 1936</a>
       <a href="index.html#arsenal">Арсенал</a>
       <a href="index.html#join">Как зайти</a>
       <a href="lands.html">Земли</a>
-      <a class="active" href="wiki.html">Вики</a>
+      <a href="players.html">Игроки</a>
+      <a href="feed.html">Лента</a>
+      <a class="active" href="wiki.html" aria-current="page">Вики</a>
       <a href="tickets.html">Обращения</a>
       <a href="live.html">Эфиры</a>
       <a class="btn btn-dark btn-sm" href="cabinet.html">Кабинет</a>
@@ -49,20 +56,26 @@
   </div>
 </header>
 
-<main class="page-wrap">
+<main id="content" tabindex="-1">
+
+<div class="page-wrap">
   <div class="container">
     <div class="crumbs">
       <a href="index.html">Главная</a><span>/</span>Вики
     </div>
 
-    <button class="doc-open" id="wOpen" type="button">
+    <button class="doc-open" id="wOpen" type="button"
+            aria-expanded="false" aria-controls="wSide">
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
            stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h9"/></svg>
       Содержание и поиск
     </button>
 
     <div class="doc">
-      <aside class="doc-side" id="wSide">
+      <!-- tabindex="-1" — чтобы на узком экране фокус мог перейти в саму
+           выехавшую панель. Ставить его на поле поиска нельзя: телефон тут же
+           поднимет клавиатуру и закроет ею половину списка. -->
+      <aside class="doc-side" id="wSide" tabindex="-1">
         <label class="search">
           <svg class="s-ic" viewBox="0 0 20 20" fill="none" stroke="currentColor"
                stroke-width="1.7" stroke-linecap="round">
@@ -72,20 +85,24 @@
                  placeholder="Поиск по вики" aria-label="Поиск по вики">
           <button class="s-clear" id="wClear" type="button" aria-label="Очистить">✕</button>
         </label>
-        <nav class="doc-nav" id="wNav"></nav>
+        <nav class="doc-nav" id="wNav" aria-label="Разделы вики"></nav>
         <div class="doc-found" id="wFound" hidden></div>
       </aside>
 
       <article class="doc-body" id="wBody">
         <div class="loading" aria-label="Загрузка"><i></i><i></i><i></i></div>
+        <noscript><div class="empty"><h4>Нужен JavaScript</h4>
+          <p>Вики собирается в браузере. Включи JavaScript — правила и ответы те же самые есть в Discord.</p></div></noscript>
       </article>
 
-      <aside class="doc-toc" id="wToc"></aside>
+      <aside class="doc-toc" id="wToc" aria-label="На этой странице"></aside>
     </div>
   </div>
-</main>
+</div>
 
 <div class="doc-scrim" id="wScrim"></div>
+
+</main>
 
 <footer>
   <div class="container">
@@ -95,21 +112,26 @@
         <a href="index.html#season">Сезон 1936</a>
         <a href="index.html#join">Как зайти</a>
         <a href="lands.html">Земли</a>
+        <a href="players.html">Игроки</a>
+        <a href="feed.html">Лента</a>
         <a href="wiki.html">Вики</a>
         <a href="tickets.html">Обращения</a>
         <a href="live.html">Эфиры</a>
         <a href="donate.html">Донат</a>
         <a href="index.html#news">Новости</a>
+        <a href="offer.html">Оферта</a>
       </div>
     </div>
     <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
       и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+    <p class="foot-legal">Продавец: самозанятый, владелец проекта AEGIS. Связь — через <a href="tickets.html">обращения</a> на сайте. <a href="offer.html">Оферта</a>.</p>
   </div>
 </footer>
 
 <script src="js/config.js"></script>
-<script src="js/api.js"></script>
+<script src="js/api.js?v=20260925"></script>
 <script src="js/main.js"></script>
-<script src="js/wiki.js"></script>
+<script src="js/wiki.js?v=1018p"></script>
+<script src="js/wiki-edit.js?v=1003"></script>
 </body>
 </html>

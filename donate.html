@@ -3,75 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Военная казна — донат AEGIS SMP</title>
-<meta name="description" content="Монетизация AEGIS SMP: золотые червонцы по курсу 1 к 1, промокоды, привилегии на месяц/сезон/навсегда, премиум «Мандат Ставки», боевой пропуск с наградой на каждом этапе, кейсы с открытыми шансами и продажей приза, тематические киты трёх уровней. Всё в лавке можно получить и без денег.">
+<title>Военное снабжение — донат AEGIS SMP</title>
+<meta name="description" content="Донат AEGIS SMP: один ценник — в рублях, под ним та же сумма в валюте твоей страны СНГ по курсу ЦБ РФ. Привилегии на месяц и на весь вайп, премиум «Мандат Ставки», боевой пропуск, кейсы с открытыми шансами, тематические киты и наборы нашего мода AEGIS. Золотые червонцы — отдельной позицией, от 50 Ч; обратно на деньги они не меняются, и ни один товар в лавке в червонцах не стоит.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="canonical" href="https://aegis-smp.github.io/donate.html">
+<link rel="canonical" href="https://www.aegis-smp.com/donate.html">
 <meta name="theme-color" content="#0E0E10">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AEGIS SMP">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:url" content="https://aegis-smp.github.io/donate.html">
-<meta property="og:title" content="Военная казна — донат AEGIS SMP">
-<meta property="og:description" content="Одна валюта — золотой червонец, курс 1 к 1 без надбавок. Привилегии, киты, кейсы и боевой пропуск покупаются червонцами и берутся игрой.">
-<meta property="og:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta property="og:url" content="https://www.aegis-smp.com/donate.html">
+<meta property="og:title" content="Военное снабжение — донат AEGIS SMP">
+<meta property="og:description" content="Один ценник — в рублях, и та же сумма в валюте твоей страны. Привилегии, киты, кейсы, наборы мода и боевой пропуск. Отдельно — золотые червонцы от 50 Ч.">
+<meta property="og:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Военная казна — донат AEGIS SMP">
-<meta name="twitter:description" content="Одна валюта — золотой червонец, курс 1 к 1 без надбавок. Привилегии, киты, кейсы и боевой пропуск покупаются червонцами и берутся игрой.">
-<meta name="twitter:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta name="twitter:title" content="Военное снабжение — донат AEGIS SMP">
+<meta name="twitter:description" content="Один ценник — в рублях, и та же сумма в валюте твоей страны. Привилегии, киты, кейсы, наборы мода и боевой пропуск. Отдельно — золотые червонцы от 50 Ч.">
+<meta name="twitter:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
      кириллические гарнитуры — остальные алфавиты браузер возьмёт сам,
      только если они реально понадобятся. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=0925p">
+
+<!-- Адреса проекта подключены здесь, в голове, а не внизу страницы: пока лавка
+     закрыта (js/config.js, shopClosed), класс на <html> обязан появиться до
+     первой отрисовки — иначе ценники успевают мигнуть на экране и только потом
+     пропасть. Ниже по странице этот же файл больше не подключается. -->
+<script src="js/config.js"></script>
+<script>if (window.AEGIS && AEGIS.shopClosed) document.documentElement.classList.add('shop-closed');</script>
 </head>
 <body>
+<a class="skip-link" href="#content">К содержанию</a>
 
 <header class="topbar">
   <div class="container topbar-in">
     <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
-    <button class="burger" aria-label="Меню"><span></span></button>
-    <nav class="topnav" id="topnav">
+    <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
+    <nav class="topnav" id="topnav" aria-label="Основное меню">
       <a href="index.html#season">Сезон 1936</a>
       <a href="index.html#arsenal">Арсенал</a>
       <a href="index.html#join">Как зайти</a>
       <a href="lands.html">Земли</a>
+      <a href="players.html">Игроки</a>
+      <a href="feed.html">Лента</a>
       <a href="wiki.html">Вики</a>
       <a href="tickets.html">Обращения</a>
       <a href="live.html">Эфиры</a>
       <a class="btn btn-dark btn-sm" href="cabinet.html">Кабинет</a>
-      <a class="btn btn-primary btn-sm active" href="donate.html">Донат</a>
+      <a class="btn btn-primary btn-sm active" href="donate.html" aria-current="page">Донат</a>
     </nav>
   </div>
 </header>
+
+<main id="content" tabindex="-1">
 
 <div class="page-hero">
   <div class="mc-stage mc-stage-page" data-skin3d="parade" aria-hidden="true"></div>
   <div class="container">
     <div class="kicker">Поддержка проекта</div>
-    <h1>Военная <span class="grad-text">казна</span></h1>
-    <p class="lead">В лавке одна валюта — <b>золотой червонец</b>. За рубли покупаются только
-      червонцы, курс <b>1 к 1</b> без надбавок и мелкого шрифта; всё остальное — привилегии,
-      премиум, киты, кейсы — стоит червонцы и <b>берётся в игре</b>. И то же самое можно
-      заработать игрой: боевым пропуском, ивентами, активностью. Без вложений — дольше,
-      но по-настоящему.</p>
+    <h1>Военное <span class="grad-text">снабжение</span></h1>
+    <p class="lead"><span class="rub">У каждой позиции здесь <b>один ценник</b> — в рублях, без надбавок
+      и мелкого шрифта. Под ним стоит та же сумма <b>в валюте твоей страны</b>: играют
+      не только из России, и строка «199 ₽» человеку из Алматы ничего не говорит.</span>
+<b>Золотой червонец</b> — валюта самого сервера: его зарабатывают
+      игрой и тратят в игре, на землю, налоги и торговлю между державами. Купить
+      его тоже можно, <a href="#coins">отдельной позицией</a>, но ни один товар
+      здесь в червонцах не стоит. Остальное в лавке — то, что не решает на фронте:
+      звания, косметика, снаряжение и вечер, сэкономленный у станка.</p>
   </div>
 </div>
 
 <div class="shop-tabs">
   <div class="container shop-tabs-in">
-    <a href="#treasury">Червонцы</a>
+    <a href="#prices">Цены</a>
+    <a href="#support">Поддержать</a>
+    <a href="#coins">Червонцы</a>
     <a href="#ranks">Привилегии</a>
     <a href="#premium">Премиум</a>
     <a href="#pass">Пропуск</a>
     <a href="#cases">Кейсы</a>
     <a href="#kits">Киты</a>
+    <a href="#mod">Мод AEGIS</a>
+    <a href="#bags">Ранцы</a>
     <a href="#goods">Предметы</a>
+    <a href="#amnesty">Амнистия</a>
     <a href="#bundles">Комбо</a>
     <a href="#free">Без рубля</a>
     <a href="#howto">Как купить</a>
@@ -79,73 +99,68 @@
 </div>
 
 <div class="container">
+  <!-- Две строки на два состояния лавки (js/config.js → shopClosed). Строка
+       открытой лавки не привязана к дате: она верна и до старта, и после. -->
   <div class="notice">
-    <b>Лавка открывается вместе с сезоном</b> — сентябрь 2026. Пока это витрина:
-    состав наборов и цены доводятся до старта, червонцы до открытия не зачисляются.
+    <span class="shut-only"><b>Оплата пока закрыта</b> — день открытия
+    объявим в Discord и Telegram. Пока это витрина: ценников на ней нет, оплата
+    не принимается.</span><span class="rub"><b>Покупки приходят на почту
+    сервера:</b> в игре придёт письмо, забрать — командой <code>/mail</code>. Если ты ещё
+    не заходил на сервер, письмо дождётся первого входа.</span>
   </div>
+
+  <!-- Оплата за другого (donate.html?pay=№) и возврат с неудачной оплаты
+       (?fail=1). Карты Украины и Азербайджана российская касса не принимает:
+       игрок оформляет заказ и отправляет ссылку тому, чья карта проходит, —
+       тот платит, покупка приходит на аккаунт оформившего. Блок рисует
+       js/shop.js; без номера заказа в адресе его нет. -->
+  <section class="payfor" id="payfor" hidden aria-live="polite"></section>
 </div>
 
-<!-- ============================ ЧЕРВОНЦЫ ============================ -->
-<section class="shop-section" id="treasury">
+<!-- ============================ ЦЕНЫ ============================ -->
+<section class="shop-section" id="prices">
   <div class="container">
     <div class="section-head reveal">
-      <div class="kicker">Валюта лавки</div>
-      <h2>Золотой <span class="grad-text">червонец</span></h2>
-      <p class="sub">Единственное, что покупается за рубли. Курс один на всех и без хитростей:
-        <b>1 ₽ = 1 червонец</b>. Никаких «чем больше пакет, тем выгоднее» — выгоду дают
-        <b>комбо</b>, <b>промокоды</b> и премиум, а не размер платежа. Червонцы лежат на
-        аккаунте и переживают вайп.</p>
+      <div class="kicker rub">Как устроены цены</div>
+      <h2 class="rub">Один ценник <span class="grad-text">и никаких курсов</span></h2>
+      <p class="sub rub">Цена стоит <b>в рублях</b> — ровно та, которую спишет банк. Ниже мелко
+        идёт та же сумма в валюте твоей страны: пересчёт справочный, по курсу ЦБ РФ
+        на указанный день. Никаких внутренних «курсов лавки», пакетов валюты и сгорающего
+        баланса: платишь за ту позицию, которую взял, и ни за что больше.</p>
+      <!-- Пока лавка закрыта, на месте рассказа про ценники стоит причина, по которой
+           их на странице нет. Вернётся оплата — вернётся и верхний вариант, а этот
+           спрячется: обе пары живут в разметке, переключает их класс на <html>. -->
+      <div class="kicker shut-only">Пока без цен</div>
+      <h2 class="shut-only">Витрина <span class="grad-text">без ценников</span></h2>
+      <p class="sub shut-only">Лавка на перерыве между вайпами: покупки приходят почтой
+        в игре, а сервер до следующего вайпа выключен. Поэтому прием денег выключен,
+        и ценники с витрины сняты. Остальное на месте — позиции, состав наборов, шансы кейсов
+        и награды пропуска видно целиком. Цены вернутся вместе с оплатой: одной строкой
+        в рублях и пересчётом в валюту твоей страны.</p>
     </div>
 
-    <div class="coins">
-      <div class="coin-pack reveal">
-        <div class="cp-amount">100 <small>Ч</small></div>
-        <div class="cp-rub">100 ₽</div>
-        <div class="cp-note">проба: цветной ник или точка дома</div>
-        <button class="btn btn-dark btn-sm" data-buy="Пополнение казны · 100 Ч" data-rub="100" data-coin="100">Пополнить</button>
-      </div>
-      <div class="coin-pack reveal">
-        <div class="cp-amount">300 <small>Ч</small></div>
-        <div class="cp-rub">300 ₽</div>
-        <div class="cp-note">звание «Ефрейтор» на сезон</div>
-        <button class="btn btn-dark btn-sm" data-buy="Пополнение казны · 300 Ч" data-rub="300" data-coin="300">Пополнить</button>
-      </div>
-      <div class="coin-pack cp-hot reveal">
-        <div class="cp-amount">700 <small>Ч</small></div>
-        <div class="cp-rub">700 ₽</div>
-        <div class="cp-note">«Офицер» на сезон или кейс «Генштаб»</div>
-        <button class="btn btn-primary btn-sm" data-buy="Пополнение казны · 700 Ч" data-rub="700" data-coin="700">Пополнить</button>
-      </div>
-      <div class="coin-pack reveal">
-        <div class="cp-amount">1500 <small>Ч</small></div>
-        <div class="cp-rub">1500 ₽</div>
-        <div class="cp-note">комбо «Генеральный план» целиком</div>
-        <button class="btn btn-dark btn-sm" data-buy="Пополнение казны · 1500 Ч" data-rub="1500" data-coin="1500">Пополнить</button>
-      </div>
-      <div class="coin-pack reveal">
-        <div class="cp-amount">3000 <small>Ч</small></div>
-        <div class="cp-rub">3000 ₽</div>
-        <div class="cp-note">премиум на полгода или «Маршал» с запасом</div>
-        <button class="btn btn-dark btn-sm" data-buy="Пополнение казны · 3000 Ч" data-rub="3000" data-coin="3000">Пополнить</button>
-      </div>
-    </div>
+    <!-- Переключатель валюты рисует js/money.js по data/rates.json. Пока файл
+         не догрузился, блок остаётся скрытым и цены стоят в рублях. -->
+    <div class="cur-pick" id="curPick" hidden></div>
 
     <div class="promo-grid">
       <div class="promo-card reveal">
-        <div class="pc-ic"><span class="icon-plate"><img src="assets/icons/schematic.png" alt=""></span></div>
+        <div class="pc-ic"><span class="icon-plate"><img class="pix" src="assets/icons/schematic.png" alt=""></span></div>
         <div>
-          <div class="tier">Скидка при пополнении</div>
+          <div class="tier">Скидка на заказ</div>
           <h3>Промокоды</h3>
-          <p>Код вводится <b>в момент пополнения</b> — скидка считается там же, и в игру
-            приходит полная сумма червонцев. Коды не сгорают до указанной даты и не привязаны
-            к первому платежу.</p>
+          <p>Код вводится <b>в окне заказа</b> — скидка считается там же, и к оплате выходит
+            уже уменьшенная сумма. Коды не сгорают до указанной даты и не привязаны
+            к первой покупке.</p>
           <ul class="pc-list">
             <li>ивенты, турниры и конкурсы в каналах проекта</li>
             <li>праздничные — к открытию сезона, к Новому году, к юбилеям сервера</li>
             <li>приветственные — для тех, кто пришёл с чужого стрима или ролика</li>
             <li>извинительные — за простой, откат мира или сорванный ивент, всем задетым</li>
           </ul>
-          <div class="pc-code">ввод в окне оплаты · поле «промокод»</div>
+          <!-- Строку заменяет js/shop.js, когда у службы есть действующий код
+               «для всех» (GET /shop/promo); иначе остаётся как есть. -->
+          <div class="pc-code" id="pcCode">ввод в окне оплаты · поле «промокод»</div>
         </div>
       </div>
 
@@ -153,23 +168,182 @@
         <div class="pc-ic"><span class="icon-plate"><img class="pix wide" src="assets/icons/crown.png" alt=""></span></div>
         <div>
           <div class="tier">Постоянная скидка</div>
-          <h3>Премиум — −5% на пополнение</h3>
-          <p>Пока действует «Мандат Ставки», каждое пополнение идёт со скидкой <b>5%</b> —
-            на объём до <b>5000 червонцев в месяц</b>. Дальше по обычному курсу.</p>
+          <h3>Премиум — −5% на всю лавку</h3>
+          <p>Пока действует «Мандат Ставки», каждый заказ идёт со скидкой <b>5%</b><span class="rub"> —
+            на объём до <b>5000 ₽ в месяц</b>. Дальше по обычной цене</span>.</p>
           <ul class="pc-list">
             <li><b>складывается с промокодом</b> — сначала промокод, потом −5% премиума</li>
             <li>считается автоматически, включать ничего не надо</li>
             <li>лимит считается по календарному месяцу и обнуляется первого числа</li>
           </ul>
-          <div class="pc-code">1500 ₽ с премиумом и кодом −10% → 1500 Ч за 1283 ₽</div>
+          <div class="pc-code">комбо «Держава» с кодом −10% и мандатом — 1103 ₽ вместо 1290</div>
         </div>
       </div>
     </div>
 
-    <div class="balance-note reveal"><b>Зачем валюта, а не прямые цены в рублях:</b> червонцы
-      выдаются и за игру, поэтому любую позицию лавки можно получить без рубля — привилегию,
-      премиум, кит, кейс. Дороже по времени, но полностью реально: расклад и цифры —
-      в разделе <a href="#free">«Без единого рубля»</a>.</div>
+    <div class="balance-note reveal"><b>Ценников в червонцах здесь нет.</b> Золотой червонец —
+      валюта самого сервера: его дают за игру, за пропуск и за ивенты, а тратят в игре —
+      на свою провинцию, суточный налог и торговлю между державами. Товары лавки стоят
+      только рубли, ни один ценник на этой странице в червонцах не набран. Сами червонцы
+      при этом купить можно — <a href="#coins">отдельным пакетом</a>, от 50 Ч, и обратно
+      на деньги они не меняются. Что игра выдаёт сама и сколько — в разделе
+      <a href="#free">«Без единого рубля»</a>.</div>
+  </div>
+</section>
+
+<!-- ============================ ПОДДЕРЖАТЬ ============================ -->
+<!-- Раздел без товара. Человеку, который просто хочет дать проекту денег,
+     до сих пор деваться было некуда: любая кнопка «поддержать» вела в лавку,
+     где надо выбрать позицию и заплатить ровно её цену. Здесь сумма своя,
+     от 10 ₽, и взамен не выдаётся ничего — про это сказано прямо, чтобы
+     никто не ждал покупку и не шёл потом в обращения. -->
+<section class="shop-section" id="support">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Без покупки</div>
+      <h2>Просто <span class="grad-text">поддержать</span></h2>
+      <p class="sub rub">Проект стоит денег каждый месяц: сервер, домен, бот, бэкапы.
+        Если хочется помочь, а из лавки ничего не нужно — вот прямой путь.
+        Сумма любая, <b>от 10 ₽</b>, и взамен не выдаётся ничего: ни привилегии,
+        ни предметов, ни места в очереди.</p>
+      <p class="sub shut-only">Приём денег сейчас закрыт — ни суммы, ни кнопки.
+        Раздел включится вместе с лавкой; до тех пор проекту от вас ничего не нужно,
+        кроме игроков на сервере.</p>
+    </div>
+
+    <div class="sup reveal">
+      <!-- Готовые суммы — чтобы не набирать руками; поле рядом — для своей.
+           Спорить им не о чем: нажатие кнопки пишет число в поле, ввод в поле
+           гасит выбранную кнопку, а платится всегда то, что стоит в итоге. -->
+      <div class="sup-row">
+        <div class="switch" id="supSwitch" role="group" aria-label="Сумма поддержки">
+          <button type="button" data-sum="10" aria-pressed="false">10 ₽</button>
+          <button type="button" data-sum="50" aria-pressed="false">50 ₽</button>
+          <button type="button" data-sum="100" class="on" aria-pressed="true">100 ₽</button>
+          <button type="button" data-sum="300" aria-pressed="false">300 ₽</button>
+          <button type="button" data-sum="1000" aria-pressed="false">1000 ₽</button>
+        </div>
+        <div class="sup-own">
+          <label for="supOwn">Своя сумма</label>
+          <div class="sup-in">
+            <input id="supOwn" type="number" min="10" max="30000" step="10"
+                   inputmode="numeric" value="100" aria-describedby="supNote">
+            <span>₽</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sup-foot">
+        <div class="price" id="supPrice">100 <small>₽</small></div>
+        <button class="btn btn-primary" id="supGo"
+                data-buy="Поддержка проекта" data-rub="100" data-support="1">Поддержать</button>
+      </div>
+      <!-- Строку дописывает js/shop.js: там же минимум в валюте игрока. -->
+      <p class="sup-note" id="supNote">Списывается рублёвая сумма. Минимум — 10 ₽.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ЧЕРВОНЦЫ ============================
+     Единственное место лавки, где рубль встречается с игровой валютой.
+     Продаётся сам червонец; ценников в червонцах у остальных позиций нет
+     и не будет — это разные решения, и их легко перепутать. Обратного хода
+     тоже нет: вывести червонцы деньгами нельзя. -->
+<section class="shop-section" id="coins">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Валюта сервера</div>
+      <h2>Золотые <span class="grad-text">червонцы</span></h2>
+      <p class="sub">Червонец зарабатывается игрой — вечер у скупщика даёт 90–130 Ч,
+        и весь сервер на этом стоит. Но если времени нет, а провинцию надо держать
+        или на рынке ждёт чужой лот, червонцы можно просто <b>докупить</b>.
+        Минимум — <b>50 Ч</b>, дальше — сколько нужно: готовый пакет или своё число
+        в поле под пакетами. Чем больше берёшь, тем дешевле выходит червонец.</p>
+    </div>
+
+    <div class="goods">
+      <div class="good reveal">
+        <div class="g-head">
+          <div class="icon-plate"><img class="pix" src="assets/icons/golden_sheet.png" alt=""></div>
+          <div><h3>50 червонцев</h3><div class="g-sub">полвечера игры<span class="rub"> · 1,98 ₽ за червонец</span></div></div>
+          <div class="price">99 <small>₽</small></div>
+        </div>
+        <button class="btn btn-dark btn-sm" data-buy="50 золотых червонцев" data-rub="99">Купить</button>
+      </div>
+
+      <div class="good reveal">
+        <div class="g-head">
+          <div class="icon-plate"><img class="pix" src="assets/icons/golden_sheet.png" alt=""></div>
+          <div><h3>150 червонцев</h3><div class="g-sub">вечер с небольшим<span class="rub"> · 1,79 ₽ за червонец</span></div></div>
+          <div class="price">269 <small>₽</small></div>
+        </div>
+        <button class="btn btn-dark btn-sm" data-buy="150 золотых червонцев" data-rub="269">Купить</button>
+      </div>
+
+      <div class="good reveal">
+        <div class="g-head">
+          <div class="icon-plate"><img class="pix" src="assets/icons/golden_sheet.png" alt=""></div>
+          <div><h3>400 червонцев</h3><div class="g-sub">три-четыре вечера<span class="rub"> · 1,62 ₽ за червонец</span></div></div>
+          <div class="price">649 <small>₽</small></div>
+        </div>
+        <button class="btn btn-dark btn-sm" data-buy="400 золотых червонцев" data-rub="649">Купить</button>
+      </div>
+
+      <div class="good reveal">
+        <div class="g-head">
+          <div class="icon-plate"><img class="pix" src="assets/icons/golden_sheet.png" alt=""></div>
+          <div><h3>1000 червонцев</h3><div class="g-sub">полторы недели ровной игры<span class="rub"> · 1,49 ₽ за червонец</span></div></div>
+          <div class="price">1490 <small>₽</small></div>
+        </div>
+        <button class="btn btn-primary btn-sm" data-buy="1000 золотых червонцев" data-rub="1490">Купить</button>
+      </div>
+    </div>
+
+    <!-- Своё число червонцев. Посуда та же, что у «Поддержать проект».
+         Цену считает js/shop.js по ступеням пакетов выше (между пакетами —
+         по прямой), служба проверяет её той же формулой. В разметке стоит
+         пакет 50 Ч — чтобы прайс службы (make_prices.py) не получил лишней
+         позиции; настоящее число кнопке пишет скрипт. -->
+    <div class="sup coin-own reveal">
+      <div class="sup-row">
+        <div class="switch" id="coinSwitch" role="group" aria-label="Сколько червонцев">
+          <button type="button" data-n="100" aria-pressed="false">100 Ч</button>
+          <button type="button" data-n="250" class="on" aria-pressed="true">250 Ч</button>
+          <button type="button" data-n="500" aria-pressed="false">500 Ч</button>
+          <button type="button" data-n="750" aria-pressed="false">750 Ч</button>
+          <button type="button" data-n="2000" aria-pressed="false">2000 Ч</button>
+        </div>
+        <div class="sup-own">
+          <label for="coinOwn">Своё количество</label>
+          <div class="sup-in">
+            <input id="coinOwn" type="number" min="50" max="2000" step="1"
+                   inputmode="numeric" value="250" aria-describedby="coinNote">
+            <span>Ч</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sup-foot">
+        <div>
+          <div class="price" id="coinPrice">99 <small>₽</small></div>
+          <div class="coin-per" id="coinPer"></div>
+        </div>
+        <button class="btn btn-primary" id="coinGo"
+                data-buy="50 золотых червонцев" data-rub="99">Купить</button>
+      </div>
+      <p class="sup-note" id="coinNote">От 50 до 2000 Ч за раз. Цена считается по ступеням пакетов выше.</p>
+    </div>
+
+    <div class="balance-note reveal"><b>Что с ними можно и чего нельзя.</b>
+      Купленные червонцы падают на твой счёт в игре и ничем не отличаются от
+      заработанных: ими берут провинцию, платят суточный налог, выкупают лоты
+      у других игроков и скидываются городу в казну. Чего нельзя: <b>обратно
+      на деньги червонец не меняется</b> — ни вывода, ни выкупа, ни продажи за
+      реальные деньги на стороне; за такую продажу снимают покупки и банят.
+      Ценников в червонцах в лавке по-прежнему нет: всё остальное здесь стоит
+      только рубли. И больше <b>2000 Ч в сутки</b> на один аккаунт лавка не
+      отпускает — потолок стоит ровно затем, чтобы карту сезона нельзя было
+      скупить деньгами за один вечер.</div>
   </div>
 </section>
 
@@ -178,113 +352,186 @@
   <div class="container">
     <div class="section-head reveal">
       <div class="kicker">Звания</div>
-      <h2>Привилегии <span class="grad-text">на срок и навсегда</span></h2>
-      <p class="sub">Звание — это набор мелких услуг из раздела «Предметы», собранный вместе
-        и вдвое дешевле. У каждого звания <b>свой префикс</b>, <b>свой ежедневный кит</b>
-        и <b>свои команды</b>. Каждое следующее включает всё из предыдущего.</p>
+      <h2>Привилегии <span class="grad-text">на месяц или на весь вайп</span></h2>
+      <p class="sub">Семь ступеней. У каждой <b>свой кит</b> через <code>/kit</code>
+        и свои команды; старшая ступень включает команды и киты всех младших. Ниже по каждой
+        карточке — ровно то, что звание делает в игре сегодня.</p>
     </div>
 
     <div class="switch-row reveal">
-      <div class="switch" id="periodSwitch">
-        <button type="button" data-period="m">Месяц</button>
-        <button type="button" data-period="s" class="on">Сезон</button>
-        <button type="button" data-period="f">Навсегда</button>
+      <!-- Выбранный срок отличается только заливкой кнопки. aria-pressed
+           проговаривает выбор, aria-label называет саму группу — иначе читалка
+           выдаст два слова подряд, не сказав, что это переключатель срока. -->
+      <div class="switch" id="periodSwitch" role="group" aria-label="Срок привилегии">
+        <button type="button" data-period="m" aria-pressed="false">Месяц</button>
+        <button type="button" data-period="s" class="on" aria-pressed="true">Весь вайп</button>
       </div>
-      <p class="switch-hint" id="periodHint">Действует до конца сезона «1936» и сгорает вместе
-        с вайпом. Основной вариант: сезон идёт около трёх месяцев.</p>
+      <p class="switch-hint" id="periodHint">Действует до следующего вайпа и сгорает вместе
+        с ним. Основной вариант: вайп идёт около трёх месяцев.</p>
     </div>
 
-    <div class="ranks">
-      <div class="rank reveal" data-name="Доброволец"
-           data-m="69" data-s="149" data-f="449"
-           data-pm="173" data-ps="376" data-pf="1128">
-        <div class="tier">Тир I</div>
-        <h3>Доброволец</h3>
-        <div class="price"><span class="pv">149</span> <small>Ч</small><span class="per">/ сезон</span></div>
-        <div class="valueline">по отдельности <b class="parts">376 Ч</b> · выгода <b class="save-pc">60%</b></div>
-        <ul class="perks">
-          <li>Префикс <span class="pfx pfx-1">[Доброволец]</span> в чате и TAB</li>
-          <li>Цветной ник и пиксельный значок у имени</li>
-          <li><b>Кит «Паёк добровольца»</b> — раз в сутки</li>
-          <li>2 точки дома <code>/home</code></li>
-          <li>Команды <code>/сесть</code> и <code>/жребий</code></li>
-          <li>Имя в титрах сезона</li>
+    <!-- Звания 24.09: цены и состав сверены с модом (Donate.java: has(p, …, уровень),
+         Roles.java: у каждой из семи ступеней своя нашивка, V–VII — ГС/В/Л с 24.09). Каждая ступень
+         включает команды младших, и с 24.09 /kit выдаёт ей ещё и киты всех младших (kits_lower).
+         «По отдельности» убрано: поштучно продаются не все услуги звания,
+         и честной суммы для сравнения нет. -->
+    <div class="ranks rk2-row">
+      <div class="rank rk2  reveal" data-name="Знаменосец"
+           data-m="69" data-s="149">
+        <div class="rk2-head">
+          <span class="rk2-mark rk2-lvI" aria-hidden="true"><b>I</b></span>
+          <div><div class="tier">Ступень I</div><h3>Знаменосец</h3></div>
+        </div>
+        <p class="r-mot">Вход в строй: нашивка у ника и паёк каждые сутки.</p>
+        <div class="price"><span class="pv">149</span> <small>₽</small><span class="per">/ весь вайп</span></div>
+        <div class="rk2-kit"><span class="icon-plate"><img class="pix" src="assets/icons/barrel.png" alt=""></span>
+          <div><b>Кит «Паёк знаменосца»</b><i>раз в сутки · провиант, факелы, уголь, железный инструмент</i></div></div>
+        <ul class="perks rk2-perks">
+          <li><span class="rk2-ic"><img class="pix wide" src="assets/icons/crown.png" alt=""></span><span>Нашивка звания у ника — в TAB, в чате и над головой</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/home_point.png" alt=""></span><span><b>2 точки дома</b> <code>/home</code> вместо одной</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/clipboard.png" alt=""></span><span><code>/жребий</code> — бросок 1–100, видят игроки в 48 блоках</span></li>
         </ul>
-        <button class="btn btn-dark" data-buy="Привилегия «Доброволец» · сезон" data-coin="149">Оформить</button>
+        <button class="btn btn-dark" data-buy="Привилегия «Знаменосец» · весь вайп" data-rub="149">Оформить</button>
       </div>
 
-      <div class="rank reveal" data-name="Ефрейтор"
-           data-m="139" data-s="299" data-f="899"
-           data-pm="342" data-ps="743" data-pf="2229">
-        <div class="tier">Тир II</div>
-        <h3>Ефрейтор</h3>
-        <div class="price"><span class="pv">299</span> <small>Ч</small><span class="per">/ сезон</span></div>
-        <div class="valueline">по отдельности <b class="parts">743 Ч</b> · выгода <b class="save-pc">60%</b></div>
-        <ul class="perks">
-          <li class="inherit">Всё из «Доброволец», плюс:</li>
-          <li>Префикс <span class="pfx pfx-2">[Ефрейтор]</span> — свой цвет</li>
-          <li><b>Кит «Ротный запас»</b> — раз в сутки, вместо пайка</li>
-          <li>3 точки дома <code>/home</code></li>
-          <li>Приоритетный вход при полном сервере</li>
-          <li>Команды <code>/трофей</code> и <code>/салют</code></li>
-          <li>1 ротация заданий пропуска в день</li>
+      <div class="rank rk2  reveal" data-name="Гвардеец"
+           data-m="109" data-s="239">
+        <div class="rk2-head">
+          <span class="rk2-mark rk2-lvII" aria-hidden="true"><b>II</b></span>
+          <div><div class="tier">Ступень II</div><h3>Гвардеец</h3></div>
+        </div>
+        <p class="r-mot">Пускает на полный сервер и даёт салют раз в 10 минут.</p>
+        <div class="price"><span class="pv">239</span> <small>₽</small><span class="per">/ весь вайп</span></div>
+        <div class="rk2-kit"><span class="icon-plate"><img class="pix" src="assets/icons/andesite_alloy.png" alt=""></span>
+          <div><b>Кит «Гвардейский запас»</b><i>раз в двое суток · андезитовый сплав ×128, сундуки, лечение</i></div></div>
+        <ul class="perks rk2-perks">
+          <li class="inherit"><span>Всё из «Знаменосца» и его кит</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/aegis_beacon_lamp.png" alt=""></span><span><b>Вход на полный сервер</b> — пускает, даже когда мест нет</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/aegis_salute_shell.png" alt=""></span><span><code>/салют</code> — фейерверк, раз в 10 минут</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/diamond_sword.png" alt=""></span><span><code>/трофей</code> — показать предмет в руке игрокам в 48 блоках</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/goggles.png" alt=""></span><span><code>/nv</code> (<code>/ночь</code>) — ночное зрение, держится, пока не выключишь</span></li>
         </ul>
-        <button class="btn btn-dark" data-buy="Привилегия «Ефрейтор» · сезон" data-coin="299">Оформить</button>
+        <button class="btn btn-dark" data-buy="Привилегия «Гвардеец» · весь вайп" data-rub="239">Оформить</button>
       </div>
 
-      <div class="rank rank-hot reveal" data-name="Офицер"
-           data-m="279" data-s="599" data-f="1790"
-           data-pm="588" data-ps="1279" data-pf="3837">
-        <div class="tier">Тир III</div>
-        <h3>Офицер</h3>
-        <div class="price"><span class="pv">599</span> <small>Ч</small><span class="per">/ сезон</span></div>
-        <div class="valueline">по отдельности <b class="parts">1279 Ч</b> · выгода <b class="save-pc">53%</b></div>
-        <ul class="perks">
-          <li class="inherit">Всё из «Ефрейтор», плюс:</li>
-          <li>Префикс <span class="pfx pfx-3">[Офицер]</span> — свой цвет</li>
-          <li><b>Кит «Офицерский запас»</b> — раз в сутки</li>
-          <li><code>/back</code> — возврат к точке смерти (вне боя)</li>
-          <li><b>Своё сообщение при входе</b> — видит весь сервер</li>
-          <li>4 точки дома <code>/home</code></li>
-          <li>Команды <code>/тревога</code> и <code>/парад</code></li>
-          <li>+15% к опыту боевого пропуска, 2 ротации в день</li>
+      <div class="rank rk2  reveal" data-name="Командор"
+           data-m="179" data-s="390">
+        <div class="rk2-head">
+          <span class="rk2-mark rk2-lvIII" aria-hidden="true"><b>III</b></span>
+          <div><div class="tier">Ступень III</div><h3>Командор</h3></div>
+        </div>
+        <p class="r-mot">Для тех, кто воюет: возврат к месту гибели и сигнал сбора.</p>
+        <div class="price"><span class="pv">390</span> <small>₽</small><span class="per">/ весь вайп</span></div>
+        <div class="rk2-kit"><span class="icon-plate"><img class="pix" src="assets/icons/brass_ingot.png" alt=""></span>
+          <div><b>Кит «Командорский запас»</b><i>раз в трое суток · латунь ×128, механизмы, заряды, золотые яблоки</i></div></div>
+        <ul class="perks rk2-perks">
+          <li class="inherit"><span>Всё из «Гвардейца» и его кит</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/atlas.png" alt=""></span><span><code>/back</code> — вернуться к месту гибели (вне боя)</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/create_stock_link.png" alt=""></span><span><code>/tpa</code> и <code>/tpahere</code> — телепорт к игроку с его согласия, раз в 10 минут (у «Маршала» — 7, выше — 5); не в бою и не туда, где идет бой</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/home_point.png" alt=""></span><span><b>3 точки дома</b></span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/clipboard.png" alt=""></span><span><code>/приветствие</code> — твоя строка в чате, когда заходишь (до 60 знаков)</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/aegis_siren.png" alt=""></span><span><code>/тревога</code> — горн и сигнал всем в 64 блоках, раз в 5 минут</span></li>
         </ul>
-        <button class="btn btn-primary" data-buy="Привилегия «Офицер» · сезон" data-coin="599">Оформить</button>
+        <button class="btn btn-dark" data-buy="Привилегия «Командор» · весь вайп" data-rub="390">Оформить</button>
       </div>
 
-      <div class="rank rank-top reveal" data-name="Маршал"
-           data-m="590" data-s="1290" data-f="3890"
-           data-pm="1183" data-ps="2572" data-pf="7716">
-        <div class="tier">Тир IV</div>
-        <h3>Маршал</h3>
-        <div class="price"><span class="pv">1290</span> <small>Ч</small><span class="per">/ сезон</span></div>
-        <div class="valueline">по отдельности <b class="parts">2572 Ч</b> · выгода <b class="save-pc">50%</b></div>
-        <ul class="perks">
-          <li class="inherit">Всё из «Офицер», плюс:</li>
-          <li>Префикс <span class="pfx pfx-4">[Маршал]</span> — золотой, с анимацией</li>
-          <li><b>Кит «Штабной обоз»</b> раз в сутки и <b>кит III уровня раз в неделю</b></li>
-          <li><code>/fly</code> — летать в своём городе</li>
-          <li>5 точек дома <code>/home</code></li>
-          <li>Скин-накидка и личный позывной на входе</li>
-          <li>Команды <code>/приказ</code>, <code>/погоны</code>, <code>/знамя</code></li>
-          <li>−10% на всё в лавке, 4 ротации в день</li>
-          <li>Ранний доступ к новинкам на тест-сервере</li>
+      <div class="rank rk2 rank-best reveal" data-name="Маршал"
+           data-m="290" data-s="649">
+        <div class="rk2-ribbon">Лучший выбор</div>
+        <div class="rk2-head">
+          <span class="rk2-mark rk2-lvIV" aria-hidden="true"><b>IV</b></span>
+          <div><div class="tier">Ступень IV</div><h3>Маршал</h3></div>
+        </div>
+        <p class="r-mot">Полёт над своим городом и резерв стали раз в четверо суток.</p>
+        <div class="price"><span class="pv">649</span> <small>₽</small><span class="per">/ весь вайп</span></div>
+        <div class="rk2-kit"><span class="icon-plate"><img class="pix" src="assets/icons/tfmg_steel_block.png" alt=""></span>
+          <div><b>Кит «Маршальский резерв»</b><i>раз в четверо суток · сталь ×128, кокс ×128, механизмы, снаряды</i></div></div>
+        <ul class="perks rk2-perks">
+          <li class="inherit"><span>Всё из «Командора» и его кит</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/propeller.png" alt=""></span><span><code>/fly</code> над своим городом — гаснет на границе и в бою</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/create_radar_bearing.png" alt=""></span><span><b>Позывной</b> — весь сервер слышит сигнал, когда ты заходишь (раз в 10 минут)</span></li>
         </ul>
-        <button class="btn btn-primary" data-buy="Привилегия «Маршал» · сезон" data-coin="1290">Оформить</button>
+        <button class="btn btn-primary" data-buy="Привилегия «Маршал» · весь вайп" data-rub="649">Оформить</button>
       </div>
+
     </div>
 
-    <div class="switch-hint reveal">В «по отдельности» посчитаны только услуги, которые
-      продаются поштучно. Ежедневные киты званий, прикольные команды и место в очереди —
-      сверх этой суммы.</div>
+    <div class="ranks-split reveal">
+      <span>Высшие ступени</span>
+      <p>Команды — как у «Маршала», сверху самые тяжёлые киты сервера.</p>
+    </div>
 
-    <!-- киты званий -->
+    <div class="ranks ranks-3 rk2-row">
+      <div class="rank rk2 rank-elite reveal" data-name="Генералиссимус"
+           data-m="449" data-s="990">
+        <div class="rk2-head">
+          <span class="rk2-mark rk2-lvV" aria-hidden="true"><b>V</b></span>
+          <div><div class="tier">Ступень V</div><h3>Генералиссимус</h3></div>
+        </div>
+        <p class="r-mot">Промышленный ящик: алюминий, нефть и стальные механизмы.</p>
+        <div class="price"><span class="pv">990</span> <small>₽</small><span class="per">/ весь вайп</span></div>
+        <div class="rk2-kit"><span class="icon-plate"><img class="pix" src="assets/icons/aegis_vault.png" alt=""></span>
+          <div><b>Кит «Ставка генералиссимуса»</b><i>раз в пять суток · стальной механизм ×8, алюминий ×128, нефть ×8 вёдер</i></div></div>
+        <ul class="perks rk2-perks">
+          <li class="inherit"><span>Всё из «Маршала» и его кит</span></li>
+          <li><span class="rk2-ic"><img class="pix" src="assets/icons/home_point.png" alt=""></span><span><b>4 точки дома</b> — максимум на сервере</span></li>
+          <li><span class="rk2-ic"><img class="pix wide" src="assets/icons/cannon_barrel_bronze.png" alt=""></span><span><code>/канонада</code> — звук орудийных залпов вокруг тебя, раз в 10 минут</span></li>
+          <li><span class="rk2-ic"><img class="pix wide" src="assets/icons/crown.png" alt=""></span><span>Своя нашивка у ника — «ГС», бордовая</span></li>
+        </ul>
+        <button class="btn btn-dark" data-buy="Привилегия «Генералиссимус» · весь вайп" data-rub="990">Оформить</button>
+      </div>
+
+      <div class="rank rk2 rank-elite reveal" data-name="Верховный"
+           data-m="690" data-s="1590">
+        <div class="rk2-head">
+          <span class="rk2-mark rk2-lvVI" aria-hidden="true"><b>VI</b></span>
+          <div><div class="tier">Ступень VI</div><h3>Верховный</h3></div>
+        </div>
+        <p class="r-mot">Самый тяжёлый склад после легендарного: сталь блоками и снаряды.</p>
+        <div class="price"><span class="pv">1590</span> <small>₽</small><span class="per">/ весь вайп</span></div>
+        <div class="rk2-kit"><span class="icon-plate"><img class="pix" src="assets/icons/tfmg_steel_mechanism.png" alt=""></span>
+          <div><b>Кит «Резерв Верховного»</b><i>раз в шесть суток · стальной блок ×32, механизм точности ×16, снаряды ×32</i></div></div>
+        <ul class="perks rk2-perks">
+          <li class="inherit"><span>Всё из «Генералиссимуса» и его кит</span></li>
+          <li><span class="rk2-ic"><img class="pix wide" src="assets/icons/crown.png" alt=""></span><span>Своя нашивка у ника — «В», графитовая</span></li>
+        </ul>
+        <button class="btn btn-dark" data-buy="Привилегия «Верховный» · весь вайп" data-rub="1590">Оформить</button>
+      </div>
+
+      <div class="rank rk2 rank-top reveal" data-name="Легенда"
+           data-m="1090" data-s="2490">
+        <div class="rk2-head">
+          <span class="rk2-mark rk2-lvVII" aria-hidden="true"><b>VII</b></span>
+          <div><div class="tier">Ступень VII</div><h3>Легенда</h3></div>
+        </div>
+        <p class="r-mot">Раз в неделю — всё на пушку целиком, сталь и нефть.</p>
+        <div class="price"><span class="pv">2490</span> <small>₽</small><span class="per">/ весь вайп</span></div>
+        <div class="rk2-kit"><span class="icon-plate"><img class="pix wide" src="assets/icons/crown.png" alt=""></span>
+          <div><b>Кит «Легендарный резерв»</b><i>раз в неделю · стволы, затвор и лафет пушки, заряды, снаряды, сталь ×256, нефть ×16 вёдер</i></div></div>
+        <ul class="perks rk2-perks">
+          <li class="inherit"><span>Всё из «Верховного» и его кит</span></li>
+          <li><span class="rk2-ic"><img class="pix wide" src="assets/icons/crown.png" alt=""></span><span>Своя нашивка у ника — «Л», малиновая</span></li>
+        </ul>
+        <button class="btn btn-primary" data-buy="Привилегия «Легенда» · весь вайп" data-rub="2490">Оформить</button>
+      </div>
+
+    </div>
+
+    <!-- киты званий.
+         Срок у каждого кита свой и растёт вместе со званием: чем полнее ящик,
+         тем реже он приходит. Так верхние звания не превращаются в бесконечный
+         склад — за сталью всё равно надо ехать, а значит нужны дороги, составы
+         и торговля. С 24.09 /kit выдаёт старшему званию и киты младших, у каждого свой срок
+         (Donate.java, heldRanks; aegis-donate.json kits_lower). -->
     <div class="rank-kits reveal">
-      <div class="rk-h">Ежедневные киты званий — у каждой привилегии свой</div>
+      <div class="rk-h">Киты званий — чем выше ступень, тем полнее ящик и тем реже он приходит</div>
+      <p class="rk-sub">Кит приходит по команде <code>/kit</code> — у каждого звания свой ящик
+        и свой срок. Старшая ступень берёт у младших и команды, и их ящики: в <code>/kit</code>
+        у неё кнопка «забрать» у каждого ящика.</p>
       <div class="rk-grid">
         <div class="rk-card">
-          <div class="rk-top"><span class="icon-plate"><img src="assets/icons/clipboard.png" alt=""></span>
-            <div><h4>Паёк добровольца</h4><i>раз в сутки · «Доброволец»</i></div></div>
+          <div class="rk-top"><span class="icon-plate"><img src="assets/icons/barrel.png" alt=""></span>
+            <div><h4>Паёк знаменосца</h4><i>раз в сутки · «Знаменосец»</i></div></div>
           <ul>
             <li>провиант ×64</li>
             <li>факелы ×128, уголь ×64</li>
@@ -292,39 +539,72 @@
           </ul>
         </div>
         <div class="rk-card">
-          <div class="rk-top"><span class="icon-plate"><img class="pix" src="assets/icons/create_cogwheel.png" alt=""></span>
-            <div><h4>Ротный запас</h4><i>раз в сутки · «Ефрейтор»</i></div></div>
+          <!-- было: андезитовый КОРПУС. В 32 px он читался тем же коричневым
+               ящиком, что бочка пайка выше и латунный корпус ниже — три
+               одинаковые полосатые коробки подряд. Теперь показываем сам
+               сплав: серый слиток, который и лежит в ките. -->
+          <div class="rk-top"><span class="icon-plate"><img class="pix" src="assets/icons/andesite_alloy.png" alt=""></span>
+            <div><h4>Гвардейский запас</h4><i>раз в двое суток · «Гвардеец»</i></div></div>
           <ul>
-            <li>всё из пайка, плюс:</li>
-            <li>андезитовый сплав ×64</li>
-            <li>сундуки ×8, зелье лечения ×2</li>
+            <li>андезитовый сплав ×128</li>
+            <li>сундуки ×8</li>
+            <li>зелье лечения ×4</li>
           </ul>
         </div>
         <div class="rk-card">
-          <div class="rk-top"><span class="icon-plate"><img src="assets/icons/brass_ingot.png" alt=""></span>
-            <div><h4>Офицерский запас</h4><i>раз в сутки · «Офицер»</i></div></div>
+          <!-- та же причина: вместо латунного корпуса — латунный слиток -->
+          <div class="rk-top"><span class="icon-plate"><img class="pix" src="assets/icons/brass_ingot.png" alt=""></span>
+            <div><h4>Командорский запас</h4><i>раз в трое суток · «Командор»</i></div></div>
           <ul>
-            <li>всё из ротного, плюс:</li>
-            <li>латунь ×64, механизм точности ×2</li>
-            <li>пороховой заряд ×8, золотое яблоко</li>
+            <li>латунь ×128, механизм точности ×4</li>
+            <li>пороховой заряд ×16</li>
+            <li>золотое яблоко ×2</li>
+          </ul>
+        </div>
+        <div class="rk-card">
+          <div class="rk-top"><span class="icon-plate"><img src="assets/icons/tfmg_steel_block.png" alt=""></span>
+            <div><h4>Маршальский резерв</h4><i>раз в четверо суток · «Маршал»</i></div></div>
+          <ul>
+            <li>сталь ×128, коксовый уголь ×128</li>
+            <li>механизм точности ×8</li>
+            <li>фугасы ×16</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rk-grid rk-grid-3">
+        <div class="rk-card">
+          <div class="rk-top"><span class="icon-plate"><img src="assets/icons/aegis_vault.png" alt=""></span>
+            <div><h4>Ставка генералиссимуса</h4><i>раз в пять суток · «Генералиссимус»</i></div></div>
+          <ul>
+            <li>стальной механизм ×8</li>
+            <li>алюминий ×128</li>
+            <li>нефть ×8 вёдер</li>
+          </ul>
+        </div>
+        <div class="rk-card">
+          <div class="rk-top"><span class="icon-plate"><img src="assets/icons/tfmg_steel_mechanism.png" alt=""></span>
+            <div><h4>Резерв Верховного</h4><i>раз в шесть суток · «Верховный»</i></div></div>
+          <ul>
+            <li>стальной блок ×32</li>
+            <li>механизм точности ×16</li>
+            <li>фугасы ×16, бронебойные ×16</li>
           </ul>
         </div>
         <div class="rk-card rk-top-tier">
-          <div class="rk-top"><span class="icon-plate"><img class="pix" src="assets/icons/tfmg_steel_ingot.png" alt=""></span>
-            <div><h4>Штабной обоз</h4><i>раз в сутки · «Маршал»</i></div></div>
+          <div class="rk-top"><span class="icon-plate"><img src="assets/icons/crown.png" alt=""></span>
+            <div><h4>Легендарный резерв</h4><i>раз в неделю · «Легенда»</i></div></div>
           <ul>
-            <li>всё из офицерского, плюс:</li>
-            <li>сталь ×64, коксовый уголь ×64</li>
-            <li>механизм точности ×4, снаряды ×8</li>
-            <li><b>+ кит III уровня раз в неделю</b></li>
+            <li>материалы на пушку целиком</li>
+            <li>заряды ×32, фугасы ×8</li>
+            <li>сталь ×256, нефть ×16 вёдер</li>
           </ul>
         </div>
       </div>
     </div>
 
-    <div class="balance-note reveal"><b>Честная война:</b> за деньги нет креатива, бессмертия,
-      админ-прав, чужих координат и личных бустов добычи. Звание даёт комфорт, косметику
-      и экономию времени — фронт решает сталь.</div>
+    <div class="balance-note reveal"><b>Чего за деньги нет:</b> креатива, бессмертия,
+      админ-прав, чужих координат и личных бустов добычи. Звание экономит время
+      и даёт удобства, а войну решают заводы и пушки.</div>
   </div>
 </section>
 
@@ -334,9 +614,8 @@
     <div class="section-head reveal">
       <div class="kicker">Премиум-подписка</div>
       <h2>Мандат <span class="grad-text">Ставки</span></h2>
-      <p class="sub">Месячная подписка со средним чеком привилегии. Внутри — то, что иначе
-        не достаётся никак: инструменты автора, личная геральдика и голос в решениях сезона.
-        Навсегда не продаётся принципиально.</p>
+      <p class="sub">Месячная подписка поверх звания. Она даёт одно — скидку на всю лавку,
+        и эта скидка работает с первой минуты после оплаты.</p>
     </div>
 
     <div class="prem reveal">
@@ -347,43 +626,35 @@
             <h3>Мандат Ставки</h3>
           </div>
           <div class="prem-price">
-            <div class="price">449 <small>Ч</small><span class="per">/ месяц</span></div>
-            <div class="prem-back">150 Ч возвращаются на счёт каждый месяц подписки</div>
+            <div class="price">199 <small>₽</small><span class="per">/ месяц</span></div>
+            <div class="prem-back">без автопродления — подписка просто заканчивается</div>
           </div>
         </div>
         <div class="prem-cols">
           <div>
-            <div class="prem-h">Только здесь</div>
+            <div class="prem-h">Работает с первого дня</div>
             <ul class="perks">
-              <li>Личный герб державы 16×16 — свой рисунок в TAB и на карте (через модерацию)</li>
-              <li>Плащ «Ставка» — рисуется модом, в кейсах не выпадает</li>
-              <li>Кинорежим камеры для скриншотов — свободный облёт вне боя</li>
-              <li>До 5 своих меток с подписями на карте мира</li>
-              <li>Личный позывной — свой звук объявления входа</li>
-              <li>Еженедельная сводка державы: добыча, потери, рост провинций</li>
+              <li><b>−5% на всю лавку</b> <span class="stack"><span class="rub">до 5000 ₽ в месяц, </span>поверх промокода</span></li>
+              <li>Скидка считается сама, в окне заказа — включать ничего не надо</li>
+              <li>Складывается с любым званием: у них разные наборы, ничего не теряется</li>
             </ul>
           </div>
           <div>
-            <div class="prem-h">Складывается со званием</div>
+            <div class="prem-h">Как работает</div>
             <ul class="perks">
-              <li><b>−5% на пополнение казны</b> <span class="stack">до 5000 Ч в месяц, поверх промокода</span></li>
-              <li>+25% к опыту боевого пропуска <span class="stack">со «Офицером» → +40%</span></li>
-              <li>+25% к червонцам с ивентов <span class="stack">суммируется с бонусом звания</span></li>
-              <li>+2 ротации заданий пропуска в день <span class="stack">с званием — до 6 в день</span></li>
-              <li>Приоритет очереди выше, чем у звания</li>
-              <li>Закрытый канал «Ставка» в Discord и голос по фичам сезона</li>
+              <li>Включается сразу после оплаты — письма на <code>/mail</code> не будет, скидка живёт в самой лавке</li>
+              <li>30 дней с минуты оплаты; вторая оплата продлевает срок, а не сгорает</li>
+              <li>Без автопродления — подписка просто заканчивается</li>
             </ul>
           </div>
         </div>
-        <button class="btn btn-primary" data-buy="Премиум «Мандат Ставки» · 30 дней" data-coin="449">Оформить подписку</button>
+        <button class="btn btn-primary" data-buy="Премиум «Мандат Ставки» · 30 дней" data-rub="199">Оформить подписку</button>
       </div>
     </div>
 
-    <div class="case-note reveal"><b>Почему выгодно брать и звание, и премиум:</b> наборы бонусов
-      не пересекаются, а одинаковые множители складываются — «Офицер» +15% и премиум +25% дают
-      +40%, ротации заданий суммируются до шести в день. Складываются только опыт пропуска,
-      червонцы, ротации и скидка на пополнение: множителей на добычу и производство в лавке
-      нет вообще.</div>
+    <div class="case-note reveal"><b>Как считается скидка:</b> сначала промокод, затем −5% мандата.
+      Лимит 5000 ₽ считается по календарному месяцу. Кроме скидки мандат ничего не даёт —
+      ни предметов, ни преимуществ в игре.</div>
   </div>
 </section>
 
@@ -391,8 +662,10 @@
 <section class="shop-section" id="pass">
   <div class="container">
     <div class="section-head reveal">
-      <div class="kicker">Боевой пропуск</div>
+      <div class="kicker">Боевой пропуск · <span class="soon-tag">позже</span></div>
       <h2>Пропуск <span class="grad-text">сезона</span></h2>
+      <p class="sub"><b>Пропуска в игре пока нет.</b> Ниже — как он задуман; ордер, ротации
+        и пропуски этапов не продаются, пока он не заработает.</p>
       <p class="sub">Награда стоит на <b>каждом</b> этапе — пустых уровней нет ни одного.
         Этап — 1000 очков, четыре задания в день дают чуть больше двух этапов. Круг —
         60 этапов, это примерно месяц спокойной игры; за сезон круг закрывается трижды,
@@ -443,9 +716,12 @@
       </div>
     </div>
 
-    <div class="bp-jump reveal" id="bpJump">
-      <span>Прыгнуть к этапу:</span>
-      <button type="button" data-lvl="1" class="on">1</button>
+    <!-- Кнопки подписаны голыми числами: вне группы «10» ни о чём не говорит,
+         поэтому у ряда есть собственное имя. Отмеченная кнопка — это не нажатое
+         состояние, а «ты сейчас здесь», для такого есть aria-current. -->
+    <div class="bp-jump reveal" id="bpJump" role="group" aria-labelledby="bpJumpLbl">
+      <span id="bpJumpLbl">Прыгнуть к этапу:</span>
+      <button type="button" data-lvl="1" class="on" aria-current="true">1</button>
       <button type="button" data-lvl="10">10</button>
       <button type="button" data-lvl="20">20</button>
       <button type="button" data-lvl="30">30</button>
@@ -456,8 +732,7 @@
 
     <div class="bp-scroll reveal" id="bpScroll">
       <div class="bp-grid" id="bpGrid">
-        <noscript><p class="switch-hint">Полоса наград рисуется скриптом — включите
-          JavaScript или спросите раскладку в Discord.</p></noscript>
+        <noscript><p class="switch-hint">Полоса наград рисуется скриптом — включи JavaScript или спроси раскладку в Discord.</p></noscript>
       </div>
     </div>
     <p class="bp-hint">Полоса листается вбок, все 60 этапов. Подсвеченные золотом столбцы —
@@ -470,8 +745,7 @@
       <div class="pb-card reveal">
         <div class="tier">Инструменты, а не платный трек</div>
         <h3>Прокрут заданий</h3>
-        <p>Задание не нравится — прокрути, придёт другое. Ротации дают звания и премиум
-          (до шести в день бесплатно), сверх этого их можно докупить.</p>
+        <p>Задание не нравится — прокрути, придёт другое. Ротации можно докупить.</p>
         <div class="pb-feat">
           <b>Прокрутить можно и то, что уже почти сделано.</b> Прогресс сгорает, но новое
           задание приходит сразу — и его очки тоже твои. Это не баг: кто следит за тем,
@@ -480,13 +754,13 @@
         <div class="pb-lines">
           <div class="pb-line">
             <span>Ротация заданий ×3</span>
-            <b>49 Ч</b>
-            <button class="btn btn-dark btn-sm" data-buy="Ротация заданий пропуска ×3" data-coin="49">Купить</button>
+            <b class="rub">19 ₽</b>
+            <button class="btn btn-dark btn-sm" data-later data-buy="Ротация заданий пропуска ×3" data-rub="19">Купить</button>
           </div>
           <div class="pb-line">
             <span>Пропуск этапа ×3</span>
-            <b>99 Ч</b>
-            <button class="btn btn-dark btn-sm" data-buy="Пропуск этапа пропуска ×3" data-coin="99">Купить</button>
+            <b class="rub">35 ₽</b>
+            <button class="btn btn-dark btn-sm" data-later data-buy="Пропуск этапа пропуска ×3" data-rub="35">Купить</button>
           </div>
         </div>
       </div>
@@ -495,12 +769,12 @@
         <div class="tier">Вторая линия наград</div>
         <h3>Боевой ордер</h3>
         <p>Платная линия поверх бесплатной: косметика круга, тематические кейсы, киты
-          II–III уровня и червонцы обратно. <b>Бесплатную линию не забирает и не гейтит</b> —
+          II–III уровня и механизмы вагонами. <b>Бесплатную линию не забирает и не гейтит</b> —
           всё, что есть у бесплатного игрока, остаётся на месте. Обычные лавочные кейсы
           лежат только на юбилейных этапах.</p>
         <div class="pb-foot">
-          <div class="price">499 <small>Ч</small><span class="per">/ круг</span></div>
-          <button class="btn btn-primary" data-buy="Боевой ордер · круг пропуска" data-coin="499">Оформить</button>
+          <div class="price">169 <small>₽</small><span class="per">/ круг</span></div>
+          <button class="btn btn-primary" data-later data-buy="Боевой ордер · круг пропуска" data-rub="169">Оформить</button>
         </div>
       </div>
     </div>
@@ -523,8 +797,8 @@
         <div class="ci-card ci-top">
           <div class="ci-n">III</div>
           <h4>Третий круг</h4>
-          <p><b>Титул «Гвардия сезона»</b> с личным цветом, <b>плащ «Гвардия»</b> и место
-            отдельным блоком в титрах. Плюс 500 Ч и «Офицер» на 30 дней.</p>
+          <p><b>Титул «Легенда сезона»</b> с личным цветом, <b>плащ «Легенда»</b> и место
+            отдельным блоком в титрах. Плюс 500 Ч и «Командор» на 30 дней.</p>
         </div>
       </div>
       <p class="ci-note">Награды за круги косметические и статусные — на бой они не влияют,
@@ -545,13 +819,14 @@
       <div class="kicker">Трофеи</div>
       <h2>Кейсы <span class="grad-text">военного времени</span></h2>
       <p class="sub">Нажми на кейс — внутри всё: содержимое, шансы по каждой ступени, цена
-        обратного выкупа, сколько крутить за раз и с какой анимацией. Только за червонцы:
-        за рубли кейсы не продаются.</p>
+        обратного выкупа. Крутится кейс только в игре, после покупки. Кейс берут ради
+        призов: ненужный <b>продаётся обратно в игре за червонцы</b>, но в среднем это
+        около трети того, что дал бы на ту же сумму пакет червонцев.</p>
     </div>
 
     <div class="cases" id="caseGrid">
-      <noscript><p class="switch-hint">Кейсы рисуются скриптом — включите JavaScript
-        или спросите состав в Discord.</p></noscript>
+      <noscript><p class="switch-hint">Кейсы рисуются скриптом — включи JavaScript
+        или спроси состав в Discord.</p></noscript>
     </div>
 
     <div class="case-rules reveal">
@@ -559,33 +834,37 @@
       <div class="cr-grid">
         <div class="cr-item">
           <b>Продажа приза</b>
-          <p>Не нужен — продай обратно за червонцы прямо в окне открытия. Цена выкупа
-            написана у каждой позиции заранее, она не плавает.</p>
+          <p>Не нужен — продай обратно прямо в окне открытия: червонцы уйдут на игровой
+            счёт. Цена выкупа написана у каждой позиции заранее, она не плавает. Червонцы
+            с продажи идут в дневной предел 2000 Ч вместе с пакетами.</p>
         </div>
         <div class="cr-item">
-          <b>Окуп — с эпического</b>
-          <p>Эпическое и легендарное продаются <b>дороже самого кейса</b>. Только они
-            и объявляются в общий чат: остальное видит лично владелец, лента не спамится.</p>
+          <b>Громко — только редкое</b>
+          <p>В общий чат объявляются лишь эпическое и легендарное: остальное видит лично
+            владелец, лента не спамится. Выкуп у них в разы выше, чем у обычного приза.</p>
         </div>
         <div class="cr-item">
           <b>Несколько за раз</b>
-          <p>1, 3, 5 или 10 кейсов одного вида одной прокруткой. Анимация длинная по
-            умолчанию, быстрая — переключателем в том же окне.</p>
+          <p>Покупка — по 1, 3, 5 или 10 кейсов одного вида. Приходят письмом, открываются
+            в игре по <code>/кейсы</code>, у каждого свой приз.</p>
         </div>
         <div class="cr-item">
           <b>Гарантия и повторы</b>
-          <p>Каждый десятый кейс одной серии обязательно даёт редкое или выше. Повтор
-            косметики сам превращается в червонцы — 30% цены кейса.</p>
+          <p>Если девять кейсов одного вида подряд не дали редкого, десятый обязательно
+            даст редкое или выше — какое именно, решают те же шансы. Ненужный приз
+            продаётся в игре за червонцы по цене из таблицы кейса.</p>
         </div>
         <div class="cr-item">
           <b>Шансы фиксированы</b>
-          <p>Они не зависят от того, сколько кейсов открыто, от суммы платежей и от времени
-            суток. Числа на этой странице — те же, что в игре.</p>
+          <p>Они не зависят от суммы платежей, времени суток и от того, кто открывает;
+            единственная поблажка — гарантия десятого, и она только в пользу игрока.
+            Выпадение решает сервер, а не сайт и не игра у тебя. Числа на этой странице —
+            те же, что в игре.</p>
         </div>
         <div class="cr-item">
           <b>Ничего эксклюзивно-сильного</b>
-          <p>В кейсах нет ничего, чего нельзя добыть или скрафтить руками — кроме косметики
-            и временных званий.</p>
+          <p>В кейсах только обычные предметы игры, киты и звания на срок — ни одной вещи,
+            которой не бывает у остальных игроков.</p>
         </div>
       </div>
     </div>
@@ -599,25 +878,429 @@
       <div class="kicker">Снабжение</div>
       <h2>Тематические <span class="grad-text">киты</span></h2>
       <p class="sub">Семь профессий, три уровня у каждой. Нажми на кит — откроется состав
-        с ценником по каждой позиции и выбор уровня. Уровень — это полнота комплекта,
-        а не сила: всё содержимое крафтится в игре, кит экономит вечер у станка.</p>
+        с ценником по каждой позиции и выбор уровня. Уровень — это полнота комплекта:
+        внутри обычные предметы игры и её модов, кит экономит вечер у станка.</p>
     </div>
 
     <div class="kits" id="kitGrid">
-      <noscript><p class="switch-hint">Состав китов показывается скриптом — включите
-        JavaScript или спросите состав в Discord.</p></noscript>
+      <noscript><p class="switch-hint">Состав китов показывается скриптом — включи JavaScript или спроси состав в Discord.</p></noscript>
     </div>
 
     <div class="case-note reveal">
-      <b>Сколько угодно раз.</b> Лимита «один кит за сезон» больше нет: бери столько, сколько
-      нужно — хоть десять «Строителей» под большую стройку. Выдача по <code>/kit</code>
-      в своей столице и вне войны, кулдаун между выдачами — 5 минут, чтобы не заваливать
-      сундук случайно. Ежедневные киты званий («Паёк», «Ротный запас», «Офицерский запас»,
-      «Штабной обоз») — отдельная история и работают по своему кулдауну.
-      <b>«Штурмовик» — единственный кит с личным оружием и бронёй:</b> внутри обычные меч,
-      лук, щит, доспех и зелья с обычными зачарованиями, всё это любой игрок делает у
-      верстака и стола сам. Кит экономит вечер, а не даёт того, чего нет у остальных.
+      <b>Сколько угодно раз.</b> Лимита на число покупок нет: бери столько, сколько нужно —
+      хоть десять «Строителей» под большую стройку. Купленный кит приходит письмом на
+      <code>/mail</code>, после «забрать» ложится в <code>/посылки</code> — оттуда открывается
+      в любой момент. До 9 стопок падает прямо в инвентарь, больше — сундуками по 27;
+      нужны свободные ячейки. Киты званий — отдельно: их выдаёт <code>/kit</code> раз в
+      сутки у «Знаменосца» и реже у старших, раз в неделю у «Легенды».
+      <b>«Штурмовик» — единственный кит с личным оружием и бронёй:</b> обычные мечи, лук или
+      арбалет, щиты, доспех и зелья; на III уровне — с зачарованиями и двумя зачарованными
+      яблоками.
     </div>
+  </div>
+</section>
+
+<!-- ========================= НАБОРЫ МОДА AEGIS =========================
+     Цены и «по отдельности» живут ЗДЕСЬ, в разметке: у карточки data-price,
+     у каждой строки состава data-v. Суммы, проценты выгоды и цену полного
+     арсенала считает js/shop.js из этих же чисел — одно число в одном месте,
+     разъехаться нечему. Состав и формулировки взяты из самого мода
+     (resources\assets\aegislive\lang\ru_ru.json), а не придуманы. -->
+<section class="shop-section" id="mod">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Свой мод</div>
+      <h2>Арсенал <span class="grad-text">AEGIS</span></h2>
+      <p class="sub">Сирены, снаряды, оружие и склады из нашего собственного мода — их нет
+        ни в одной другой сборке Minecraft. Каждый набор здесь не россыпь предметов,
+        а <b>рабочая система целиком</b>: сирена приезжает вместе с радаром и приводом,
+        склад — с терминалом и кладовщиком, снаряды — со взрывателями и картузами.
+        Поставил, подключил, работает. И всё это <b>крафтится в игре</b>: набор экономит
+        производственную цепочку, а не открывает недоступное.</p>
+    </div>
+
+    <div class="packs">
+
+      <!-- ---------------------------------------------- Оповещение -->
+      <article class="pack reveal" data-price="129" data-key="siren">
+        <div class="pk-head">
+          <div class="kt-icons">
+            <span class="kt-cell"><img src="assets/icons/aegis_siren.png" alt=""></span>
+            <span class="kt-cell"><img src="assets/icons/aegis_siren_control.png" alt=""></span>
+            <span class="kt-cell"><img src="assets/icons/aegis_beacon_lamp.png" alt=""></span>
+          </div>
+          <div class="pk-title">
+            <div class="tier">Набор I</div>
+            <h3>Оповещение</h3>
+            <p class="pk-sub">Воздушная тревога, которая срабатывает сама — от радара, а не от кнопки.</p>
+          </div>
+        </div>
+        <ul class="pk-list">
+          <li data-v="55"><img src="assets/icons/aegis_siren.png" alt="">
+            <span>Сирена воздушной тревоги <b>×4</b></span><em></em></li>
+          <li data-v="30"><img src="assets/icons/aegis_siren_control.png" alt="">
+            <span>Пост оповещения <b>×2</b></span><em></em></li>
+          <li data-v="50"><img src="assets/icons/aegis_beacon_lamp.png" alt="">
+            <span>Проблесковый маяк <b>×8</b></span><em></em></li>
+          <li data-v="35"><img src="assets/icons/create_radar_bearing.png" alt="">
+            <span>Антенна радара: вращатель, рефлекторы, приёмник</span><em></em></li>
+          <li data-v="25"><img src="assets/icons/create_cogwheel.png" alt="">
+            <span>Мотор, валы и шестерни на 256 SU</span><em></em></li>
+        </ul>
+        <div class="pk-foot">
+          <div class="valueline">по отдельности <b class="parts">—</b> · выгода <b class="save-pc">—</b></div>
+          <div class="pk-buy">
+            <div class="price"><span class="pv">129</span> <small>₽</small></div>
+            <button class="btn btn-dark" data-buy="Набор мода «Оповещение»" data-rub="129">Купить</button>
+          </div>
+        </div>
+        <p class="pk-note">Сирена — кинетический блок Create: ей нужно <b>32 об/мин</b> и работающий
+          <b>радар Create Radar</b> в радиусе 160 блоков. Привод и антенна в наборе есть, так что
+          воет она по настоящей воздушной цели. Пост раздаёт настройку всем сиренам в 64 блоках,
+          маяк мигает, пока сирена в тревоге или пришёл редстоун.</p>
+      </article>
+
+      <!-- ---------------------------------------------- Боекомплект -->
+      <article class="pack reveal" data-price="249" data-key="shells">
+        <div class="pk-head">
+          <div class="kt-icons">
+            <span class="kt-cell"><img src="assets/icons/aegis_star_shell.png" alt=""></span>
+            <span class="kt-cell"><img src="assets/icons/aegis_thermite_shell.png" alt=""></span>
+            <span class="kt-cell"><img src="assets/icons/aegis_concussion_shell.png" alt=""></span>
+          </div>
+          <div class="pk-title">
+            <div class="tier">Набор II</div>
+            <h3>Боекомплект</h3>
+            <p class="pk-sub">Пять наших снарядов к пушкам Big Cannons — и всё, чем их заряжают.</p>
+          </div>
+        </div>
+        <ul class="pk-list">
+          <li data-v="50"><img src="assets/icons/aegis_star_shell.png" alt="">
+            <span>Осветительный снаряд <b>×8</b> — звезда на парашюте</span><em></em></li>
+          <li data-v="30"><img src="assets/icons/aegis_salute_shell.png" alt="">
+            <span>Салютный снаряд <b>×8</b> — холостой, для парадов</span><em></em></li>
+          <li data-v="75"><img src="assets/icons/aegis_thermite_shell.png" alt="">
+            <span>Термитный снаряд <b>×8</b> — очаг пожара на 8 секунд</span><em></em></li>
+          <li data-v="75"><img src="assets/icons/aegis_concussion_shell.png" alt="">
+            <span>Контузионный снаряд <b>×8</b> — ударная волна без воронки</span><em></em></li>
+          <li data-v="65"><img src="assets/icons/aegis_gas_shell.png" alt="">
+            <span>Газовый снаряд <b>×4</b> — облако по ветру, постройки целы</span><em></em></li>
+          <li data-v="35"><img class="pix" src="assets/icons/createbigcannons_impact_fuze.png" alt="">
+            <span>Взрыватели ударные и дистанционные <b>×24</b></span><em></em></li>
+          <li data-v="45"><img src="assets/icons/cbc_powder_charge.png" alt="">
+            <span>Пороховой картуз <b>×96</b></span><em></em></li>
+        </ul>
+        <div class="pk-foot">
+          <div class="valueline">по отдельности <b class="parts">—</b> · выгода <b class="save-pc">—</b></div>
+          <div class="pk-buy">
+            <div class="price"><span class="pv">249</span> <small>₽</small></div>
+            <button class="btn btn-dark" data-buy="Набор мода «Боекомплект»" data-rub="249">Купить</button>
+          </div>
+        </div>
+        <p class="pk-note">Калибр, взрыватель и заряжание — обычные, от Create: Big Cannons: снаряд
+          в казённик, следом картузы. Осветительному и салютному взрыватель не нужен, они вскрываются
+          в верхней точке сами; остальным трём — носовой, без него снаряд не сработает. Газовое
+          облако сносит ветром и на своих — это оружие площади, а не точки.</p>
+      </article>
+
+      <!-- ---------------------------------------------- Хранилище -->
+      <article class="pack reveal" data-price="269" data-key="stock">
+        <div class="pk-head">
+          <div class="kt-icons">
+            <span class="kt-cell"><img src="assets/icons/aegis_vault.png" alt=""></span>
+            <span class="kt-cell"><img class="pix" src="assets/icons/aegis_stock_module.png" alt=""></span>
+            <span class="kt-cell"><img src="assets/icons/aegis_flow_collector.png" alt=""></span>
+          </div>
+          <div class="pk-title">
+            <div class="tier">Набор III</div>
+            <h3>Хранилище</h3>
+            <p class="pk-sub">Складская система под ключ: от сундуков до терминала, который сразу открывается.</p>
+          </div>
+        </div>
+        <ul class="pk-list">
+          <li data-v="145"><img src="assets/icons/aegis_vault.png" alt="">
+            <span>Улучшенное хранилище <b>×8</b> — вдвое вместительнее обычного</span><em></em></li>
+          <li data-v="90"><img class="pix" src="assets/icons/aegis_stock_module.png" alt="">
+            <span>Модуль крафта — ставится в «Модификатор» и не расходуется</span><em></em></li>
+          <li data-v="55"><img src="assets/icons/aegis_flow_collector.png" alt="">
+            <span>Сборщик потоков <b>×2</b> и разветвитель потоков <b>×2</b></span><em></em></li>
+          <li data-v="60"><img src="assets/icons/create_packager.png" alt="">
+            <span>Упаковщик <b>×4</b> и складской передатчик <b>×4</b></span><em></em></li>
+          <li data-v="35"><img src="assets/icons/create_stock_ticker.png" alt="">
+            <span>Складской тикер и горелка всполоха за кладовщика</span><em></em></li>
+          <!-- было belt_connector: спрайт ремня — бурый комок, в 34 px в нём не
+               видно ни ремня, ни чего-либо ещё. Латунная воронка из этого же
+               набора читается силуэтом. -->
+          <li data-v="20"><img src="assets/icons/create_brass_funnel.png" alt="">
+            <span>Ремни, воронки и рамки на подводку</span><em></em></li>
+        </ul>
+        <div class="pk-foot">
+          <div class="valueline">по отдельности <b class="parts">—</b> · выгода <b class="save-pc">—</b></div>
+          <div class="pk-buy">
+            <div class="price"><span class="pv">269</span> <small>₽</small></div>
+            <button class="btn btn-dark" data-buy="Набор мода «Хранилище»" data-rub="269">Купить</button>
+          </div>
+        </div>
+        <p class="pk-note">Терминал склада Create открывается только у полной цепочки:
+          хранилища → упаковщик → складской передатчик → складской тикер, и рядом с тикером обязан
+          стоять кладовщик — существо или горелка всполоха. Здесь есть всё это разом, <b>включая
+          горелку</b>, поэтому интерфейс открывается в тот же вечер. Сборщик собирает три потока
+          в один, разветвитель — один в три.</p>
+      </article>
+
+      <!-- ---------------------------------------------- Оружейная -->
+      <!-- СКРЫТО ДО ОТКРЫТИЯ: овнер 16.09.2026 — «скрой пока оружия», «гранат тоже»,
+           модели раскрываются на открытии. Вернуть = поставить назад имена картинок
+           из tools\icons_hidden и убрать class="hid". -->
+      <article class="pack reveal" data-price="299" data-key="arms">
+        <div class="pk-head">
+          <div class="kt-icons">
+            <span class="kt-cell"><img class="hid" src="assets/icons/hidden.svg" alt=""></span>
+          </div>
+          <div class="pk-title">
+            <div class="tier">Набор IV</div>
+            <h3>Оружейная</h3>
+            <p class="pk-sub">Готовое стрелковое отделение: стволы, навеска, патроны и гранаты.</p>
+          </div>
+        </div>
+        <ul class="pk-list">
+          <li data-v="45"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Винтовка обр. 1891/30 <b>×2</b></span><em></em></li>
+          <li data-v="50"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Пистолет-пулемёт <b>×2</b></span><em></em></li>
+          <li data-v="60"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Ручной пулемёт</span><em></em></li>
+          <li data-v="65"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Противотанковое ружьё</span><em></em></li>
+          <li data-v="40"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Барабанный и дисковый магазины <b>×2</b></span><em></em></li>
+          <li data-v="55"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Оптика, дульный тормоз, сошки и гранёный штык</span><em></em></li>
+          <li data-v="45"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Винтовочный патрон <b>×256</b></span><em></em></li>
+          <li data-v="35"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Бронебойный патрон <b>×64</b></span><em></em></li>
+          <li data-v="40"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Осколочная граната <b>×16</b> и связка гранат <b>×4</b></span><em></em></li>
+          <li data-v="20"><img class="hid" src="assets/icons/hidden.svg" alt="">
+            <span>Дымовая шашка <b>×8</b></span><em></em></li>
+        </ul>
+        <div class="pk-foot">
+          <div class="valueline">по отдельности <b class="parts">—</b> · выгода <b class="save-pc">—</b></div>
+          <div class="pk-buy">
+            <div class="price"><span class="pv">299</span> <small>₽</small></div>
+            <button class="btn btn-primary" data-buy="Набор мода «Оружейная»" data-rub="299">Купить</button>
+          </div>
+        </div>
+        <p class="pk-note">У каждого ствола есть ресурс: настреляв своё, он «садится» — разброс выше,
+          пробитие ниже, — и лечится только заменой ствола. <b>Ни стволов, ни ствольных коробок,
+          ни штампов в наборе нет и не будет:</b> производство остаётся производством, и через
+          несколько сотен выстрелов оружейная линия нужна всё равно. Это фора на старте,
+          а не преимущество навсегда. <b>Как выглядят стволы и гранаты — покажем на открытии</b>, поэтому вместо картинок пока замок: список и цена от этого не меняются.</p>
+      </article>
+    </div>
+
+    <!-- ---------------------------------------------- всё сразу -->
+    <div class="pack-all reveal" data-price="749">
+      <div class="pa-left">
+        <h3>Полный арсенал <span class="save" id="paSave">—</span></h3>
+        <p>Все четыре набора мода одним заказом: сирены с радаром, боекомплект, складская
+          система и оружейная. Дешевле, чем брать наборы по одному, — и это единственная
+          скидка на товар мода, других не будет.</p>
+        <div class="pa-chips">
+          <span>Оповещение</span><span>Боекомплект</span><span>Хранилище</span><span>Оружейная</span>
+        </div>
+      </div>
+      <div class="pa-buy">
+        <div class="old"><b id="paSum">—</b> <span id="paCnt"></span></div>
+        <div class="price">749 <small>₽</small></div>
+        <div class="pa-sub">по отдельности <b id="paParts">—</b></div>
+        <button class="btn btn-primary" data-buy="Полный арсенал мода AEGIS" data-rub="749">Взять целиком</button>
+      </div>
+    </div>
+
+    <div class="balance-note reveal"><b>Честная война:</b> ни один предмет мода не продаётся
+      только за деньги — всё это крафтится на сервере из своей руды, нефти и стали, и любой
+      игрок делает то же самое сам. Набор экономит производственную цепочку, а не открывает
+      того, чего нет у остальных: боеприпас кончается, ствол садится, сирене нужен ток.
+      Деталей, из которых оружие собирается, здесь нет принципиально.</div>
+  </div>
+</section>
+
+<!-- ============================ РАНЦЫ ============================ -->
+<section class="shop-section" id="bags">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Снаряжение</div>
+      <h2>Ранец <span class="grad-text">и его модули</span></h2>
+      <p class="sub">Первые три яруса собираются на верстаке, как в самом моде.
+        Старшие три — штабной, инженерный и экспедиционный — берутся только здесь:
+        их рецептов на сервере нет, из сундуков они не выпадают, с мобов не снимаются.
+        <b>Модули</b> к любому ранцу крафтят сами, из своих материалов.</p>
+    </div>
+
+    <div class="bags-hero reveal">
+      <div class="bh-art"><img src="assets/icons/bag.png" alt="Ранец"></div>
+      <div class="bh-rules">
+        <div class="bh-rule">
+          <b>I–III — на верстаке</b>
+          <span>Вещмешок, походный и интендантский ранцы крафтятся всеми:
+            вещмешок из кожи и сундука, дальше он улучшается медью и железом.
+            Покупать их не нужно.</span>
+        </div>
+        <div class="bh-rule">
+          <b>IV–VI — только в лавке</b>
+          <span>Рецептов штабного, инженерного и экспедиционного на сервере нет.
+            Из сундуков подземелий ранцы не выпадают, а мобы носят ранцы
+            не дороже интендантского.</span>
+        </div>
+        <div class="bh-rule">
+          <b>Модули — сами</b>
+          <span>Модули не продаются: их собирают на верстаке за железо, золото
+            и редстоун — к любому ранцу, хоть к вещмешку. Чужой ранец
+            на сервере не открыть.</span>
+        </div>
+      </div>
+    </div>
+
+    <ol class="bag-ladder">
+      <li class="bag-row reveal" style="--t:#C65C35">
+        <div class="bg-n">I</div>
+        <div class="bg-name">
+          <h3>Вещмешок</h3>
+          <p>Первый ранец: карман под инструмент, еду и добычу за вылазку.</p>
+        </div>
+        <div class="bg-num"><b>27</b><span>ячеек</span></div>
+        <div class="bg-num"><b>1</b><span>модуль</span></div>
+        <div class="price craft">в крафте</div>
+        <span class="btn btn-sm bag-craft">на верстаке</span>
+      </li>
+      <li class="bag-row reveal" style="--t:#C87456">
+        <div class="bg-n">II</div>
+        <div class="bg-name">
+          <h3>Ранец походный</h3>
+          <p>Ровно вдвое больше первого — на дальний выход и стройку.</p>
+        </div>
+        <div class="bg-num"><b>45</b><span>ячеек</span></div>
+        <div class="bg-num"><b>1</b><span>модуль</span></div>
+        <div class="price craft">в крафте</div>
+        <span class="btn btn-sm bag-craft">на верстаке</span>
+      </li>
+      <li class="bag-row reveal" style="--t:#A8A8A8">
+        <div class="bg-n">III</div>
+        <div class="bg-name">
+          <h3>Ранец интендантский</h3>
+          <p>Второй модуль: подбор и фильтр начинают работать вместе.</p>
+        </div>
+        <div class="bg-num"><b>54</b><span>ячейки</span></div>
+        <div class="bg-num"><b>2</b><span>модуля</span></div>
+        <div class="price craft">в крафте</div>
+        <span class="btn btn-sm bag-craft">на верстаке</span>
+      </li>
+      <li class="bag-row reveal" style="--t:#E9B115">
+        <div class="bg-n">IV</div>
+        <div class="bg-name">
+          <h3>Ранец штабной</h3>
+          <p>Три модуля и восемь десятков ячеек: рабочий ранец инженера страны.</p>
+        </div>
+        <div class="bg-num"><b>81</b><span>ячейка</span></div>
+        <div class="bg-num"><b>3</b><span>модуля</span></div>
+        <div class="price">319 <small>₽</small></div>
+        <button class="btn btn-dark btn-sm" data-buy="Ранец штабной (ранец IV)" data-rub="319">Купить</button>
+      </li>
+      <li class="bag-row reveal" style="--t:#20C5B5">
+        <div class="bg-n">V</div>
+        <div class="bg-name">
+          <h3>Ранец инженерный</h3>
+          <p>Пять модулей — можно держать печь, бак и верстак одновременно.</p>
+        </div>
+        <div class="bg-num"><b>108</b><span>ячеек</span></div>
+        <div class="bg-num"><b>5</b><span>модулей</span></div>
+        <div class="price">429 <small>₽</small></div>
+        <button class="btn btn-dark btn-sm" data-buy="Ранец инженерный (ранец V)" data-rub="429">Купить</button>
+      </li>
+      <li class="bag-row reveal" style="--t:#8C8287">
+        <div class="bg-n">VI</div>
+        <div class="bg-name">
+          <h3>Ранец экспедиционный</h3>
+          <p>Потолок мода: семь модулей. Больше ярусов в игре просто нет.</p>
+        </div>
+        <div class="bg-num"><b>120</b><span>ячеек</span></div>
+        <div class="bg-num"><b>7</b><span>модулей</span></div>
+        <div class="price">549 <small>₽</small></div>
+        <button class="btn btn-dark btn-sm" data-buy="Ранец экспедиционный (ранец VI)" data-rub="549">Купить</button>
+      </li>
+    </ol>
+
+    <p class="bag-up"><b>Купленный ранец приходит почтой</b> — забрать его
+      в игре командой <code>/mail</code>. Ранец выдаётся новым и пустым:
+      вещи и модули из старого переложи сами. <b>Больше трёх ранцев мод
+      на игроке не держит.</b> Именной ранец, который не теряется при смерти, —
+      позже.</p>
+
+    <div class="mods-two">
+      <div class="mod-col reveal">
+        <div class="tier">Крафтится всеми</div>
+        <h3>Что можно собрать</h3>
+        <p>У каждого модуля свой рецепт на верстаке, покупать ничего не нужно,
+          и ставится он в любой ранец — хоть в вещмешок. У большинства есть
+          усиленная версия: тот же смысл, больше ячеек фильтра и шире охват.</p>
+        <ul class="mod-list">
+          <li><img src="assets/icons/sb_upgrade_base.png" alt="">
+            <div><b>Основа модуля</b><span>заготовка, с неё начинается любой другой</span></div></li>
+          <li><img src="assets/icons/sb_pickup.png" alt="">
+            <div><b>Подбор и фильтр</b><span>добыча падает сразу в ранец; фильтр решает, что брать, а что оставить</span></div></li>
+          <li><img src="assets/icons/sb_magnet.png" alt="">
+            <div><b>Магнит</b><span>тянет предметы к себе — но всего на один блок, дальше придётся подойти</span></div></li>
+          <li><img src="assets/icons/sb_void.png" alt="">
+            <div><b>Уничтожение лишнего</b><span>булыжник и земля не забивают ранец на карьере</span></div></li>
+          <li><img src="assets/icons/sb_compacting.png" alt="">
+            <div><b>Сжатие</b><span>девять слитков сами становятся блоком</span></div></li>
+          <li><img src="assets/icons/sb_deposit.png" alt="">
+            <div><b>Разгрузка и пополнение</b><span>сгружает добычу в свои сундуки и добирает из них расходники</span></div></li>
+          <li><img src="assets/icons/sb_crafting.png" alt="">
+            <div><b>Верстак, наковальня, ковка, камнерез</b><span>четыре станка в кармане — стройка не гоняет домой за каждой ступенькой</span></div></li>
+          <li><img src="assets/icons/sb_smelting.png" alt="">
+            <div><b>Печь, домна и коптильня</b><span>обычной скорости, включая самоплавку; быстрее печи на базе не станет</span></div></li>
+          <li><img src="assets/icons/sb_tank.png" alt="">
+            <div><b>Бак, насос и опыт</b><span>вода, нефть и лава в ранце; насос переливает из фляг в баке, отдельный модуль качает опыт</span></div></li>
+          <li><img src="assets/icons/sb_battery.png" alt="">
+            <div><b>Батарея</b><span>питание для модулей, которым нужен ток</span></div></li>
+          <li><img src="assets/icons/sb_feeding.png" alt="">
+            <div><b>Быт</b><span>кормёжка, смена инструмента, зелья, музыка — всё, что не решает на фронте</span></div></li>
+          <li><img src="assets/icons/sb_stack.png" alt="">
+            <div><b>Стопка ×1.5 и ×2</b><span>ячейка держит больше обычного — и в ранце не больше одного такого модуля</span></div></li>
+        </ul>
+      </div>
+
+      <div class="mod-col no reveal">
+        <div class="tier">На сервере выключено</div>
+        <h3>Чего не будет</h3>
+        <p>Эти модули в моде есть, но на AEGIS их рецептов нет ни у кого —
+          ни за деньги, ни за игру. Каждый вычеркнут не «на всякий случай»,
+          а по конкретной причине.</p>
+        <ul class="mod-list">
+          <li><img src="assets/icons/sb_refill.png" alt="">
+            <div><b>Пополнение в руке</b><span>сам докладывает патроны и блоки прямо в руку. Бой должен упираться в то, сколько ты унёс, а не в размер ранца</span></div></li>
+          <li><img src="assets/icons/sb_mob_catcher.png" alt="">
+            <div><b>Ловец мобов</b><span>житель или стадо в кармане ломают торговлю и расселение городов, а усиленный ещё и завозит враждебных мобов на чужую базу</span></div></li>
+          <li><img src="assets/icons/sb_adv_pump.png" alt="">
+            <div><b>Усиленный насос</b><span>качает жидкость прямо из мира: ходячая нефтевышка мимо всей нефтяной механики. Обычный насос остаётся</span></div></li>
+          <li><img src="assets/icons/sb_inception.png" alt="">
+            <div><b>Ранец в ранце</b><span>вложенные ранцы умножают объём и стабильно роняют сервер на дюпах</span></div></li>
+          <li><img src="assets/icons/sb_everlasting.png" alt="">
+            <div><b>Неуничтожимость</b><span>ранец, который не горит в лаве и не тонет в бездне, превращается в вечный сейф, который нельзя отбить в бою</span></div></li>
+          <li><img src="assets/icons/sb_stack_omega.png" alt="">
+            <div><b>Стопки ×4 и выше</b><span>вплоть до тридцати трёх миллионов в ячейке. Это склад в кармане: поезда Create, ленты и наша складская система после такого не нужны никому</span></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="balance-note reveal"><b>Честно о том, что это платное:</b> три старших
+      ранца — вещь на витрине, которую нельзя получить игрой. Ранцы I–III, все модули,
+      а заодно пушки, снаряды и складская система <b>нашего мода AEGIS</b> крафтятся
+      на сервере и за деньги не запираются. Старший ранец ничего не решает на фронте
+      и никого не делает сильнее в бою: это лишние ячейки для переноски.</div>
   </div>
 </section>
 
@@ -660,9 +1343,9 @@
           нет: на сервере, где воюют за нефть и сталь, купленный множитель производства —
           это купленная война.</p>
         <div class="b-buy">
-          <div class="price" id="boostPrice">199 <small>Ч</small></div>
+          <div class="price" id="boostPrice">259 <small>₽</small></div>
           <button class="btn btn-primary" id="boostBuy"
-                  data-buy="Ускорение сервера ×1.5 на 60 минут" data-coin="199">Купить</button>
+                  data-buy="Ускорение сервера ×1.5 на 60 минут" data-rub="259">Купить</button>
         </div>
       </div>
     </div>
@@ -670,158 +1353,125 @@
     <div class="goods">
       <div class="good reveal">
         <div class="g-head">
-          <div class="icon-plate"><img src="assets/icons/shield.png" alt=""></div>
-          <div><h3>Точка дома</h3><div class="g-sub">+1 слот, до 10</div></div>
-          <div class="price">69 <small>Ч</small></div>
+          <div class="icon-plate"><img src="assets/icons/home_point.png" alt=""></div>
+          <div><h3>Точка дома</h3><div class="g-sub">+1 слот, всего не больше 4</div></div>
+          <div class="price">149 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Точка дома (+1 слот)" data-coin="69">Купить</button>
+        <button class="btn btn-dark btn-sm" data-buy="Точка дома (+1 слот)" data-rub="149">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
-          <div class="icon-plate"><img src="assets/icons/clipboard.png" alt=""></div>
-          <div><h3>Свой префикс</h3><div class="g-sub">в чате и TAB, через модерацию</div></div>
-          <div class="price">119 <small>Ч</small></div>
+          <div class="icon-plate"><img class="pix" src="assets/icons/clipboard.png" alt=""></div>
+          <div><h3>Свой префикс</h3><div class="g-sub">в чате и TAB · <span class="soon-tag">позже</span></div></div>
+          <div class="price">39 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Свой префикс в чате и TAB" data-coin="119">Купить</button>
+        <button class="btn btn-dark btn-sm" data-later data-buy="Свой префикс в чате и TAB" data-rub="39">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
-          <div class="icon-plate"><img src="assets/icons/copper_sheet.png" alt=""></div>
-          <div><h3>Цветной ник</h3><div class="g-sub">в чате и TAB</div></div>
-          <div class="price">89 <small>Ч</small></div>
+          <div class="icon-plate"><img class="pix" src="assets/icons/copper_sheet.png" alt=""></div>
+          <div><h3>Цветной ник</h3><div class="g-sub">в чате и TAB · <span class="soon-tag">позже</span></div></div>
+          <div class="price">29 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Цветной ник в чате и TAB" data-coin="89">Купить</button>
+        <button class="btn btn-dark btn-sm" data-later data-buy="Цветной ник в чате и TAB" data-rub="29">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
           <div class="icon-plate"><img class="pix wide" src="assets/icons/crown.png" alt=""></div>
-          <div><h3>Значок у ника</h3><div class="g-sub">один из двенадцати</div></div>
-          <div class="price">99 <small>Ч</small></div>
+          <div><h3>Значок у ника</h3><div class="g-sub">пиксельный · <span class="soon-tag">позже</span></div></div>
+          <div class="price">35 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Пиксельный значок у ника" data-coin="99">Купить</button>
+        <button class="btn btn-dark btn-sm" data-later data-buy="Пиксельный значок у ника" data-rub="35">Купить</button>
       </div>
 
       <div class="good good-new reveal">
         <div class="g-head">
-          <div class="icon-plate"><img src="assets/icons/schematic.png" alt=""></div>
+          <div class="icon-plate"><img class="pix" src="assets/icons/schematic.png" alt=""></div>
           <div><h3>Своё сообщение при входе</h3><div class="g-sub">видит весь сервер</div></div>
-          <div class="price">189 <small>Ч</small></div>
+          <div class="price">65 <small>₽</small></div>
         </div>
-        <p class="g-note">Своя строка вместо казённого «игрок зашёл на сервер» — свой текст
-          и свой цвет. Проходит модерацию один раз, дальше меняется командой.</p>
-        <button class="btn btn-dark btn-sm" data-buy="Своё сообщение при входе на сервер" data-coin="189">Купить</button>
+        <p class="g-note">Когда ты заходишь, весь сервер видит в чате «Ник: твой текст» —
+          до 60 знаков, не чаще раза в 10 минут. Текст меняется командой <code>/приветствие</code>.</p>
+        <button class="btn btn-dark btn-sm" data-buy="Своё сообщение при входе на сервер" data-rub="65">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
           <div class="icon-plate"><img class="pix" src="assets/icons/aegis_siren_remote.png" alt=""></div>
-          <div><h3>Личный позывной</h3><div class="g-sub">свой звук объявления входа</div></div>
-          <div class="price">149 <small>Ч</small></div>
+          <div><h3>Личный позывной</h3><div class="g-sub">сигнал всему серверу, когда заходишь</div></div>
+          <div class="price">49 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Личный позывной (звук входа)" data-coin="149">Купить</button>
+        <button class="btn btn-dark btn-sm" data-buy="Личный позывной (звук входа)" data-rub="49">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
-          <div class="icon-plate"><img src="assets/icons/golden_sheet.png" alt=""></div>
+          <div class="icon-plate"><img class="pix" src="assets/icons/golden_sheet.png" alt=""></div>
           <div><h3>Приоритетный вход</h3><div class="g-sub">когда сервер полон</div></div>
-          <div class="price">149 <small>Ч</small></div>
+          <div class="price">49 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Приоритетный вход при полном сервере" data-coin="149">Купить</button>
+        <button class="btn btn-dark btn-sm" data-buy="Приоритетный вход при полном сервере" data-rub="49">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
-          <div class="icon-plate"><img class="pix" src="assets/icons/aegis_star_shell.png" alt=""></div>
+          <div class="icon-plate"><img src="assets/icons/aegis_star_shell.png" alt=""></div>
           <div><h3>Возврат к точке смерти</h3><div class="g-sub"><code>/back</code> · вне боя, задержка 30 с</div></div>
-          <div class="price">129 <small>Ч</small></div>
+          <div class="price">45 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Возврат к точке смерти /back" data-coin="129">Купить</button>
+        <button class="btn btn-dark btn-sm" data-buy="Возврат к точке смерти /back" data-rub="45">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
-          <div class="icon-plate"><img src="assets/icons/propeller.png" alt=""></div>
+          <div class="icon-plate"><img class="pix" src="assets/icons/propeller.png" alt=""></div>
           <div><h3>Полёт <code>/fly</code></h3><div class="g-sub">летать в своём городе</div></div>
-          <div class="price">449 <small>Ч</small></div>
+          <div class="price">250 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Полёт /fly в своём городе" data-coin="449">Купить</button>
+        <button class="btn btn-dark btn-sm" data-buy="Полёт /fly в своём городе" data-rub="250">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
-          <div class="icon-plate"><img src="assets/icons/banner_cloth.png" alt=""></div>
-          <div><h3>Скин-накидка</h3><div class="g-sub">одна из восьми, поверх скина</div></div>
-          <div class="price">249 <small>Ч</small></div>
+          <div class="icon-plate"><img class="pix" src="assets/icons/cape.png" alt=""></div>
+          <div><h3>Скин-накидка</h3><div class="g-sub">поверх скина · <span class="soon-tag">позже</span></div></div>
+          <div class="price">85 <small>₽</small></div>
         </div>
-        <button class="btn btn-dark btn-sm" data-buy="Скин-накидка" data-coin="249">Купить</button>
+        <button class="btn btn-dark btn-sm" data-later data-buy="Скин-накидка" data-rub="85">Купить</button>
       </div>
 
       <div class="good reveal">
         <div class="g-head">
-          <div class="icon-plate"><img class="pix" src="assets/icons/aegis_salute_shell.png" alt=""></div>
-          <div><h3>Салютный залп <code>/салют</code></h3><div class="g-sub">по команде, раз в день</div></div>
-          <div class="price">99 <small>Ч</small></div>
+          <div class="icon-plate"><img src="assets/icons/aegis_salute_shell.png" alt=""></div>
+          <div><h3>Салютный залп <code>/салют</code></h3><div class="g-sub">по команде, раз в 10 минут</div></div>
+          <div class="price">35 <small>₽</small></div>
         </div>
         <p class="g-note">Залп запускается тогда, когда он к месту — на параде, после победы,
           на открытии стройки. При входе на сервер не срабатывает: там это шум.</p>
-        <button class="btn btn-dark btn-sm" data-buy="Салютный залп /салют" data-coin="99">Купить</button>
+        <button class="btn btn-dark btn-sm" data-buy="Салютный залп /салют" data-rub="35">Купить</button>
       </div>
     </div>
 
-    <!-- очередь -->
+    <!-- очередь: в моде это одна отметка — Donate.priority(): «Гвардеец» и выше или перк -->
     <div class="prio reveal">
-      <div class="prio-h">У кого какой приоритет входа, когда сервер полон</div>
+      <div class="prio-h">Кто заходит, когда сервер полон</div>
       <ol class="prio-list">
-        <li class="p-adm">
-          <span class="p-n">вне очереди</span>
-          <b>Администрация и модерация на смене</b>
-          <i>для них держатся два резервных слота сверх лимита — общую очередь они не занимают</i>
+        <li>
+          <span class="p-n">да</span>
+          <b>«Гвардеец» и старше или купленный «Приоритетный вход»</b>
+          <i>одна и та же отметка: звание и товар вместе не складываются</i>
         </li>
         <li>
-          <span class="p-n">1</span>
-          <b>Премиум + «Офицер» или «Маршал»</b>
-          <i>высший приоритет среди игроков</i>
-        </li>
-        <li>
-          <span class="p-n">2</span>
-          <b>Премиум «Мандат Ставки»</b>
-          <i>приоритет премиума выше, чем у любого звания без него</i>
-        </li>
-        <li>
-          <span class="p-n">3</span>
-          <b>«Маршал»</b>
-          <i>тир IV</i>
-        </li>
-        <li>
-          <span class="p-n">4</span>
-          <b>«Офицер»</b>
-          <i>тир III</i>
-        </li>
-        <li>
-          <span class="p-n">5</span>
-          <b>«Ефрейтор» или купленный «Приоритетный вход»</b>
-          <i>одна ступень: если есть и звание, и товар — берётся высшее, они не складываются</i>
-        </li>
-        <li>
-          <span class="p-n">6</span>
-          <b>«Доброволец»</b>
-          <i>тир I</i>
-        </li>
-        <li>
-          <span class="p-n">7</span>
-          <b>Все остальные</b>
-          <i>обычная очередь по времени ожидания</i>
+          <span class="p-n">нет</span>
+          <b>Все остальные, включая «Знаменосца»</b>
+          <i>ждут, пока освободится слот</i>
         </li>
       </ol>
-      <p class="prio-note"><b>Приоритет — это место в очереди, а не право выкинуть игрока.</b>
-        Никого с сервера не снимают и ни у кого сессию не рвут: приоритет решает только,
-        кто зайдёт следующим, когда освободится слот. Внутри одной ступени — по времени
-        ожидания. Двое суток без входа — приоритет не теряется, он привязан к званию,
-        а не к активности.</p>
+      <p class="prio-note">Отметка привязана к званию или покупке, а не к активности:
+        пропустил пару дней — она на месте.</p>
     </div>
 
     <div class="nope reveal">
@@ -833,9 +1483,113 @@
           Ничего кастомного, ничего с уникальными свойствами.</li>
         <li><b>Защиты привата, отмены войны, отката потерь.</b> Проигрыш нельзя выкупить.</li>
         <li><b>Креатива, спавна предметов, чужих координат и приватной информации.</b></li>
+        <li><b>Выкупа тяжёлых наказаний.</b> Амнистия снимает только меру до суток;
+          читы, гриферство, дюп, символика и слив не выкупаются никогда.</li>
         <li><b>Обхода гринда.</b> Кроме косметики, в лавке нет ничего, чего нельзя скрафтить.</li>
       </ul>
     </div>
+  </div>
+</section>
+
+<!-- ============================ АМНИСТИЯ ============================ -->
+<section class="shop-section" id="amnesty">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="kicker">Наказания</div>
+      <h2>Апелляция <span class="grad-text">и амнистия</span></h2>
+      <p class="sub">Разбор несправедливой меры бесплатный и идёт первым. Деньгами
+        выкупается только лёгкий срок — мера до суток включительно, не больше двух раз
+        за сезон и никогда за то, чем испортили игру другим.</p>
+    </div>
+
+    <div class="amn-free reveal">
+      <div class="amn-free-txt">
+        <div class="kicker">Сначала бесплатно</div>
+        <h3>Апелляция не стоит ничего</h3>
+        <p>Считаешь меру несправедливой — тикет <a href="tickets.html#/appeal">«Апелляции»</a>
+          на сайте или <code>/кейс</code> в игре, по одному разбору в сутки. Модератор обязан
+          назвать пункт правил: <b>номера нет — мера снимается сама</b>, и разбирается уже
+          его звено. Признал вину — в письме о наказании есть кнопка «просить смягчение»:
+          срок режут вдвое, в полтора раза или снимают совсем.</p>
+        <p class="amn-back"><b>Ошиблась модерация — возвращение бесплатное.</b> Если амнистия
+          к тому времени уже оплачена, деньги возвращаются целиком, тем же способом.</p>
+      </div>
+      <a class="btn btn-primary" href="tickets.html#/appeal">Подать апелляцию</a>
+    </div>
+
+    <div class="amn-grid">
+      <div class="amn reveal">
+        <div class="amn-h">
+          <div><div class="tier">Мера до суток</div><h3>Снятие мута</h3></div>
+          <div class="price">60 <small>₽</small></div>
+        </div>
+        <p>Мут на 30 минут, на 3 часа или на сутки снимается сразу — чат и голос
+          возвращаются.</p>
+        <ul class="amn-no">
+          <li>мут на трое суток не снимается: столько дают за травлю и за брань
+            в адрес человека</li>
+        </ul>
+        <a class="btn btn-dark btn-sm" href="cabinet.html#/punish">Оформить в кабинете</a>
+      </div>
+
+      <div class="amn reveal">
+        <div class="amn-h">
+          <div><div class="tier">Мера до суток</div><h3>Досрочное возвращение</h3></div>
+          <div class="price">150 <small>₽</small></div>
+        </div>
+        <p>Блокировка входа на 30 минут, на 3 часа или на сутки снимается, и игрок заходит
+          сразу. Столько стоит обычная бытовая ссора: пришёл на чужое после просьбы,
+          поставил соседу стену-заслон, начал войну без регистрации, собрал лаг-машину.</p>
+        <ul class="amn-no">
+          <li>блокировка на трое суток, на 14 суток и навсегда не снимается ни за какие
+            деньги</li>
+        </ul>
+        <a class="btn btn-dark btn-sm" href="cabinet.html#/punish">Оформить в кабинете</a>
+      </div>
+
+      <div class="amn amn-rule reveal">
+        <div class="amn-h">
+          <div><div class="tier">Ограничение</div><h3>Второй раз — вдвое</h3></div>
+          <div class="price" data-no-rub>×2</div>
+        </div>
+        <p>Вторая амнистия в том же сезоне стоит вдвое<span class="rub">: мут — 120 ₽,
+          возвращение — 300 ₽</span>. Третьей нет, срок отсиживается. Счётчик обнуляется
+          вайпом вместе со всем остальным.</p>
+        <p class="amn-where">Оформляется в кабинете, в разделе «Наказания»: у действующей
+          меры появляется кнопка. В игре её нет нарочно — заблокированный в игру не зайдёт,
+          а кабинет открывается и после бана.</p>
+      </div>
+    </div>
+
+    <div class="nope reveal">
+      <div class="nope-h">Что не выкупается никогда</div>
+      <ul>
+        <li><b>Читы, x-ray, макросы и стороннее ПО</b> (п. 3) — блокировка навсегда,
+          и разговора о деньгах там нет.</li>
+        <li><b>Гриферство и разрушение чужого вне войны</b> (п. 2) — сначала восстановление
+          за свой счёт, срок отсиживается.</li>
+        <li><b>Дюп и выгода с бага</b> (п. 3) — задублированное изымается; сообщил о баге
+          сам — меры и не будет.</li>
+        <li><b>Мультиаккаунт и обход наказания со второго аккаунта</b> (п. 3) — срок
+          начинается заново и удваивается.</li>
+        <li><b>Запрещённая символика и прославление нацизма</b> (п. 6) — по призывам
+          к насилию не принимается даже апелляция.</li>
+        <li><b>Крупный обман и продажа игрового за реальные деньги</b> (п. 4).</li>
+        <li><b>Слив неопубликованного за пределы проекта</b> (п. 9).</li>
+        <li><b>Мера, вынесенная руководством лично</b> (п. 8) — по правилам она
+          окончательная.</li>
+        <li><b>Наказания в Discord</b> — там свои правила и свои сроки, снимаются только
+          апелляцией.</li>
+      </ul>
+    </div>
+
+    <p class="amn-note reveal"><b>Амнистия гасит срок, а не факт.</b> Запись остаётся
+      в истории наказаний навсегда и видна модерации: ступень лестницы не сбрасывается,
+      и то же нарушение во второй раз берётся как повтор — а повтор почти всегда уже
+      не выкупается. Возмещение амнистия тоже не отменяет: сломанное восстанавливается,
+      вынесенное возвращается, задублированное изымается. Купить её можно только себе
+      и только после того, как апелляцию рассмотрели и мера устояла: пока разбор идёт,
+      кнопка не работает — бесплатный путь всегда первый.</p>
   </div>
 </section>
 
@@ -844,70 +1598,69 @@
   <div class="container">
     <div class="section-head reveal">
       <div class="kicker">Выгоднее вместе</div>
-      <h2>Комбо <span class="grad-text">за червонцы</span></h2>
+      <h2>Комбо <span class="grad-text">со скидкой</span></h2>
       <p class="sub">Готовые связки под стадию игры. Внутри — те же позиции лавки,
-        просто дешевле, чем по отдельности. Скидку на сами червонцы дают промокоды
-        и премиум, а скидку на товар — вот эти четыре набора.</p>
+        просто дешевле, чем по отдельности. Промокод и скидка премиума считаются
+        сверху, поверх этой выгоды.</p>
     </div>
     <div class="bundles">
       <div class="bundle reveal">
         <div>
-          <h3>Первый эшелон <span class="save">−29%</span></h3>
+          <h3>Первый эшелон <span class="save">−30%</span></h3>
           <p>Стартовый вагон новобранца: звание, еда на первые дни, инженерный инструмент
             и пара кейсов, чтобы сразу встать к станку.</p>
-          <div class="contents">«Доброволец» на сезон + кит «Снабжение» I + кит «Инженер» I
+          <div class="contents">«Знаменосец» на весь вайп + кит «Снабжение» I + кит «Инженер» I
             + кейс «Полевой склад» ×2</div>
         </div>
         <div class="bundle-buy">
-          <div class="old">745 Ч</div>
-          <div class="price">529 <small>Ч</small></div>
-          <button class="btn btn-primary" data-buy="Комбо «Первый эшелон»" data-coin="529">Купить</button>
+          <div class="old">355 ₽</div>
+          <div class="price">249 <small>₽</small></div>
+          <button class="btn btn-primary" data-buy="Комбо «Первый эшелон»" data-rub="249">Купить</button>
         </div>
       </div>
 
       <div class="bundle reveal">
         <div>
-          <h3>Военный заём <span class="save">−25%</span></h3>
-          <p>Как облигации 1936 года, только честнее: вкладываешь в казну — получаешь месяц
-            премиума, склад трофеев на производство и снаряжение бойца.</p>
-          <div class="contents">Премиум «Мандат Ставки» 30 дней + кейс «Заводской наряд» ×2
-            + кейс «Нефтяной контракт» + кит «Штурмовик» II + ротации заданий ×3</div>
+          <h3>Военный заём <span class="save">−24%</span></h3>
+          <p>Платишь один раз — получаешь месяц мандата, три кейса на производство
+            и нефть и снаряжение бойца.</p>
+          <div class="contents">«Мандат Ставки» 30 дней + кейс «Заводской наряд» ×2
+            + кейс «Нефтяной контракт» + кит «Штурмовик» II</div>
         </div>
         <div class="bundle-buy">
-          <div class="old">1734 Ч</div>
-          <div class="price">1300 <small>Ч</small></div>
-          <button class="btn btn-primary" data-buy="Комбо «Военный заём»" data-coin="1300">Купить</button>
+          <div class="old">615 ₽</div>
+          <div class="price">469 <small>₽</small></div>
+          <button class="btn btn-primary" data-buy="Комбо «Военный заём»" data-rub="469">Купить</button>
         </div>
       </div>
 
       <div class="bundle reveal">
         <div>
-          <h3>Генеральный план <span class="save">−27%</span></h3>
-          <p>Для тех, кто пришёл строить державу всерьёз: офицерское звание, боевой ордер
-            на круг, артиллерийский комплект и кейс генштаба.</p>
-          <div class="contents">«Офицер» на сезон + боевой ордер + кит «Артиллерист» II
+          <h3>Генеральный план <span class="save">−29%</span></h3>
+          <p>Для тех, кто пришёл строить державу всерьёз: звание командора,
+            артиллерийский комплект и кейс генштаба.</p>
+          <div class="contents">«Командор» на весь вайп + кит «Артиллерист» II
             + кейс «Генштаб»</div>
         </div>
         <div class="bundle-buy">
-          <div class="old">1946 Ч</div>
-          <div class="price">1420 <small>Ч</small></div>
-          <button class="btn btn-primary" data-buy="Комбо «Генеральный план»" data-coin="1420">Купить</button>
+          <div class="old">678 ₽</div>
+          <div class="price">479 <small>₽</small></div>
+          <button class="btn btn-primary" data-buy="Комбо «Генеральный план»" data-rub="479">Купить</button>
         </div>
       </div>
 
       <div class="bundle reveal">
         <div>
           <h3>Держава <span class="save">−29%</span></h3>
-          <p>Всё сразу и на весь сезон: высшее звание, три месяца премиума, платная линия
-            пропуска и три кейса генштаба. Киты III уровня «Маршалу» и так капают раз
-            в неделю — отдельно за них платить не надо.</p>
-          <div class="contents">«Маршал» на сезон + премиум ×3 месяца + боевой ордер
+          <p>Всё сразу и на весь вайп: «Маршал» с полётом над городом и резервом
+            раз в четверо суток, три месяца мандата и три кейса генштаба.</p>
+          <div class="contents">«Маршал» на весь вайп + мандат ×3 месяца
             + кейс «Генштаб» ×3</div>
         </div>
         <div class="bundle-buy">
-          <div class="old">4783 Ч</div>
-          <div class="price">3390 <small>Ч</small></div>
-          <button class="btn btn-primary" data-buy="Комбо «Держава»" data-coin="3390">Купить</button>
+          <div class="old">1813 ₽</div>
+          <div class="price">1290 <small>₽</small></div>
+          <button class="btn btn-primary" data-buy="Комбо «Держава»" data-rub="1290">Купить</button>
         </div>
       </div>
     </div>
@@ -920,16 +1673,28 @@
     <div class="section-head reveal">
       <div class="kicker">Главное правило</div>
       <h2>Без единого <span class="grad-text">рубля</span></h2>
-      <p class="sub">Червонцы выдаются за игру. Это не жест вежливости, а часть расчёта:
-        любую позицию лавки реально закрыть без вложений — просто дольше.</p>
+      <p class="sub">Червонцы работают <b>внутри сервера</b>: ими берут провинцию,
+        платят суточный налог и торгуют между державами. Докупить их можно, но ни одна
+        позиция лавки в них не стоит — а всё, что решает на фронте, и так добывается
+        руками. Вот сколько даёт одна игра, без единого рубля.</p>
     </div>
 
     <div class="free-grid">
+      <div class="free-card free-lead reveal">
+        <div class="fl-l">
+          <div class="fc-sum">90–130 Ч</div>
+          <h3>Скупщик · за вечер</h3>
+        </div>
+        <p>Главный источник, и к нему приходят первым: добытое сдаётся скупщику на спавне.
+          Час-другой в день — 30–50 Ч, вечер живой игры — 90–130. Дальше заработок гаснет
+          нарочно: свыше ~250 Ч в сутки из игрока уже почти ничего не выходит, так что
+          ферма на всю ночь бессмысленна, а вернувшийся после перерыва не отстаёт навсегда.</p>
+      </div>
       <div class="free-card reveal">
-        <div class="fc-sum">840 Ч</div>
+        <div class="fc-sum">1080 Ч</div>
         <h3>Боевой пропуск</h3>
-        <p>Около 280 Ч за круг, три круга за сезон. Достаточно, если играть без надрыва:
-          четыре задания в день.</p>
+        <p>360 Ч за круг — 25 Ч на шести этапах, 60 на 35-м и 150 на последнем; три
+          круга за сезон. Достаточно, если играть без надрыва: четыре задания в день.</p>
       </div>
       <div class="free-card reveal">
         <div class="fc-sum">150–600 Ч</div>
@@ -952,21 +1717,23 @@
         <p>Арт, ролик, гайд, карта, разбор боя в каналах проекта — по решению овнера.</p>
       </div>
       <div class="free-card reveal">
-        <div class="fc-sum">~65% цены</div>
+        <div class="fc-sum">5–380 Ч</div>
         <h3>Продажа призов</h3>
-        <p>Ненужный приз из кейса продаётся обратно червонцами, повтор косметики —
-          автоматически.</p>
+        <p>Ненужный приз из кейса продаётся обратно в игре: от 5 червонцев за обычный
+          до 380 за легендарное.</p>
       </div>
     </div>
 
     <div class="free-total reveal">
       <div>
-        <div class="kicker">Итог сезона без вложений</div>
-        <h3>1300–1700 червонцев</h3>
-        <p>Это «Офицер» на сезон плюс два кейса. Или премиум на три месяца. Или четыре кита
-          второго уровня. Выбор — за игроком, а не за кошельком.</p>
+        <div class="kicker">Сверх обычной игры, за сезон</div>
+        <h3>1400–1900 червонцев</h3>
+        <p>Столько приносят одни только награды — сверх того, что даёт скупщик.
+          Провинция у игрока одна, и на неё этого хватает с запасом: свободная стоит
+          от 10 Ч, самая дорогая земля мира — 600 Ч, суточный налог — от 1 до 36 Ч. Сверху идёт бесплатная линия пропуска: киты, косметика, кейс
+          «Штабные очки» и ресурсы вагонами, все шестьдесят этапов без единого пустого.</p>
       </div>
-      <div class="ft-num">≈1500 <small>Ч</small></div>
+      <div class="ft-num">≈1650 <small>Ч</small></div>
     </div>
   </div>
 </section>
@@ -981,33 +1748,63 @@
     <div class="howto">
       <div class="step reveal">
         <div class="n">01</div>
-        <h3>Пополни казну</h3>
-        <p>Выбери пакет червонцев и оплати. В комментарии к переводу — <b>игровой ник</b>,
+        <h3>Выбери позицию</h3>
+        <p>Нажми «Купить» у нужной карточки. В окне заказа впиши <b>игровой ник</b>,
           точно как в игре, и <b>промокод</b>, если он есть.</p>
       </div>
       <div class="step reveal">
         <div class="n">02</div>
-        <h3>Дождись зачисления</h3>
-        <p>Обычно минуты, в худшем случае — сутки. Скидка по коду и −5% премиума считаются
-          при зачислении. Баланс — командой <code>/казна</code>.</p>
+        <h3>Оплати</h3>
+        <p>Откроется платёжная страница: карта или СБП, скидка кода и −5% премиума уже
+          посчитаны. Карта Казахстана, Беларуси, Узбекистана и других стран СНГ платит
+          в своей валюте — банк пересчитает сам. Карты Украины и Азербайджана касса
+          не принимает: в окне заказа будет ссылка <b>«оплатить за меня»</b> — отправь
+          её тому, у кого карта проходит, а покупка придёт тебе.</p>
       </div>
       <div class="step reveal">
         <div class="n">03</div>
-        <h3>Открой лавку в игре</h3>
-        <p>Команда <code>/лавка</code>: те же разделы, что здесь, с живым балансом
-          и сроками действия.</p>
+        <h3>Забери товар</h3>
+        <p>Покупка ложится на <b>почту сервера</b>: в игре придёт письмо, забрать —
+          <code>/mail</code>. Ещё не заходил на сервер — письмо дождётся первого входа. После «забрать» звания
+          включаются сразу, мандат — без письма, киты ложатся в <code>/посылки</code>,
+          кейсы крутятся в <code>/кейсы</code>.</p>
       </div>
       <div class="step reveal">
         <div class="n">04</div>
-        <h3>Забери товар</h3>
-        <p>Выдача мгновенная. Звания и премиум включаются сразу, киты — по <code>/kit</code>,
-          кейсы крутятся в <code>/лавка</code>.</p>
+        <h3>Сверь чек</h3>
+        <p>Привязан Discord — бот пришлёт чек в личку: номер заказа, что куплено и где
+          забрать. <code>/донат</code> в игре показывает твои звания и до какого числа они действуют.
+          Что-то не так — <a href="tickets.html">обращение</a> с номером заказа.</p>
       </div>
     </div>
+
+    <!-- ============================ ЧЕКИ ============================
+         Список заказов, оформленных в этом браузере. Нужен ровно для одного
+         случая: человек ошибся в нике или оплатил не ту позицию — и ему есть
+         что показать в обращении, кроме слов. Хранится у него же, на сервер
+         отсюда ничего не уходит; пустой список не показывается вовсе. -->
+    <div class="rcpts reveal" id="rcpts" hidden>
+      <div class="rcpts-h">
+        <h3>Мои чеки</h3>
+        <span>Заказы из этого браузера. Список лежит у тебя и никуда не уходит.</span>
+      </div>
+      <div class="rcpts-list" id="rcptsList"></div>
+      <p class="rcpts-note">Ошибся ником или оплатил не ту позицию — скопируй чек и приложи
+        к <a href="tickets.html">обращению</a>: по номеру заказа платёж находится сразу,
+        выдачу поправим. Отдельный чек о списании присылает платёжная служба — на почту
+        или в приложение банка.</p>
+    </div>
+
     <div class="disclaimer reveal">
       <b>Важно:</b> донат — добровольная поддержка проекта, а не покупка услуг; возврат
-      не предусмотрен. Червонец — внутренняя условная единица без денежной стоимости
-      и обратного обмена на рубли; продажа приза из кейса возвращает червонцы, а не деньги.
+      не предусмотрен. Цена везде указана в рублях, вторая строка под ней — справочный
+      пересчёт по курсу ЦБ РФ на указанный день; платёж всё равно проходит в рублях
+      и банк считает по своему курсу. Золотой червонец — внутренняя условная единица
+      сервера без самостоятельной денежной стоимости; пакет червонцев — такая же
+      добровольная поддержка проекта, как и остальные позиции. Обратно на деньги червонец
+      не меняется, вывод и перепродажа за реальные деньги на стороне запрещены правилами,
+      ценником у товара червонец не бывает; продажа приза из кейса возвращает червонцы,
+      а не деньги.
       Составы наборов, шансы и цены могут уточняться до открытия сезона; лавка в игре
       включается вместе с сезоном. Всё содержимое выдаётся из обычных предметов сборки
       и не даёт преимущества, недоступного остальным.
@@ -1015,6 +1812,8 @@
     </div>
   </div>
 </section>
+
+</main>
 
 <footer>
   <div class="container">
@@ -1024,21 +1823,29 @@
         <a href="index.html#season">Сезон 1936</a>
         <a href="index.html#join">Как зайти</a>
         <a href="lands.html">Земли</a>
+        <a href="players.html">Игроки</a>
+        <a href="feed.html">Лента</a>
         <a href="wiki.html">Вики</a>
         <a href="tickets.html">Обращения</a>
         <a href="live.html">Эфиры</a>
         <a href="donate.html">Донат</a>
         <a href="index.html#news">Новости</a>
+        <a href="offer.html">Оферта</a>
       </div>
     </div>
     <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
       и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+    <p class="foot-legal">Продавец: самозанятый, владелец проекта AEGIS. Связь — через <a href="tickets.html">обращения</a> на сайте. <a href="offer.html">Оферта</a>.</p>
   </div>
 </footer>
 
 <!-- ---------------------------- карточка кита ---------------------------- -->
 <div class="modal-wrap" id="kitModal">
-  <div class="modal modal-wide">
+  <!-- Окно поверх страницы должно и называться окном: role="dialog" с
+       aria-modal говорят читалке, что остальная страница сейчас не в счёт, а
+       aria-labelledby даёт окну имя — иначе оно откроется безымянным. Имя
+       берём из заголовка: он всё равно меняется под выбранный набор. -->
+  <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="kmName">
     <button class="m-close" aria-label="Закрыть">✕</button>
     <div class="km-head">
       <div class="km-icons" id="kmIcons"></div>
@@ -1049,10 +1856,10 @@
       </div>
     </div>
 
-    <div class="switch km-switch" id="kmSwitch">
-      <button type="button" data-t="0" class="on">Уровень I</button>
-      <button type="button" data-t="1">Уровень II</button>
-      <button type="button" data-t="2">Уровень III</button>
+    <div class="switch km-switch" id="kmSwitch" role="group" aria-label="Уровень кита">
+      <button type="button" data-t="0" class="on" aria-pressed="true">Уровень I</button>
+      <button type="button" data-t="1" aria-pressed="false">Уровень II</button>
+      <button type="button" data-t="2" aria-pressed="false">Уровень III</button>
     </div>
 
     <ul class="km-items" id="kmItems"></ul>
@@ -1060,18 +1867,18 @@
     <div class="km-foot">
       <div class="km-value">по отдельности <b id="kmParts">—</b> · выгода <b id="kmSave">—</b></div>
       <div class="km-buy">
-        <div class="price"><span id="kmPrice">—</span> <small>Ч</small></div>
-        <button class="btn btn-primary" id="kmBuy" data-buy="Кит" data-coin="0">Купить</button>
+        <div class="price"><span id="kmPrice">—</span> <small>₽</small></div>
+        <button class="btn btn-primary" id="kmBuy" data-buy="Кит" data-rub="0">Купить</button>
       </div>
     </div>
-    <div class="km-note">Брать можно сколько угодно раз: лимита за сезон нет. Выдача
-      по <code>/kit</code> в своей столице и вне войны.</div>
+    <div class="km-note">Брать можно сколько угодно раз. Приходит письмом на <code>/mail</code>,
+      открывается в <code>/посылки</code> — нужны свободные ячейки.</div>
   </div>
 </div>
 
 <!-- ---------------------------- карточка кейса ---------------------------- -->
 <div class="modal-wrap" id="caseModal">
-  <div class="modal modal-wide">
+  <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="cmName">
     <button class="m-close" aria-label="Закрыть">✕</button>
     <div class="cm-head">
       <div class="cm-icon" id="cmIcon"></div>
@@ -1085,21 +1892,25 @@
 
     <div class="cm-controls">
       <div class="cm-row">
-        <span class="cm-lbl">Сколько крутить</span>
-        <div class="switch" id="cmCount">
-          <button type="button" data-n="1" class="on">×1</button>
-          <button type="button" data-n="3">×3</button>
-          <button type="button" data-n="5">×5</button>
-          <button type="button" data-n="10">×10</button>
+        <span class="cm-lbl" id="cmCountLbl">Сколько кейсов</span>
+        <div class="switch" id="cmCount" role="group" aria-labelledby="cmCountLbl">
+          <button type="button" data-n="1" class="on" aria-pressed="true">×1</button>
+          <button type="button" data-n="3" aria-pressed="false">×3</button>
+          <button type="button" data-n="5" aria-pressed="false">×5</button>
+          <button type="button" data-n="10" aria-pressed="false">×10</button>
         </div>
       </div>
       <div class="cm-row">
-        <span class="cm-lbl">Анимация</span>
-        <div class="switch" id="cmSpeed">
-          <button type="button" data-s="slow" class="on">Длинная</button>
-          <button type="button" data-s="fast">Быстрая</button>
+        <span class="cm-lbl" id="cmSpeedLbl">Анимация</span>
+        <div class="switch" id="cmSpeed" role="group" aria-labelledby="cmSpeedLbl">
+          <button type="button" data-s="slow" class="on" aria-pressed="true">Длинная</button>
+          <button type="button" data-s="fast" aria-pressed="false">Быстрая</button>
         </div>
       </div>
+      <!-- Прокрутки на сайте нет (24.09): кнопку и «анимацию» прячет js/shop.js,
+           он же пишет сюда строку для открытой или закрытой лавки. -->
+      <div class="cm-shut" id="cmInGame">Крутится только в игре: купленный кейс приходит
+        письмом, открыть его — /кейсы. Здесь — что внутри и с каким шансом.</div>
       <button class="btn btn-primary" id="cmSpin">Прокрутить ×1</button>
     </div>
 
@@ -1107,6 +1918,7 @@
     <div class="cm-result" id="cmResult"></div>
 
     <div class="cm-drops-h">Что внутри и с каким шансом</div>
+    <div class="cm-odds" id="cmOdds"></div>
     <ul class="cm-drops" id="cmDrops"></ul>
 
     <div class="cm-notes">
@@ -1115,32 +1927,93 @@
     </div>
 
     <div class="cm-foot">
-      <button class="btn btn-dark" id="cmBuy" data-buy="Кейс" data-coin="0">Купить в игре</button>
+      <button class="btn btn-dark" id="cmBuy" data-buy="Кейс" data-rub="0">Купить</button>
     </div>
   </div>
 </div>
 
 <!-- ---------------------------- оформление заказа ---------------------------- -->
 <div class="modal-wrap" id="buyModal">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <button class="m-close" aria-label="Закрыть">✕</button>
     <h3 id="mTitle">Заказ</h3>
     <div class="m-item" id="mItem">—</div>
     <div class="m-price" id="mPrice">—</div>
-    <label for="mNick">Игровой ник</label>
+    <!-- Вход в окне заказа (js/shop.js): покупку без входа не оформить —
+         только так она сама ложится на почту аккаунта, а чек приходит
+         в личку Discord. Поддержке проекта вход не нужен. -->
+    <div class="m-acc" id="mAcc" hidden>
+      <span><span id="mAccLead">Покупка придёт на аккаунт</span> <b id="mAccNick">—</b></span>
+      <button type="button" class="m-out" id="mOut">Сменить</button>
+    </div>
+    <div class="m-login" id="mLogin" hidden>
+      <p class="m-login-lead">Войди тем же ником и паролем, что в лаунчере, — заказ привяжется к твоему аккаунту, и ник набирать не придётся. Если к аккаунту привязан Discord, бот пришлёт чек в личку. Пароль проверяет сервер AEGIS по защищённому соединению, сайт его не запоминает.</p>
+      <label for="mLNick">Игровой ник</label>
+      <input id="mLNick" type="text" maxlength="16" placeholder="Steve1936" autocomplete="username" spellcheck="false">
+      <label for="mLPass">Пароль от лаунчера</label>
+      <input id="mLPass" type="password" maxlength="200" autocomplete="current-password">
+      <button class="btn btn-primary" id="mLGo">Войти</button>
+      <p class="m-login-help" id="mLSay" role="status">Нет аккаунта — <a href="reg.html">заведи его</a>. Забыл пароль — <a href="reg.html#recover">сбрось его сам</a>.</p>
+    </div>
+    <!-- Приписку показывает js/shop.js, когда окно открыто для поддержки:
+         там выдавать нечего, и ник нужен только чтобы знать, кого благодарить. -->
+    <label for="mNick">Игровой ник<span class="m-opt" id="mNickOpt" hidden> — можно не указывать</span></label>
     <input id="mNick" type="text" maxlength="16" placeholder="Steve1936" autocomplete="off">
     <label for="mPromo">Промокод <span class="m-opt">— если есть</span></label>
     <input id="mPromo" type="text" maxlength="24" placeholder="например, ОТКРЫТИЕ" autocomplete="off">
-    <div class="m-steps" id="mSteps">—</div>
+    <!-- Код «для всех», который действует прямо сейчас: служба присылает его
+         в расчёте цены, только если этот аккаунт его ещё не использовал. -->
+    <p class="m-promo-hint" id="mPromoHint" hidden></p>
+    <!-- Чем платить. Карты Украины, Азербайджана и других стран основной
+         способ не берёт — их принимает второй: PayPalych или донат на
+         DonationAlerts. Блок показывает js/shop.js, только когда служба
+         сообщила, что второй способ подключён, и сам переписывает подписи
+         под него; выбор запоминается. -->
+    <fieldset class="m-card" id="mCard" hidden>
+      <legend>Чем платишь</legend>
+      <label class="m-card-opt"><input type="radio" name="mCard" value="ru">
+        <span><b>Карта России или СНГ</b><small>Казахстан, Беларусь, Узбекистан и другие — в своей валюте, банк пересчитает сам. Из России можно и через СБП.</small></span></label>
+      <label class="m-card-opt"><input type="radio" name="mCard" value="world">
+        <span><b>Карта Украины, Азербайджана или другой страны</b><small>Через сервис PayPalych. Сумма в рублях — банк пересчитает в твою валюту.</small></span></label>
+    </fieldset>
+    <!-- Здесь идёт вся жизнь заказа: номер, ожидание оплаты, подтверждение и
+         отказ. Текст меняется сам, без нажатий, поэтому строка должна себя
+         проговаривать — иначе читалка молчит и человек ждёт вслепую. -->
+    <div class="m-steps" id="mSteps" role="status">—</div>
+    <!-- Донат на DonationAlerts: сумма и номер заказа, которые надо вписать
+         на их странице (подставить снаружи их нельзя). Заполняет js/shop.js,
+         когда заказ заведён и платят картой другой страны. -->
+    <div class="m-friend m-da" id="mDa" hidden></div>
     <button class="btn btn-primary" id="mGo">Перейти к оплате</button>
-    <button class="btn btn-dark" id="mAlt">Уже есть червонцы — беру в игре</button>
+    <!-- Чек. Появляется, как только у заказа есть номер, и остаётся после
+         оплаты: это единственное, с чем можно прийти в обращения, если
+         ошибся ником или оплатил не ту позицию. js/shop.js кладёт в буфер
+         номер, позицию, сумму, ник и время. -->
+    <button class="btn btn-dark" id="mCopy" hidden>Скопировать чек</button>
+    <!-- Что будет, если что-то пойдёт не так, — строкой под кнопкой, до оплаты.
+         Текст и продавца со ссылкой на оферту пишет js/shop.js (обещание то же,
+         что в оферте: не пришло на почту — вернём). -->
+    <p class="m-sure" id="mSure" hidden></p>
+    <!-- «Оплатить за меня»: ссылка открывает этот же заказ у другого
+         человека — он платит без входа, покупка приходит сюда. js/shop.js
+         показывает блок, когда у заказа есть номер; у поддержки его нет. -->
+    <div class="m-friend" id="mFriend" hidden>
+      <p><b>Заплатит кто-то другой?</b> Отправь ему эту ссылку — он оплатит без входа,
+        а покупка придёт тебе.</p>
+      <div class="m-friend-row">
+        <input id="mFLink" type="text" readonly aria-label="Ссылка «оплатить за меня»">
+        <button type="button" class="m-out" id="mFCopy">Скопировать</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<script src="js/config.js"></script>
-<script src="js/api.js"></script>
+<script src="js/api.js?v=20260925"></script>
 <script src="js/main.js"></script>
+<script src="js/money.js"></script>
 <script src="js/shop.js"></script>
+<script src="js/shop-closed.js"></script>
+<script src="js/shop-soon.js"></script>
 <script src="js/aegis3d.js"></script>
 </body>
 </html>

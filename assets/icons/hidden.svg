@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Замок вместо иконки: модель показываем на открытии сервера. -->
+  <path d="M8 10.2V7.6a4 4 0 0 1 8 0v2.6" stroke="#8b8780" stroke-width="1.7"
+        stroke-linecap="round"/>
+  <rect x="4.6" y="10.2" width="14.8" height="9.6" rx="2.4" fill="#2a2930"
+        stroke="#8b8780" stroke-width="1.5"/>
+  <circle cx="12" cy="14.1" r="1.45" fill="#F58620"/>
+  <path d="M12 15.3v2.1" stroke="#F58620" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

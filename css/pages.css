@@ -19,6 +19,13 @@
 .crumbs a { color: var(--muted); }
 .crumbs a:hover { color: var(--gold); }
 .crumbs span { opacity: .5; }
+@media (max-width: 760px) {
+  /* «Главная» в крошках — 21 px в высоту, а это единственный путь назад в
+     шапке страницы. Поле сверху и снизу даёт 39 px нажимаемых; отрицательный
+     внешний отступ снимает прибавку, чтобы строка крошек не разъехалась. */
+  .crumbs { margin: -9px 0 5px; }
+  .crumbs a { padding: 9px 0; }
+}
 
 /* Плашка «пока не работает» — честная, а не спрятанная */
 .nbox {
@@ -33,6 +40,24 @@
   line-height: 1.6;
   box-shadow: inset 3px 0 0 var(--or);
 }
+/* Плашка, стоящая отдельным блоком страницы (а не внутри карточки, списка или
+   формы), своих отступов не имела: ритм страницы держит .cab-block, у которого
+   margin-top 34px и ничего снизу. Из-за этого на «Землях» кнопка «Показать ещё»
+   упиралась прямо в текст плашки — между ними было ноль пикселей. Отступ даём
+   по тому же правилу, что у блоков: сверху 34, снизу ноль, — иначе следующий
+   .cab-block добавил бы свой и разрыв стал бы вдвое шире соседних. */
+/* Впритык к соседу плашка не ложится нигде — овнер это запрещал, а 18.09.2026
+   «Привяжи Discord» в кабинете всё равно легла прямо на плитки (и записка
+   экзамена — под ними). Поэтому зазор общий, а не заплаткой под каждую пару:
+   18 с обеих сторон — заметно больше 12 между плитками, иначе плашка читалась
+   бы ещё одной плиткой. В обычном потоке поля схлопываются, так что рядом с
+   .cab-block (34 сверху) разрыв не удваивается. Первая и последняя в своём
+   контейнере плашка поля не получает — иначе раздула бы карточку или форму.
+   Правило стоит ДО .container > .nbox: у них одна специфичность, 34 выигрывает. */
+.nbox:not(:first-child) { margin-top: 18px; }
+.nbox:not(:last-child) { margin-bottom: 18px; }
+.container > .nbox { margin-top: 34px; }
+
 .nbox.warn { box-shadow: inset 3px 0 0 var(--red); }
 .nbox.ok { box-shadow: inset 3px 0 0 #58C271; }
 .nbox b { color: var(--gold); }
@@ -43,6 +68,34 @@
   margin-top: 1px;
   opacity: .9;
 }
+
+/* Код для Discord в кабинете: код целиком одной строкой с переносом где угодно —
+   он длинный (≈90 знаков), а на телефоне страница не должна ехать вбок. */
+.ds-box { margin-top: 14px; }
+.ds-box > div { min-width: 0; flex: 1; }
+.ds-code {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 10px 0 4px;
+}
+.ds-code code {
+  flex: 1 1 260px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--ink);
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-all;
+  user-select: all;
+}
+.ds-steps { margin: 10px 0 0; padding-left: 20px; }
+.ds-steps li { margin: 3px 0; }
+.ds-note { margin-top: 8px; opacity: .8; font-size: 13.5px; }
 
 /* Пустое состояние: список пуст, и это нормально */
 .empty {
@@ -135,6 +188,11 @@
   transition: box-shadow .18s ease, background .18s ease;
 }
 .search input::placeholder { color: #6f6c66; }
+/* У каждого поля поиска есть свой крестик .s-clear. Chrome и Safari рисуют
+   поверх него ещё и собственный — получалось два крестика подряд, а в Firefox
+   был один. Прячем браузерный: тогда вид одинаковый везде. */
+.search input::-webkit-search-cancel-button,
+.search input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
 .search input:focus {
   background: #26252b;
   box-shadow: 0 0 0 2px rgba(245, 134, 32, .55);
@@ -183,7 +241,11 @@
   top: 92px;
   max-height: calc(100vh - 112px);
   overflow-y: auto;
-  padding-right: 6px;
+  /* Лента прокрутки этой колонки рисуется ВНУТРИ, в правых её пикселях: при
+     padding-right 6px она съедала отступ целиком и шла впритык к плашкам
+     разделов. Держим 12px — столько остаётся между плашкой и лентой, а не
+     между плашкой и краем колонки. */
+  padding-right: 12px;
   scrollbar-width: thin;
   scrollbar-color: #33323a transparent;
 }
@@ -191,16 +253,28 @@
 .doc-side::-webkit-scrollbar-thumb { background: #33323a; border-radius: 3px; }
 
 .doc-nav { margin-top: 20px; }
-.doc-nav h5 {
+/* Здесь и ещё в пяти местах этого файла стоял вписанный руками серый #74716c —
+   заголовки разделов в боковом меню вики, подписи в оглавлении, шапки колонок
+   обязанностей, разделы обращений, метка набора на плитке лавки и счётчик в
+   меню кабинета. На панелях это 3,7–4,0:1 при кегле 11,5–12, то есть ниже
+   порога читаемости, а никакого отдельного оттенка тут и не задумывалось: это
+   ровно третья ступень текста, у которой на сайте есть свой цвет. Переведено на
+   --steel, чтобы такие подписи чинились в одном месте, а не в шести. */
+/* Подписи групп в боковом меню были h5 и стояли в разметке ПЕРЕД заголовком
+   страницы — читалка выдавала «Начало, Правила, Игра, Команда», а потом уже
+   название статьи, и список заголовков переставал быть оглавлением текста.
+   Это подписи навигации, а не текста, поэтому они простые блоки, а сами nav и
+   aside подписаны через aria-label — landmark всё равно называется. */
+.doc-nav .dn-t {
   font-family: var(--f-disp);
   font-weight: 800;
   font-size: 11.5px;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: #74716c;
+  color: var(--steel);
   margin: 22px 0 9px;
 }
-.doc-nav h5:first-child { margin-top: 0; }
+.doc-nav .dn-t:first-child { margin-top: 0; }
 .doc-nav a {
   display: flex;
   align-items: center;
@@ -213,6 +287,13 @@
   line-height: 1.35;
   transition: background .15s ease, opacity .15s ease, color .15s ease;
 }
+/* Слово овнера 17.09.2026: «когда выбрал одну подкатегорию и навелся на
+   соседнюю, то у них эти формы прям впритык к друг другу». Плашки стояли
+   без зазора: пока подсвечена одна, границы не видно, а как только рядом
+   загорается вторая — два прямоугольника слипаются в один. Разводим их
+   на четыре пикселя; отступ только между соседними ссылками, чтобы под
+   подписью раздела ничего лишнего не появилось. */
+.doc-nav a + a { margin-top: 4px; }
 .doc-nav a:hover { background: var(--panel-2); opacity: 1; }
 .doc-nav a.active {
   background: var(--panel-3);
@@ -222,6 +303,182 @@
 }
 .doc-nav a .dn-ic { width: 17px; height: 17px; flex: none; opacity: .75; }
 .doc-nav a.active .dn-ic { opacity: 1; }
+
+/* ================== ЗНАЧКИ БОКОВОЙ: наведение ==================
+   Слово овнера 17.09.2026: «сделай еще значки у подкатегорий слева в вики
+   анимированным когда наводишься на них. Каждый по своему смыслу, по смыслу
+   значка пусть будет анимирован».
+
+   Поэтому общей тряски тут нет: у каждого значка своё движение, и оно про то,
+   что значок означает. Монета переворачивается, карта разворачивается, стрелки
+   обмена расходятся, сумка качается, график дорисовывается и ставит стрелку,
+   щит держит удар, у страницы отгибается угол, правила дописываются строкой,
+   в чате правил сообщения прилетают одно за другим, ящик сборки поворачивается
+   боком, вопрос подпрыгивает точкой, дежурный кивает.
+
+   Движение проходит ОДИН раз за наведение и длится меньше секунды: это
+   подсказка «ты сюда попал», а не мигалка в углу экрана. Куски значка —
+   .p1, .p2, … в том порядке, в каком они перечислены в js/wiki.js.
+
+   Заводит движение не :hover, а метка .ani — её ставит js/wiki.js на входе
+   курсора, а снимает сам значок, когда всё доиграл. Раньше тут стоял :hover,
+   и стоило увести курсор на середине движения, как рисунок бросал позу и
+   вставал на место одним кадром — овнер назвал это подёргиванием. Теперь
+   курсор можно уводить когда угодно: начатое движение доходит до конца. */
+.doc-nav a .dn-ic path { transform-box: fill-box; transform-origin: 50% 50%; }
+
+/* страница начала — отгибается угол */
+@keyframes dni-fold { 40% { transform: rotate(-16deg) translate(-.5px, .4px); } }
+.doc-nav a.ani .dn-ic[data-i="start"] .p2 {
+  transform-origin: 0% 100%;
+  animation: dni-fold .5s ease-in-out;
+}
+
+/* календарь сезона — дужки качнулись, верхняя линия прочертилась */
+@keyframes dni-tick { 30% { transform: translateY(-1.6px); } 65% { transform: translateY(0); } }
+@keyframes dni-line {
+  from { stroke-dasharray: 16; stroke-dashoffset: 16; }
+  to   { stroke-dasharray: 16; stroke-dashoffset: 0; }
+}
+.doc-nav a.ani .dn-ic[data-i="season"] .p2 { animation: dni-line .45s ease-out .08s both; }
+.doc-nav a.ani .dn-ic[data-i="season"] .p3 { animation: dni-tick .45s ease-in-out; }
+.doc-nav a.ani .dn-ic[data-i="season"] .p4 { animation: dni-tick .45s ease-in-out .07s; }
+
+/* правила игры — строки дописываются */
+.doc-nav a.ani .dn-ic[data-i="rules-game"] .p2 { animation: dni-line .3s ease-out both; }
+.doc-nav a.ani .dn-ic[data-i="rules-game"] .p3 { animation: dni-line .3s ease-out .14s both; }
+
+/* правила дискорда — сообщения прилетают одно за другим */
+@keyframes dni-msg {
+  from { opacity: 0; transform: translateX(-3px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.doc-nav a.ani .dn-ic[data-i="rules-discord"] .p2 { animation: dni-msg .26s ease-out both; }
+.doc-nav a.ani .dn-ic[data-i="rules-discord"] .p3 { animation: dni-msg .26s ease-out .16s both; }
+
+/* экономика — монета переворачивается */
+@keyframes dni-flip { to { transform: rotateY(360deg); } }
+.doc-nav a.ani .dn-ic[data-i="economy"] { animation: dni-flip .7s ease-in-out; }
+
+/* заработок — линия дорисовывается, стрелка встаёт на место */
+@keyframes dni-draw {
+  from { stroke-dasharray: 48; stroke-dashoffset: 48; }
+  to   { stroke-dasharray: 48; stroke-dashoffset: 0; }
+}
+@keyframes dni-pop {
+  from { opacity: 0; transform: scale(.4); }
+  70%  { opacity: 1; transform: scale(1.12); }
+  to   { transform: scale(1); }
+}
+.doc-nav a.ani .dn-ic[data-i="earn"] .p1 { animation: dni-draw .42s ease-out both; }
+.doc-nav a.ani .dn-ic[data-i="earn"] .p2 {
+  transform-origin: 0% 100%;
+  animation: dni-pop .3s ease-out .36s both;
+}
+
+/* лавка — сумку качнули, будто её несут */
+@keyframes dni-swing {
+  25% { transform: rotate(7deg); }
+  60% { transform: rotate(-5deg); }
+  to  { transform: rotate(0); }
+}
+.doc-nav a.ani .dn-ic[data-i="market"] {
+  transform-origin: 50% 12%;
+  animation: dni-swing .6s ease-in-out;
+}
+
+/* обмен — стрелки разъезжаются каждая в свою сторону */
+@keyframes dni-swap-r { 40% { transform: translateX(2.4px); } to { transform: translateX(0); } }
+@keyframes dni-swap-l { 40% { transform: translateX(-2.4px); } to { transform: translateX(0); } }
+.doc-nav a.ani .dn-ic[data-i="trade"] .p1 { animation: dni-swap-r .5s ease-in-out; }
+.doc-nav a.ani .dn-ic[data-i="trade"] .p2 { animation: dni-swap-l .5s ease-in-out; }
+
+/* державы — щит принимает удар и держит */
+@keyframes dni-brace {
+  30% { transform: scale(.9); }
+  65% { transform: scale(1.06); }
+  to  { transform: scale(1); }
+}
+.doc-nav a.ani .dn-ic[data-i="states"] { animation: dni-brace .5s ease-out; }
+
+/* земля — карта разворачивается, сгибы проступают */
+@keyframes dni-unfold {
+  from { transform: scaleX(.55); }
+  65%  { transform: scaleX(1.05); }
+  to   { transform: scaleX(1); }
+}
+@keyframes dni-crease { from { opacity: .2; } to { opacity: 1; } }
+.doc-nav a.ani .dn-ic[data-i="land"] { animation: dni-unfold .5s ease-out; }
+.doc-nav a.ani .dn-ic[data-i="land"] .p2,
+.doc-nav a.ani .dn-ic[data-i="land"] .p3 { animation: dni-crease .5s ease-out; }
+
+/* сборка — ящик поворачивается боком */
+@keyframes dni-turn {
+  35% { transform: rotateY(-38deg); }
+  75% { transform: rotateY(22deg); }
+  to  { transform: rotateY(0); }
+}
+.doc-nav a.ani .dn-ic[data-i="modpack"] { animation: dni-turn .65s ease-in-out; }
+
+/* частые вопросы — точка подпрыгивает, крючок клонится */
+@keyframes dni-ask-dot {
+  30% { transform: translateY(-2.2px); }
+  60% { transform: translateY(0); }
+  78% { transform: translateY(-.8px); }
+  to  { transform: translateY(0); }
+}
+@keyframes dni-ask-hook {
+  35% { transform: rotate(-9deg); }
+  70% { transform: rotate(5deg); }
+  to  { transform: rotate(0); }
+}
+.doc-nav a.ani .dn-ic[data-i="faq"] .p1 { animation: dni-ask-dot .55s ease-in-out; }
+.doc-nav a.ani .dn-ic[data-i="faq"] .p2 {
+  transform-origin: 50% 100%;
+  animation: dni-ask-hook .55s ease-in-out;
+}
+
+/* команда — дежурный кивает */
+@keyframes dni-nod {
+  30% { transform: translateY(1.4px) rotate(-5deg); }
+  65% { transform: translateY(-.6px) rotate(3deg); }
+  to  { transform: none; }
+}
+.doc-nav a.ani .dn-ic[data-i="duties"] .p1 {
+  transform-origin: 50% 100%;
+  animation: dni-nod .5s ease-in-out;
+}
+
+/* карта мира — планета поворачивается. Крутить весь значок нельзя: круг
+   поехал бы вместе с ним, а поворот глобуса видно как раз по меридианам.
+   Поэтому сжимаются только они, каждый к своему краю — к линии полюсов. */
+@keyframes dni-globe { 50% { transform: scaleX(.12); } to { transform: scaleX(1); } }
+.doc-nav a .dn-ic[data-i="map"] .p3 { transform-origin: 0 50%; }
+.doc-nav a .dn-ic[data-i="map"] .p4 { transform-origin: 100% 50%; }
+.doc-nav a.ani .dn-ic[data-i="map"] .p3,
+.doc-nav a.ani .dn-ic[data-i="map"] .p4 { animation: dni-globe .7s ease-in-out; }
+
+/* вера — огонь под сводом качается. Свод и опора стоят: движется то, что
+   и должно двигаться. */
+@keyframes dni-flame {
+  35% { transform: scaleY(1.3) scaleX(.9); }
+  70% { transform: scaleY(.94) scaleX(1.04); }
+  to  { transform: none; }
+}
+.doc-nav a.ani .dn-ic[data-i="faith"] .p3 {
+  transform-origin: 50% 100%;
+  animation: dni-flame .6s ease-in-out;
+}
+
+/* мобы и фермы — сетка чанков прочерчивается, как по F3 + G */
+.doc-nav a.ani .dn-ic[data-i="mobs"] .p2 { animation: dni-line .3s ease-out both; }
+.doc-nav a.ani .dn-ic[data-i="mobs"] .p3 { animation: dni-line .3s ease-out .12s both; }
+
+/* Кому движение мешает — тому его нет: системная настройка, не наша. */
+@media (prefers-reduced-motion: reduce) {
+  .doc-nav a.ani .dn-ic,
+  .doc-nav a.ani .dn-ic path { animation: none !important; }
+}
 
 /* результаты поиска вместо списка страниц */
 .doc-found { margin-top: 18px; }
@@ -272,13 +529,13 @@
   scrollbar-width: none;
 }
 .doc-toc::-webkit-scrollbar { display: none; }
-.doc-toc h5 {
+.doc-toc .dn-t {
   font-family: var(--f-disp);
   font-weight: 800;
   font-size: 11.5px;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: #74716c;
+  color: var(--steel);
   margin-bottom: 12px;
 }
 .doc-toc a {
@@ -298,6 +555,21 @@
 /* ====================================================== вики: текст */
 
 .doc-body { min-width: 0; padding-bottom: 40px; }
+/* Слово овнера 17.09.2026: «переход между категориями должен плавно
+   осуществляться, а не резко». Текст и оглавление гаснут, текст при этом
+   чуть съезжает вниз — как будто страница уступает место следующей. Пока
+   их не видно, js/wiki.js подменяет разметку и рывком возвращает окно к
+   началу: сам прыжок наверх на экран не попадает.
+   Метку .is-swap ставит и снимает js/wiki.js; в «спокойном режиме» он её
+   вообще не ставит, но переход снимаем и здесь — на случай, если разметку
+   поменяет что-то ещё. */
+.doc-body, .doc-toc { transition: opacity .16s ease, transform .16s ease; }
+.doc-body.is-swap { opacity: 0; transform: translateY(8px); }
+.doc-toc.is-swap { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .doc-body, .doc-toc { transition: none; }
+}
+
 .doc-body > .dh { margin-bottom: 28px; }
 .doc-body .dh h1 {
   font-family: var(--f-disp);
@@ -332,7 +604,44 @@
   font-family: var(--f-text);
   transition: opacity .15s ease;
 }
-.doc-h2:hover .anchor { opacity: 1; }
+.doc-h2:hover .anchor,
+.doc-h2 .anchor:focus-visible { opacity: 1; }
+/* На телефоне наведения не бывает — значок «ссылка на раздел» там не появлялся
+   вообще. При грубом указателе показываем его сразу, приглушённым.
+   Раз он виден, в него будут тыкать, а сама решётка — 11 пикселей шириной:
+   пальцем в неё не попасть. Расширяем область нажатия полями и снимаем их
+   отрицательным отступом, чтобы зазор до заголовка остался прежним. */
+@media (hover: none) {
+  .doc-h2 .anchor {
+    opacity: .5;
+    padding: 6px 8px;
+    margin: -6px -8px;
+  }
+}
+/* Заголовок — гибкая строка, и решётка в ней последняя. Пока текст влезал в одну
+   строку, всё было ровно; на телефоне длинные заголовки («Что нужно, чтобы
+   играть», «Как получить страну») переносятся, и решётку выдавливало за правый
+   край колонки — она вылезала из карточки на 3-8 пикселей. Переносить её нечем:
+   wiki.js клеит ссылку к тексту без пробела, а значит браузеру негде разорвать
+   строку. На узком экране убираем гибкую раскладку и прибиваем решётку к верхнему
+   правому углу заголовка, а место под неё держим полем справа — текст в неё не
+   упирается, куда бы ни перенёсся. */
+@media (max-width: 760px) {
+  .doc-h2 {
+    display: block;
+    position: relative;
+    padding-right: 32px;
+  }
+  .doc-h2 .anchor {
+    position: absolute;
+    right: 0;
+    top: -5px;
+    margin: 0;
+    /* Поле слева, а не по кругу: нажимаемая область получается 39×39, но наружу
+       за край колонки не выходит ни на пиксель. */
+    padding: 9px 2px 9px 26px;
+  }
+}
 
 .doc-p {
   font-size: 15.5px;
@@ -402,9 +711,27 @@
   border-radius: 13px;
   padding: 15px 17px;
   margin-bottom: 9px;
-  transition: background .16s ease, transform .16s ease;
+  position: relative;
+  overflow: hidden;
+  transition: background .16s ease;
 }
-.rule:hover { background: var(--panel-2); transform: translateX(2px); }
+/* Пункт правил не съезжает вбок под курсором — вместо сдвига слева
+   загорается полоска акцента. Строк много, и любое движение в списке
+   читается как дрожь. */
+.rule::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--grad);
+  transform: scaleY(0);
+  transform-origin: center top;
+  transition: transform .18s ease;
+}
+.rule:hover { background: var(--panel-2); }
+.rule:hover::before { transform: scaleY(1); }
 .rule .r-n {
   grid-row: 1 / span 2;
   font-family: var(--f-disp);
@@ -432,6 +759,26 @@
   color: #b06060;
   font-weight: 500;
 }
+/* подпункт 1.3.1 — под своим пунктом, с отступом и мельче */
+.rule.rule-sub {
+  grid-template-columns: 44px minmax(0, 1fr);
+  margin-left: 34px;
+  padding: 11px 15px;
+}
+.rule.rule-sub .r-n { font-size: 12px; }
+.rule.rule-sub .r-t { font-size: 14px; }
+/* «Пример» и «Исключения» внутри пункта */
+.rule .r-x {
+  margin-top: 8px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #a9a59d;
+  background: rgba(255, 255, 255, .035);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+.rule .r-x .r-xl { font-weight: 600; color: #e2ded6; }
+.rule .r-x-ex .r-xl { color: #9fd3a8; }
 
 /* должности */
 .duty {
@@ -459,7 +806,7 @@
   font-size: 11.5px;
   letter-spacing: .13em;
   text-transform: uppercase;
-  color: #74716c;
+  color: var(--steel);
   margin-bottom: 8px;
 }
 .duty-cols .doc-li { font-size: 14.5px; }
@@ -549,9 +896,14 @@
 .qa-wrap {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows .28s cubic-bezier(.2, .8, .3, 1);
+  /* Свёрнутый ответ имеет нулевую высоту, но остаётся на странице: без
+     visibility табуляция проваливалась в двадцать восемь невидимых ссылок
+     внутри закрытых вопросов. Переключается скачком в конце перехода —
+     раскрытие и сворачивание остаются плавными. */
+  visibility: hidden;
+  transition: grid-template-rows .28s cubic-bezier(.2, .8, .3, 1), visibility .28s;
 }
-.qa.open .qa-wrap { grid-template-rows: 1fr; }
+.qa.open .qa-wrap { grid-template-rows: 1fr; visibility: visible; }
 .qa-a { overflow: hidden; }
 .qa-a > div { padding: 0 20px 19px; }
 .qa-a .doc-p, .qa-a .doc-li { font-size: 15px; }
@@ -590,6 +942,10 @@
   margin: 30px 0 12px;
 }
 .tk-gt:first-of-type { margin-top: 4px; }
+/* ...но если перед ним стоит вступительная плашка, прижимать заголовок не к
+   чему: 4px превращают их в одно пятно. Даём тот же отступ, что между кучками
+   (30px) — иначе первая кучка выглядит частью плашки. */
+.nbox + .tk-gt { margin-top: 30px; }
 
 .tk-grid {
   display: grid;
@@ -608,16 +964,92 @@
   cursor: pointer;
   font-family: var(--f-text);
   color: var(--ink);
-  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+  transition: background .18s ease, box-shadow .18s ease;
 }
-.tk-card:hover {
+.tk-card:hover,
+.tk-card:focus-visible {
   background: var(--panel-2);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, .35);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .35),
+              inset 0 0 0 1px rgba(245, 134, 32, .34);
 }
+/* С клавиатуры карточка выглядела ровно как под курсором — тонкая рамка внутри
+   и тень. Понять, где сейчас стоит фокус, по ней нельзя: полсотни тем, и все
+   одинаковые. Ставим ту же сплошную рамку в два пикселя, что у плиток китов и
+   кейсов, — по сайту это уже привычный знак «ты здесь». */
+.tk-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--or), 0 12px 26px rgba(0, 0, 0, .35);
+}
+/* Значок темы рисуется своим пером (js/tickets.js), а не шрифтом эмодзи.
+   Размер задаётся кеглем — так же, как раньше эмодзи, поэтому правила ниже
+   про 22 и 30 пикселей работают без изменений. */
+.tk-e { display: block; color: var(--or); }
+.tk-e svg { width: 1em; height: 1em; display: block; }
 .tk-card .tk-e { font-size: 22px; line-height: 1; }
 .tk-card h3 { font-family: var(--f-disp); font-weight: 800; font-size: 16px; }
 .tk-card p { font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+
+/* Тема, которая ещё не открылась (js/tickets.js, CLOSED). Гасим её тише, чем
+   ссылку под курсором: карточка читается, но не зовёт — ни руки-курсора, ни
+   подсветки, ни фокуса с клавиатуры (нажимать нечего). */
+.tk-card.off { cursor: default; }
+.tk-card.off:hover { background: var(--panel); box-shadow: none; }
+.tk-card.off .tk-e { color: var(--muted); }
+.tk-card.off h3 { color: var(--muted); }
+.tk-card.off p { opacity: .8; }
+.tk-card.off .pill { align-self: flex-start; margin-top: 2px; }
+
+/* Форма и колонка-подсказка. Колонка держится у верха экрана, пока листают
+   длинную форму: «когда ответят» должно быть видно в момент сомнения, а не
+   только если долистать до низа. */
+.tk-two {
+  display: grid;
+  /* Левая колонка забирает остаток, а не ровно 720px: иначе справа от
+     подсказки оставалась ничейная полоса в сотню пикселей — читается как
+     недоделка. Саму форму держит узкой .tk-form. */
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 290px);
+  gap: 40px;
+  align-items: start;
+}
+.tk-side {
+  position: sticky;
+  top: 92px;
+  display: grid;
+  gap: 14px;
+}
+.tk-sc {
+  background: var(--panel-2);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.tk-sc h3 {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 11.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--steel);
+  margin-bottom: 12px;
+}
+.tk-sc ul { display: grid; gap: 10px; list-style: none; }
+.tk-sc li {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  padding-left: 14px;
+  position: relative;
+}
+.tk-sc li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--or);
+}
+.tk-sc b { color: var(--ink); font-weight: 700; }
 
 .tk-form { max-width: 720px; }
 .tk-form .tk-head {
@@ -638,6 +1070,62 @@
   color: #c9c5bd;
   margin-bottom: 24px;
 }
+.tk-form .tk-long p { margin: 0 0 10px; }
+.tk-form .tk-long p:last-child { margin-bottom: 0; }
+.tk-form .tk-long b { color: var(--ink); font-weight: 600; }
+
+/* Выбор из готовых вариантов (стажировка: какая администрация). Сам кружок
+   радио спрятан, но остается в строю: Tab и стрелки ходят по вариантам как
+   обычно, а видно это по рамке карточки. Селекторы длиннее правила
+   «label:has(input[type=radio])» ниже, иначе оно центрует текст карточки. */
+.tk-pick {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 560px) { .tk-pick { grid-template-columns: 1fr; } }
+.field .tk-pick label.tk-pk {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  min-height: 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--panel-3);
+  font-weight: 500;
+  cursor: pointer;
+  transition: box-shadow .18s ease, background .18s ease;
+}
+.field .tk-pick label.tk-pk:hover { background: #26252b; }
+.field .tk-pick .tk-pk input[type=radio] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.tk-pk::before {
+  content: '';
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px #5a5751;
+  transition: box-shadow .18s ease;
+}
+.tk-pk-t { display: flex; flex-direction: column; gap: 4px; }
+.tk-pk-t b { font-size: 15px; font-weight: 700; color: var(--ink); }
+.tk-pk-t span { font-size: 13px; line-height: 1.5; font-weight: 400; color: var(--muted); }
+.field .tk-pick label.tk-pk:has(input:checked) {
+  background: #26252b;
+  box-shadow: 0 0 0 2px rgba(245, 134, 32, .55);
+}
+.tk-pk:has(input:checked)::before { box-shadow: inset 0 0 0 5px var(--or); }
+.field .tk-pick label.tk-pk:has(input:focus-visible) { box-shadow: 0 0 0 2px rgba(245, 134, 32, .9); }
+.field.bad .tk-pick label.tk-pk { box-shadow: 0 0 0 2px rgba(255, 64, 64, .6); }
 
 .field { margin-bottom: 18px; }
 .field label {
@@ -677,6 +1165,34 @@
   box-shadow: 0 0 0 2px rgba(245, 134, 32, .55);
 }
 .field.bad input, .field.bad textarea { box-shadow: 0 0 0 2px rgba(255, 64, 64, .6); }
+
+/* Галочка — не поле ввода. Правило выше тянет любой input во всю строку, и
+   квадратик оставался у левого края, а подпись уезжала на полстроки вправо:
+   выглядело сломанной вёрсткой. Здесь ширина своя, строка выравнивается по
+   центру (по базовой линии квадратик сползал вниз), а сама строка сделана
+   нормальной целью для пальца — нажимается вся, а не квадратик 13 пикселей. */
+.field input[type=checkbox], .field input[type=radio] {
+  width: auto;
+  flex: none;
+  margin: 0;
+}
+.field label:has(input[type=checkbox]), .field label:has(input[type=radio]) {
+  align-items: center;
+  min-height: 36px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Safari на айфоне сам увеличивает страницу, когда палец встаёт в поле со
+   шрифтом мельче 16px. Человек нажимает «Ник» — страница прыгает, разъезжается
+   вширь, и сводить её обратно приходится пальцами; на вход в кабинет и на
+   поиск обращения это ложится хуже всего, там это первое действие. Шестнадцать
+   пикселей — порог самого Safari, меньше нельзя. Трогаем только сенсорные
+   экраны: на мониторе размеры полей остаются прежними. */
+@media (pointer: coarse) {
+  .field input, .field textarea, .field select,
+  .search input { font-size: 16px; }
+}
 .field .err {
   display: none;
   font-size: 12.5px;
@@ -753,9 +1269,14 @@
 .lv-cta p + p { margin-top: 10px; }
 .lv-cta a { color: var(--gold); }
 
+/* min(280px, 100%), а не просто 280px: minmax не умеет быть уже своего минимума,
+   и на телефоне, где колонка под контейнером всего 327 пикселей, карточка вылезала
+   за правый край — слева отступ 24, справа ноль. Ограничение сотней процентов
+   разрешает колонке сжаться до ширины контейнера, а на широком экране ничего
+   не меняет. */
 .live-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 16px;
 }
 .live-card {
@@ -763,9 +1284,16 @@
   background: var(--panel);
   border-radius: 16px;
   overflow: hidden;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: background .2s ease, box-shadow .2s ease;
 }
-.live-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(0, 0, 0, .42); }
+/* Карточка эфира стоит на месте, приближается только само превью — так
+   заметно, что она «живая», и курсор с неё не соскакивает. */
+.live-card:hover,
+.live-card:focus-visible {
+  background: var(--panel-2);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .42),
+              inset 0 0 0 1px rgba(245, 134, 32, .3);
+}
 .live-thumb {
   position: relative;
   aspect-ratio: 16 / 9;
@@ -778,6 +1306,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* как у .shot img на главной: явный покой и свой слой, иначе картинка
+     дёргается на последнем кадре возврата */
+  transform: scale(1);
+  will-change: transform;
   transition: transform .45s ease;
 }
 .live-card:hover .live-thumb img { transform: scale(1.04); }
@@ -873,6 +1405,64 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
   align-items: center;
 }
 
+/* Ряд каналов без превью — строкой, а не сеткой пустых прямоугольников.
+   auto-fit вместо auto-fill: пустые колонки схлопываются, и один канал
+   занимает всю ширину строкой, а не жмётся в угол широкой пустой сетки.
+   Разметку компактной карточки собирает live.js. */
+.live-grid.slim { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); }
+.live-card.slim {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+.live-card.slim .lv-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 19px;
+  color: rgba(255, 255, 255, .22);
+  background: linear-gradient(140deg, var(--panel-2), var(--panel-3));
+}
+.live-card.slim .live-meta { padding: 0; }
+.live-card.slim .live-meta h3 { margin-bottom: 5px; }
+.live-card.slim .lv-side {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+}
+.live-card.slim .l-plat,
+.live-card.slim .lv-st {
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: var(--panel-3);
+  color: var(--muted);
+}
+.live-card.slim .lv-st { font-weight: 600; }
+/* На узком экране состояние и площадка не помещаются третьей колонкой —
+   уводим их под название, к имени канала. */
+@media (max-width: 560px) {
+  .live-card.slim { grid-template-columns: 46px minmax(0, 1fr); }
+  .live-card.slim .lv-side { grid-column: 2; margin-top: 2px; }
+  /* Третьей колонкой эти две плашки жались по ширине, и 11.5 пикселя были платой
+     за место. Под названием места хватает, а «не в эфире» — это единственное, что
+     на странице вообще надо прочитать, когда никто не стримит. */
+  .live-card.slim .l-plat,
+  .live-card.slim .lv-st { font-size: 12.5px; height: 26px; }
+}
+
 .live-tabs {
   display: flex;
   gap: 8px;
@@ -920,8 +1510,8 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
   background: var(--panel-3);
   image-rendering: pixelated;
 }
-/* Голова скина. Служба отдаёт целый скин 64×64 — вырезаем из него голову
-   рамкой и увеличением, чтобы не тащить в браузер холст и чужие рендеры. */
+/* Голова скина в объёме — та же, что у ников в обращениях (AegisTk.heads).
+   Пока скин грузится, видна первая буква ника. */
 .cab-me .cm-av {
   position: relative;
   flex: none;
@@ -942,16 +1532,16 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
   font-size: 19px;
   color: #6b6862;
 }
-.cab-me .cm-av img {
+.cab-me .cm-av .cm-face {
   position: absolute;
-  left: -46px;
-  top: -46px;
-  width: 368px;
-  height: 368px;
-  max-width: none;
-  border-radius: 0;
-  image-rendering: pixelated;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 39px;
+  transform: translate(-50%, -50%);
 }
+.cab-me .cm-av .cm-face:not(.ok) { visibility: hidden; }
+.cab-me .cm-av:has(.cm-face.ok) .cm-let { display: none; }
 .cab-me .cm-n { font-family: var(--f-disp); font-weight: 800; font-size: 16px; }
 .cab-me .cm-s { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
 
@@ -966,7 +1556,7 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
   font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: #74716c;
+  color: var(--steel);
   margin-bottom: 9px;
 }
 .tile .t-v {
@@ -979,11 +1569,27 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 .tile .t-s { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
 
 .cab-block { margin-top: 34px; }
+/* Заголовок раздела внутренней страницы. На главной над каждым разделом стоит
+   короткая черта — здесь та же черта, только меньше и слева от текста: блоки
+   кабинета идут плотно один за другим, и черта над строкой съела бы воздух
+   между ними. Рисуем псевдоэлементом, поэтому она появляется и в заголовках,
+   которые собирает скрипт (кабинет, панель), — разметку менять не пришлось. */
 .cab-block > h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--f-disp);
   font-weight: 800;
   font-size: 21px;
   margin-bottom: 14px;
+}
+.cab-block > h2::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--grad-h);
 }
 
 /* строки списков (наказания, история, сообщения) */
@@ -997,8 +1603,15 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 }
 .row + .row { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045); }
 .row .rw-t { font-size: 14.5px; line-height: 1.5; }
+/* Значок мессенджера в подписи строки привязки (Discord, Telegram). */
+.row .rw-t .rw-ic { vertical-align: -3px; margin-right: 8px; flex: none; }
 .row .rw-s { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
 .row .rw-r { text-align: right; font-size: 13px; color: var(--muted); white-space: nowrap; }
+/* Значение перед кнопкой в правой ячейке («свой» → «Поменять»). Зазор держит
+   сам текст: у кнопки отступ слева на узком экране снимается, и без этого
+   слово упиралось бы в кнопку. */
+.row .rw-v { margin-right: 10px; }
+.row .rw-v + .btn { margin-left: 0; }
 
 /* лог чата сервера */
 .chatlog {
@@ -1070,7 +1683,7 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
   margin-left: auto;
   font-size: 12px;
   font-weight: 700;
-  color: #74716c;
+  color: var(--steel);
 }
 .cab-nav button.on .cn-b { color: var(--gold); }
 .cab-nav .cn-t {
@@ -1122,10 +1735,55 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 }
 .cab-login .form-go { margin-top: 20px; }
 .cab-why { margin-top: 26px; max-width: 620px; font-size: 14px; line-height: 1.65; color: var(--muted); }
-.cab-why h4 { font-family: var(--f-disp); font-weight: 800; font-size: 15px; color: var(--ink); margin-bottom: 8px; }
+/* Заголовок стал h3 вместо h4 — на странице шли h1, h2 и сразу h4, а это для
+   читалки пропущенный уровень. Вид обязан остаться прежним: общее правило
+   h1,h2,h3 поднимает капс, плотную строку и отрицательный трекинг, а h4 их не
+   получал, поэтому все три свойства возвращаются сюда обратно. */
+.cab-why h3 {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 8px;
+  text-transform: none;
+  line-height: inherit;
+  letter-spacing: normal;
+}
 .cab-why ul { list-style: none; padding: 0; margin: 0; }
 .cab-why li { position: relative; padding-left: 18px; margin-bottom: 6px; }
 .cab-why li::before { content: '—'; position: absolute; left: 0; color: var(--or); }
+
+/* На широком экране окно входа стояло одно у левого края, а справа оставалась
+   пустая половина страницы — выглядело как незагрузившийся кусок. Ставим рядом
+   вторую колонку из подсказок, которые и так рисуются ниже. Одинокую карточку
+   без подсказок (например, «прав нет») просто ставим по центру.
+   :has() выбран, чтобы не трогать разметку: тот же контейнер после входа
+   держит уже весь кабинет, и сетку там включать нельзя. Браузер без :has()
+   покажет прежнюю стопку — она тоже читается. */
+@media (min-width: 900px) {
+  #cbBody:has(> .cab-login):has(> .cab-why),
+  #adBody:has(> .cab-login):has(> .cab-why) {
+    display: grid;
+    grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
+    gap: 30px;
+    align-items: start;
+  }
+  #cbBody:has(> .cab-login):has(> .cab-why) > .cab-login,
+  #adBody:has(> .cab-login):has(> .cab-why) > .cab-login { max-width: none; }
+  #cbBody:has(> .cab-login):has(> .cab-why) > .cab-why,
+  #adBody:has(> .cab-login):has(> .cab-why) > .cab-why {
+    margin-top: 0;
+    max-width: none;
+    background: var(--panel-2);
+    border-radius: 18px;
+    padding: 24px 26px;
+  }
+  /* Полоска ответа сверху относится к обеим колонкам сразу. */
+  #cbBody:has(> .cab-login) > .cb-msg,
+  #adBody:has(> .cab-login) > .cb-msg { grid-column: 1 / -1; }
+  #cbBody:has(> .cab-login):not(:has(> .cab-why)) > .cab-login,
+  #adBody:has(> .cab-login):not(:has(> .cab-why)) > .cab-login { margin-inline: auto; }
+}
 
 /* полоска ответа: получилось / не получилось */
 .cb-msg {
@@ -1143,24 +1801,50 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 /* Строка без значка слева — не держим под него пустую колонку. */
 .row.r2 { grid-template-columns: minmax(0, 1fr) auto; }
 
-/* Ссылка в меню кабинета (управление сайтом) — выглядит как пункт меню,
-   но уводит на другую страницу, поэтому и подчёркнута стрелкой. */
+/* Вход в пульт обращений для команды. Раньше это была строка среди пунктов
+   меню, и её не находили: теперь отдельная плашка со щитом, названием и тем,
+   что за ней. Уводит на другую страницу — поэтому стрелка. */
 .cab-nav .cn-go {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-  padding: 11px 14px;
-  border-radius: 11px;
+  gap: 11px;
+  margin-top: 8px;
+  padding: 11px 14px 11px 11px;
+  border-radius: 12px;
   font-family: var(--f-text);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--gold);
-  background: var(--panel);
+  color: var(--ink);
+  background: linear-gradient(135deg, rgba(250, 212, 107, .14), rgba(250, 212, 107, .04));
   transition: background .15s ease;
 }
-.cab-nav .cn-go::after { content: '→'; margin-left: auto; opacity: .7; }
-.cab-nav .cn-go:hover { background: var(--panel-2); }
+.cab-nav .cn-go svg {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 7px;
+  border-radius: 9px;
+  fill: var(--gold);
+  background: rgba(250, 212, 107, .16);
+}
+.cab-nav .cn-go span { min-width: 0; }
+.cab-nav .cn-go b {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--gold);
+}
+.cab-nav .cn-go small { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); }
+.cab-nav .cn-go::after {
+  content: '→';
+  margin-left: auto;
+  color: var(--gold);
+  opacity: .8;
+  transition: transform .15s ease;
+}
+.cab-nav .cn-go:hover {
+  background: linear-gradient(135deg, rgba(250, 212, 107, .22), rgba(250, 212, 107, .07));
+}
+.cab-nav .cn-go:hover::after { transform: translateX(3px); }
 
 /* варианты ответа в экзамене */
 .ex-opts { display: flex; flex-direction: column; gap: 2px; margin-bottom: 14px; }
@@ -1209,9 +1893,12 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 .ad-sub button:hover { color: var(--ink); background: var(--panel-2); }
 .ad-sub button.on { background: var(--grad); color: #241203; }
 
-/* приписка справа от заголовка блока: кто и когда правил */
+/* приписка справа от заголовка блока: кто и когда правил.
+   Заголовок блока выложен флексом (см. .cab-block > h2), а во флексе обтекание
+   не работает — отодвигаем приписку к правому краю отступом. */
 .ad-h-r {
-  float: right;
+  margin-left: auto;
+  padding-left: 14px;
   font-family: var(--f-text);
   font-weight: 500;
   font-size: 12.5px;
@@ -1321,7 +2008,9 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 
 @media (max-width: 720px) {
   .ad-two { grid-template-columns: 1fr; }
-  .ad-h-r { float: none; display: block; margin-top: 6px; }
+  /* Узко — приписка уходит под заголовок целой строкой. */
+  .cab-block > h2:has(.ad-h-r) { flex-wrap: wrap; }
+  .ad-h-r { margin-left: 34px; padding-left: 0; flex-basis: 100%; margin-top: 4px; }
 }
 
 /* ====================================================== земли: витрина цен */
@@ -1364,6 +2053,20 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 .ln-sum { font-size: 13.5px; color: var(--muted); margin-bottom: 12px; }
 .ln-sum b { color: var(--ink); font-weight: 600; }
 
+/* Провинции без ценника. Не тревога и не ошибка — просто то, о чём человек
+   иначе не узнает; поэтому тем же приёмом, что и остальные пояснения сайта:
+   панель с полоской акцента слева, без окантовок и без красного. */
+.ln-note {
+  background: var(--panel-2);
+  border-left: 2px solid rgba(245, 134, 32, .5);
+  border-radius: 10px;
+  padding: 11px 14px;
+  margin-bottom: 14px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
 /* Правая колонка строки в две строки: цена крупно, налог подписью. */
 .ln-r { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
 .ln-r b { font-size: 15px; color: var(--gold); font-weight: 700; }
@@ -1373,6 +2076,9 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 
 @media (max-width: 720px) {
   .ln-bar { grid-template-columns: minmax(0, 1fr); }
+  /* Отборы стояли 30 px в высоту при зазоре 8 — на телефоне палец накрывает
+     сразу два, а промах молча меняет выборку. 38 px, вид прежний. */
+  .ln-chips button { padding: 11px 14px; }
 }
 
 /* На телефоне строка складывается в столбик, и цена оказывается под названием —
@@ -1386,6 +2092,14 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
 @media (max-width: 1180px) {
   .doc { grid-template-columns: 234px minmax(0, 1fr); gap: 34px; }
   .doc-toc { display: none; }
+}
+
+/* Двум колонкам обращений нужно 720 + 230 + отступы. Как только перестаёт
+   хватать — подсказка уходит ПОД форму, а не сжимается в столбик из двух слов.
+   Там же снимаем прилипание: липкий блок внизу страницы только мешает. */
+@media (max-width: 1040px) {
+  .tk-two { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .tk-side { position: static; grid-auto-flow: row; }
 }
 
 @media (max-width: 900px) {
@@ -1402,10 +2116,15 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
     background: #131316;
     padding: 22px 18px 30px;
     transform: translateX(-104%);
-    transition: transform .26s cubic-bezier(.2, .8, .3, 1);
+    /* Закрытая панель уезжает за левый край, но остаётся на странице: без
+       visibility табуляция с кнопки уходила в поиск и весь список статей,
+       которых на экране нет. Значение переключается скачком в конце
+       перехода, поэтому выезд остаётся плавным. */
+    visibility: hidden;
+    transition: transform .26s cubic-bezier(.2, .8, .3, 1), visibility .26s;
     box-shadow: 22px 0 44px rgba(0, 0, 0, .5);
   }
-  .doc-side.open { transform: none; }
+  .doc-side.open { transform: none; visibility: visible; }
   .doc-scrim {
     position: fixed;
     inset: 0;
@@ -1425,16 +2144,70 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
   .cab-nav button.on { background: var(--grad); color: #241203; }
   .cab-nav button.on .cn-b { color: #241203; }
   .cab-nav .cn-t { display: none; }
+  /* Счётчики в строке меню: 12 пикселей рядом с крупной надписью читались
+     как мелкий шрифт в углу, а это единственное место, где видно, сколько
+     наград ждёт и сколько червонцев на счету. */
+  .cab-nav .cn-b { font-size: 12.5px; }
+  /* Плашка пульта в строке меню — такой же высоты, как пункты рядом:
+     подпись под названием здесь не помещается и раздувала бы всю строку. */
+  .cab-nav .cn-go { flex: none; margin-top: 0; padding: 8px 12px 8px 8px; white-space: nowrap; }
+  .cab-nav .cn-go svg { width: 26px; height: 26px; padding: 5px; }
+  .cab-nav .cn-go small { display: none; }
   .cab-out { padding: 0; }
+  /* Разделитель нужен, только пока «Кабинет» и «Выйти» стоят в одной строке. */
+  .cab-out .cab-sep { display: none; }
+  /* «Выйти» было подчёркнутым словом в хвосте фразы — 40 на 21 пиксель.
+     Попасть пальцем трудно, а мимо кнопки лежит обычный текст, так что
+     промах просто ничего не делает, и человек жмёт ещё раз. На телефоне
+     это отдельная кнопка под фразой, как везде на сайте. */
+  .cab-out button {
+    display: block;
+    margin-top: 10px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 10px;
+    background: var(--panel);
+    color: var(--ink);
+    text-decoration: none;
+  }
   .duty-cols, .mods-groups { grid-template-columns: 1fr; gap: 16px; }
+  /* На двух колонках эти подписи были мелкими по делу — места не было. В одну
+     колонку место есть, а 11.5 и 12 пикселей на телефоне читаются с прищуром. */
+  .duty-cols h6 { font-size: 13px; }
+  .mod-row em { font-size: 13px; }
+  /* Те же 11.5 пикселей в подписях колонки-подсказки под формой обращения. */
+  .tk-sc h3 { font-size: 13px; }
+  /* Счётчик знаков говорит, сколько осталось до предела, — в него смотрят,
+     когда текст длинный, и 12 пикселей на телефоне для этого мало. */
+  .field .cnt { font-size: 13px; }
+  /* «← ко всем темам» — единственный путь со страницы формы обратно к списку,
+     а нажимаемых у него было 17 пикселей. Поле сверху и снизу даёт 37;
+     отрицательный внешний отступ съедает прибавку, чтобы отбивка от формы
+     осталась прежней. */
+  .tk-back { margin-top: 16px; margin-bottom: -10px; }
+  .tk-back a { display: inline-block; padding: 10px 0; }
 }
 
 @media (max-width: 640px) {
   .page-wrap { padding: 24px 0 70px; }
   .rule { grid-template-columns: 26px minmax(0, 1fr); padding: 13px 14px; }
+  .rule.rule-sub { grid-template-columns: 38px minmax(0, 1fr); margin-left: 14px; padding: 10px 12px; }
   .row, .row.r2 { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .row .rw-r { text-align: left; }
   .row .rw-r .btn { margin-left: 0; }
+  /* Правая колонка строки не переносится: на широком экране кнопки стоят в ряд
+     справа, и перенос там не нужен. На телефоне строка идёт во всю ширину, и
+     три элемента подряд (метка + две кнопки) вылезали за край экрана — сами по
+     себе они не переносятся, между ними в разметке нет ни одного пробела.
+     Поэтому там, где внутри есть кнопки, колонка становится гибкой строкой с
+     переносом и своим зазором. Строки с одним текстом остаются как были. */
+  .row .rw-r:has(.btn) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    white-space: normal;
+  }
   .chatlog .cl { grid-template-columns: 54px minmax(0, 1fr); }
   .chatlog .cl-m { grid-column: 1 / -1; }
   .doc-body .dh h1 { font-size: 27px; }
@@ -1450,11 +2223,132 @@ a.live-card:hover .live-meta h3 { color: var(--gold); }
   .tile.wide { grid-column: 1 / -1; }
   .tile .t-v { font-size: 22px; }
   .tile .t-s { font-size: 12.5px; margin-top: 6px; }
+  /* Подпись над числом — 12 пикселей капсом с разрядкой. На мониторе это
+     читается, на телефоне капс с разрядкой на таком кегле уже щурится, а
+     подпись говорит, что за число под ней. */
+  .tile .t-k { font-size: 12.5px; }
+  /* Метки-пилюли («ждём оплату», «не в эфире»): 12 пикселей на цветной
+     подложке — самое мелкое, что есть на странице, а в них состояние заказа
+     и наказания. */
+  .pill { font-size: 12.5px; height: 26px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .loading i, .pill.live::before { animation: none; }
   .qa-wrap { transition: none; }
   .doc-side, .doc-scrim { transition: none; }
-  .live-card:hover, .tk-card:hover, .rule:hover { transform: none; }
+  .live-card, .tk-card, .rule { transition: none; }
+  .live-card:hover .live-thumb img { transform: none; }
+  .rule::before { transition: none; }
+}
+
+/* ------------------------------------------------ шапка профиля в кабинете */
+/* Слева скин игрока в объёме (строит js/skin3d.js), справа главное о нём:
+   когда заходил, сколько наиграл, привилегия. Подложка та же, что у плиток,
+   только с тёплым пятном света за фигурой — без стекла и окантовок. */
+.cab-hero {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 28px;
+  margin-bottom: 18px;
+  padding: 16px 26px 16px 10px;
+  border-radius: 16px;
+  background:
+    radial-gradient(90% 80% at 16% 58%, rgba(250, 212, 107, .11), transparent 62%),
+    var(--panel);
+}
+.ch-fig { display: flex; flex-direction: column; align-items: center; }
+.ch-hint { margin-top: 2px; font-size: 12px; color: var(--muted); opacity: .75; }
+.ch-nick {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.ch-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 18px; }
+.ch-st { font-size: 13.5px; color: var(--muted); }
+.ch-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+.ch-facts > div { padding: 11px 14px; border-radius: 11px; background: var(--panel-2); }
+.ch-facts dt { font-size: 12.5px; color: var(--muted); }
+.ch-facts dd { margin: 3px 0 0; font-weight: 600; font-size: 15px; }
+.ch-go { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 16px; }
+.ch-go span { font-size: 13px; color: var(--muted); }
+
+/* Сцена фигуры. Фигура 256 пикселей ростом, центр вращения — середина роста,
+   поэтому сцена чуть выше. Пока скин не загружен, сцена прозрачна: пустой
+   каркас без текстуры смотрится поломкой. Прозрачность стоит на сцене, а не
+   на самой фигуре: полупрозрачный объёмный узел браузер сплющивает в плоскость. */
+.sk3 {
+  position: relative;
+  width: 220px;
+  height: 300px;
+  perspective: 1100px;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  border-radius: 14px;
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.sk3.sk3-ok { opacity: 1; }
+.sk3.sk3-grab { cursor: grabbing; }
+.sk3:focus-visible { box-shadow: 0 0 0 2px var(--gold); }
+/* Тень под ногами — чтобы фигура стояла, а не висела. */
+.sk3::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  width: 124px;
+  height: 20px;
+  margin-left: -62px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, .5), transparent);
+  pointer-events: none;
+}
+.sk3-aim { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; }
+.sk3-aim.sk3-ease { transition: transform .8s cubic-bezier(.22, .61, .36, 1); }
+.sk3-char {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-style: preserve-3d;
+  animation: mc-breathe 6.5s ease-in-out infinite;
+}
+.sk3 .f { background-image: var(--sk3); }
+/* Руки в покое чуть расходятся и покачиваются, как в игре: наружу на 3–5°,
+   вперёд-назад на пару градусов. Правая рука игрока у зрителя слева. */
+.sk3-arm.r { animation: sk3-arm-r 6.5s ease-in-out infinite; }
+.sk3-arm.l { animation: sk3-arm-l 6.5s ease-in-out infinite; }
+@keyframes sk3-arm-r {
+  0%, 100% { transform: rotateZ(3deg) rotateX(-1.5deg); }
+  50%      { transform: rotateZ(5.5deg) rotateX(1.5deg); }
+}
+@keyframes sk3-arm-l {
+  0%, 100% { transform: rotateZ(-3deg) rotateX(1.5deg); }
+  50%      { transform: rotateZ(-5.5deg) rotateX(-1.5deg); }
+}
+/* Ушла за край экрана — не тратим на неё кадры. */
+.sk3-off .sk3-char, .sk3-off .sk3-arm { animation-play-state: paused; }
+
+@media (max-width: 720px) {
+  .cab-hero { grid-template-columns: minmax(0, 1fr); padding: 14px 16px 18px; }
+  .ch-info { text-align: left; }
+  .ch-nick { font-size: 25px; }
+}
+@media (max-width: 420px) {
+  .ch-facts { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk3, .sk3-aim.sk3-ease { transition: none; }
+  .sk3-char, .sk3-arm.r, .sk3-arm.l { animation: none; }
 }

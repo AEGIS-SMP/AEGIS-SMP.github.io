@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AEGIS SMP — военно-политический Minecraft-сервер эпохи 1936</title>
-<meta name="description" content="AEGIS — военно-политический Minecraft-сервер: реальная карта Земли 1:1000, 102 державы по историческим границам 1936 года, нефть TFMG и артиллерия Create Big Cannons. Открытие — сентябрь 2026.">
+<meta name="description" content="AEGIS — военно-политический Minecraft-сервер: реальная карта Земли 1:1000, 62 державы по историческим границам 1936 года, нефть TFMG и артиллерия Create Big Cannons. Первый вайп сезона завершен 17 октября 2026 года, дата следующего пока неизвестна.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="canonical" href="https://aegis-smp.github.io/">
+<link rel="canonical" href="https://www.aegis-smp.com/">
 <meta name="theme-color" content="#0E0E10">
 
 <!-- Карточка ссылки в Telegram, VK, Discord и поиске.
@@ -16,36 +16,44 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AEGIS SMP">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:url" content="https://aegis-smp.github.io/">
+<meta property="og:url" content="https://www.aegis-smp.com/">
 <meta property="og:title" content="AEGIS SMP — военно-политический Minecraft-сервер эпохи 1936">
-<meta property="og:description" content="Реальная карта Земли 1:1000, страны по границам 1936 года, нефть, заводы и артиллерия. Открытие — сентябрь 2026.">
-<meta property="og:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta property="og:description" content="Реальная карта Земли 1:1000, страны по границам 1936 года, нефть, заводы и артиллерия. Дата следующего вайпа пока неизвестна.">
+<meta property="og:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AEGIS SMP — военно-политический Minecraft-сервер эпохи 1936">
-<meta name="twitter:description" content="Реальная карта Земли 1:1000, страны по границам 1936 года, нефть, заводы и артиллерия. Открытие — сентябрь 2026.">
-<meta name="twitter:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta name="twitter:description" content="Реальная карта Земли 1:1000, страны по границам 1936 года, нефть, заводы и артиллерия. Дата следующего вайпа пока неизвестна.">
+<meta name="twitter:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
      кириллические гарнитуры — остальные алфавиты браузер возьмёт сам,
      только если они реально понадобятся. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=1010dl">
 </head>
 <body>
+<a class="skip-link" href="#content">К содержанию</a>
 
 <header class="topbar">
   <div class="container topbar-in">
     <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
-    <button class="burger" aria-label="Меню"><span></span></button>
-    <nav class="topnav" id="topnav">
+    <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
+    <nav class="topnav" id="topnav" aria-label="Основное меню">
       <a class="active" href="#season">Сезон 1936</a>
       <a class="active" href="#arsenal">Арсенал</a>
       <a class="active" href="#join">Как зайти</a>
       <a href="lands.html">Земли</a>
+      <a href="players.html">Игроки</a>
+      <a href="feed.html">Лента</a>
+      <!-- Живой атлас жил на сервере (map.aegis-smp.com/atlas). С 18.10.2026
+           сервера нет, поэтому «Карта» открывает снимок политической карты
+           1936 года. Вернется сервер — вернуть адрес атласа здесь, в карточке
+           «Реальная Земля» и в подвале. -->
+      <a href="assets/img/map_1936.png" target="_blank" rel="noopener">Карта</a>
       <a href="wiki.html">Вики</a>
       <a href="tickets.html">Обращения</a>
       <a href="live.html">Эфиры</a>
@@ -55,6 +63,8 @@
   </div>
 </header>
 
+<main id="content" tabindex="-1">
+
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-shade"></div>
@@ -62,7 +72,13 @@
   <div class="container hero-in">
     <img class="hero-logo" src="assets/img/logo.png" alt="AEGIS SMP">
     <div class="kicker">Военно-политический SMP · сезон «1936»</div>
-    <h1>Вся Земля. 102 державы. <span class="grad-text">Одна история.</span></h1>
+    <!-- Числа на странице подставляются из data/world.json (его собирает
+         site\tools\world_build.py прямо из данных карты). В разметке стоит
+         последнее известное значение — оно и покажется, если файл не
+         догрузился. Руками числа не править: перезапустить world_build.py. -->
+    <h1>Вся Земля. <span data-world="countries">62</span>
+      <span data-plural="countries|держава|державы|держав">державы</span>.
+      <span class="grad-text">Одна история.</span></h1>
     <p class="lead">Реальная карта планеты в масштабе 1:1000, страны по историческим границам
       1936 года, нефтяная промышленность TFMG и артиллерия Create Big Cannons.
       Подними свою державу — или разбери чужую по кирпичу.</p>
@@ -70,11 +86,14 @@
       <a class="btn btn-primary" href="#join">Начать игру</a>
       <a class="btn btn-dark" href="donate.html">Поддержать проект</a>
     </div>
+    <!-- Обратный отсчёт до открытия. Цифры рисует js/main.js, разметка пустая
+         нарочно: единственная дата сезона лежит там же одной строкой
+         (OPEN_DATE), и вписать сюда число руками невозможно — значит, и
+         разойтись с настоящей датой оно не может. С 18.10.2026 даты нет
+         (OPEN_DATE = null) — main.js рисует тут плашку «дата пока неизвестна». -->
+    <div class="cdown" id="cdown" role="timer"></div>
     <div class="count-strip">
-      <div class="chip"><b id="cd">—</b>до открытия</div>
-      <!-- точного числа пока нет: овнер назвал вилку «12 или 19 сентября»
-           (перенос 22.08.2026). Короткая форма — чтобы плашка не разъехалась. -->
-      <div class="chip"><b>12 или 19.09</b>старт сезона</div>
+      <div class="chip"><b>17.10.2026</b>первый вайп завершен</div>
       <div class="chip"><b>1.21.1</b>NeoForge · Create</div>
     </div>
   </div>
@@ -82,15 +101,85 @@
 
 <div class="stats">
   <div class="container stats-in">
-    <!-- масштаб живой: мир пересобран 02–03.09.2026, полный рендер карты 1:1000
-         закончен (2,65 млн чанков). Числа стран и провинций ждут подтверждения
-         зоны КАРТА после пересчёта приватов под новую сетку. -->
-    <div class="stat"><div class="num">1:1000</div><div class="lbl">масштаб Земли</div></div>
-    <div class="stat"><div class="num">102</div><div class="lbl">державы 1936 года</div></div>
-    <div class="stat"><div class="num">431</div><div class="lbl">провинция</div></div>
-    <div class="stat"><div class="num">34</div><div class="lbl">месторождения нефти</div></div>
+    <!-- data-count — число «набегает» от нуля, когда полоса попадает на экран
+         (js/main.js). Масштаб не набегает: «1:1000» не число, а подпись. -->
+    <div class="stat"><div class="num">1:<span data-world="scale">1000</span></div>
+      <div class="lbl">масштаб Земли</div></div>
+    <div class="stat"><div class="num" data-world="countries" data-count>62</div>
+      <div class="lbl"><span data-plural="countries|держава|державы|держав">державы</span> 1936 года</div></div>
+    <div class="stat"><div class="num" data-world="provinces" data-count>495</div>
+      <div class="lbl" data-plural="provinces|провинция|провинции|провинций">провинций</div></div>
+    <div class="stat"><div class="num" data-world="oil" data-count>34</div>
+      <div class="lbl" data-plural="oil|месторождение нефти|месторождения нефти|месторождений нефти">месторождения нефти</div></div>
   </div>
 </div>
+
+<!-- Главная новость: ролик ивента «Микроволновка» (24.09.2026, просьба овнера).
+     Ролик жил на дедике в /opt/aegis/dl; с 18.10.2026 (дедик не продлен) он
+     лежит в самом сайте, assets/video (25 МБ, 1920×1080), — GitHub Pages отдает
+     его как обычный файл. preload="none" — страница не качает 25 МБ, пока не
+     нажали «смотреть». Выйдет следующий ролик — заменить этот блок, не добавлять второй. -->
+<section id="event" class="event-sec">
+  <div class="container">
+    <article class="card event-card reveal">
+      <div class="event-video">
+        <video controls preload="none" playsinline
+               poster="assets/img/event-mo-poster.jpg"
+               aria-label="Ролик ивента «Микроволновка»">
+          <source src="assets/video/aegis-mo-trailer.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="event-body">
+        <div class="news-top">
+          <span class="date">23.09.2026</span>
+          <span class="news-fresh">Главная новость</span>
+        </div>
+        <h2>Ивент «Микроволновка»: <span class="grad-text">57 игроков против пяти великанов</span></h2>
+        <div class="event-cols">
+          <div class="event-text">
+            <p>В честь обновления сервера мы собрали всех на арене. Против игроков вышли пять
+              великанов — VineZerro, Kreenchik, Noise, RedBuzz и Makvayka, а под ногами
+              лежала руда червонцев: кто успел выбить больше, тот и забрал.</p>
+            <p>За 3 минуты 44 секунды 57 игроков выбили 1258 червонцев — в среднем по 22 на
+              человека. Все червонцы уже выданы. Не успел прийти — смотри ролик: весь ивент
+              под музыку, с настоящими скинами участников.</p>
+            <div class="event-nums">
+              <div><b>57</b><span>игроков</span></div>
+              <div><b>5</b><span>великанов</span></div>
+              <div><b>1258</b><span>червонцев</span></div>
+              <div><b>3:44</b><span>на всё</span></div>
+            </div>
+            <!-- Поделиться: ссылка ведёт на event.html — у неё свои og-теги с постером ивента
+                 (превью в Telegram/VK), а человека она сразу перекидывает сюда, на #event.
+                 Адреса кнопок js/event.js пересобирает от текущего домена. -->
+            <div class="event-share">
+              <button type="button" class="btn btn-primary btn-sm" data-share>
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M18 16.1c-.8 0-1.5.3-2 .8l-7.1-4.1c.1-.3.1-.5.1-.8s0-.5-.1-.8l7-4.1c.5.5 1.3.8 2.1.8 1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3c0 .3 0 .5.1.8L8 9.8C7.5 9.3 6.8 9 6 9c-1.7 0-3 1.3-3 3s1.3 3 3 3c.8 0 1.5-.3 2-.8l7.1 4.2c-.1.2-.1.4-.1.6 0 1.6 1.3 2.9 2.9 2.9s2.9-1.3 2.9-2.9-1.2-2.9-2.8-2.9z"/></svg>
+                <span data-share-label>Поделиться</span>
+              </button>
+              <a class="btn btn-dark btn-sm" data-share-tg target="_blank" rel="noopener"
+                 href="https://t.me/share/url?url=https%3A%2F%2Fwww.aegis-smp.com%2Fevent.html">Telegram</a>
+              <a class="btn btn-dark btn-sm" data-share-vk target="_blank" rel="noopener"
+                 href="https://vk.com/share.php?url=https%3A%2F%2Fwww.aegis-smp.com%2Fevent.html">ВКонтакте</a>
+            </div>
+          </div>
+          <div class="event-top">
+            <div class="event-top-h">Лучшие сборщики</div>
+            <!-- Головы — из тех же скинов, что в ролике: свой скин с прода, иначе стандартный по нику. -->
+            <ol>
+              <li><img src="assets/img/event/head-vovan_mogarrow.png?v=2" alt="" width="30" height="30"><span>Vovan_MogArrow</span><b>41 Ч</b></li>
+              <li><img src="assets/img/event/head-shadow.png?v=2" alt="" width="30" height="30"><span>Shadow</span><b>39 Ч</b></li>
+              <li><img src="assets/img/event/head-shrek.png?v=2" alt="" width="30" height="30"><span>Shrek</span><b>38 Ч</b></li>
+              <li><img src="assets/img/event/head-sandorik.png?v=2" alt="" width="30" height="30"><span>sandorik</span><b>37 Ч</b></li>
+              <li><img src="assets/img/event/head-dangertema.png?v=2" alt="" width="30" height="30"><span>dangertema</span><b>36 Ч</b></li>
+            </ol>
+            <p class="event-next">Следующий ивент объявим в Discord и Telegram — заходи, чтобы не пропустить.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
 
 <section id="season">
   <div class="container">
@@ -104,15 +193,25 @@
       <div class="card card-map reveal">
         <div class="shot"><img src="assets/img/map_1936.png" alt="Политическая карта мира 1936 года на сервере AEGIS" loading="lazy"></div>
         <div class="card-body">
+          <div class="card-text">
           <h3>Реальная Земля 1:1000</h3>
           <p>Вся планета — от Аляски до Австралии — сгенерирована по настоящему рельефу.
-            102 страны нарезаны по историческим границам 1936 года, внутри — 431 провинция
+            <span data-world="countries">62</span>
+            <span data-plural="countries|держава нарезана|державы нарезаны|держав нарезано">державы нарезаны</span>
+            по историческим границам 1936 года, внутри —
+            <span data-world="provinces">495</span>
+            <span data-plural="provinces|провинция|провинции|провинций">провинций</span>
             с реальными областями той эпохи. Земля уже поделена: выбирай, за кого играть.</p>
+          </div>
+          <!-- Картинка на карточке — снимок, а не карта. Живой атлас (провинции,
+               глобус, поиск державы) открывается по этой кнопке. -->
+          <a class="btn btn-primary btn-sm" href="assets/img/map_1936.png"
+             target="_blank" rel="noopener">Открыть карту мира</a>
         </div>
       </div>
       <div class="card reveal">
         <div class="card-body">
-          <div class="icon-plate"><img src="assets/icons/shield.png" alt=""></div>
+          <div class="icon-plate"><img src="assets/icons/atlas.png" alt=""></div>
           <h3>Возьми державу под крыло</h3>
           <p>Столица, провинции, границы — всё по-настоящему. Дипломатия, союзы, ультиматумы
             и войны: историю сезона пишут игроки, а не сценарий.</p>
@@ -120,7 +219,7 @@
       </div>
       <div class="card reveal">
         <div class="card-body">
-          <div class="icon-plate"><img src="assets/icons/oil.png" alt=""></div>
+          <div class="icon-plate"><img src="assets/icons/tfmg_pump.png" alt=""></div>
           <h3>Нефть — кровь войны</h3>
           <p>34 месторождения на местах реальных промыслов 1936 года. Вышки, перегонка,
             топливо TFMG — у кого нефть, у того и армия на ходу.</p>
@@ -148,31 +247,31 @@
     </div>
     <div class="grid-3">
       <div class="card feature reveal">
-        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_concussion_shell.png" alt=""></div>
+        <div class="icon-plate"><img src="assets/icons/aegis_concussion_shell.png" alt=""></div>
         <h3>Контузия от взрывов</h3>
         <p>Рядом рвануло — звон в ушах, глухота, рябь и тряска камеры. Считаются укрытие,
           шлем, приседание и даже стены помещения. Артиллерия больше не «попал / не попал».</p>
       </div>
       <div class="card feature reveal">
-        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_star_shell.png" alt=""></div>
+        <div class="icon-plate"><img src="assets/icons/aegis_star_shell.png" alt=""></div>
         <h3>Осветительный снаряд</h3>
         <p>Раскрывается в верхней точке траектории: звезда на парашюте по-настоящему освещает
           местность и подсвечивает контуры целей. Ночная разведка и корректировка огня.</p>
       </div>
       <div class="card feature reveal">
-        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_salute_shell.png" alt=""></div>
+        <div class="icon-plate"><img src="assets/icons/aegis_salute_shell.png" alt=""></div>
         <h3>Салютный снаряд</h3>
         <p>Восемь цветных разрывов над городом — и ни одной воронки. Для парадов, побед
           и объявлений войны. Грохот есть, разрушений нет.</p>
       </div>
       <div class="card feature reveal">
-        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_thermite_shell.png" alt=""></div>
+        <div class="icon-plate"><img src="assets/icons/aegis_thermite_shell.png" alt=""></div>
         <h3>Термитный снаряд</h3>
         <p>Слабее фугаса по блокам, но место разрыва превращается в очаг пожара: языки огня,
           белые искры термита и восемь секунд ада радиусом шесть блоков.</p>
       </div>
       <div class="card feature reveal">
-        <div class="icon-plate"><img class="pix" src="assets/icons/aegis_gas_shell.png" alt=""></div>
+        <div class="icon-plate"><img src="assets/icons/aegis_gas_shell.png" alt=""></div>
         <h3>Газовый снаряд</h3>
         <p>Почти не трогает постройки — зато выпускает стойкое ядовитое облако, которое
           ползёт по ветру той же розой ветров, что и погода сезона. Противогазов нет. Бегите.</p>
@@ -197,42 +296,90 @@
       <h2>Как <span class="grad-text">зайти на сервер</span></h2>
     </div>
     <div class="steps">
+      <!-- Регистрация стоит первой нарочно: имя и пароль заводятся один раз
+           на сайте и они же служат входом в лаунчер. Раньше шаги начинались
+           со скачивания, и человек искал, где же взять учётку. -->
       <div class="step reveal">
         <div class="n">01</div>
-        <h3>Скачай лаунчер</h3>
-        <p>Приложение для Windows — 44 МБ, Java внутри: ставить ничего не нужно.
-          Распакуй архив и запусти AEGIS.</p>
+        <h3>Заведи имя на сайте</h3>
+        <p><a href="reg.html">Регистрация</a> занимает минуту: имя и пароль. Одно имя
+          на человека — второе завести не выйдет. Этим же именем и паролем ты входишь
+          в лаунчер, отдельной учётки у него нет. На странице регистрации расписано,
+          чем проверяют. Сейчас сервер на перерыве между вайпами — регистрация
+          откроется вместе с ним.</p>
       </div>
       <div class="step reveal">
         <div class="n">02</div>
-        <h3>Нажми «Играть»</h3>
-        <p>Лаунчер сам скачает сборку (около 315 МБ), проверит каждый файл по контрольной сумме,
-          поставит NeoForge и запустит игру. Отдельный лаунчер Minecraft не нужен.</p>
+        <h3>Скачай лаунчер</h3>
+        <p>Есть для Windows, macOS и Linux — кнопки чуть ниже, сайт сам подсветит
+          твою систему. Ставить Java не нужно: на Windows она уже внутри архива,
+          на Mac и Linux лаунчер скачает ее сам при первом запуске.</p>
+        <p>Если Windows напишет «Система Windows защитила ваш компьютер», нажми
+          «Подробнее» → «Выполнить в любом случае». Так Windows встречает любую новую
+          программу без платной подписи. Вирусов в лаунчере нет.</p>
+        <p>Антивирус пишет «неизвестный издатель» или «может быть вредоносной программой»
+          либо убрал файл в карантин? Причина та же: у лаунчера нет платной цифровой
+          подписи. Верни файл из карантина и добавь папку лаунчера в исключения антивируса.
+          Качай лаунчер только отсюда.</p>
       </div>
       <div class="step reveal">
         <div class="n">03</div>
-        <h3>Дождись открытия</h3>
-        <p>Старт сезона «1936» — сентябрь 2026: целимся в 12 или 19, точное число
-        объявим заранее. Сервер лаунчер добавит в список сам: до открытия он показан
-        выключенным — так и должно быть.</p>
+        <h3>Нажми «Играть»</h3>
+        <p>Лаунчер сам скачает сборку (около 315 МБ), проверит каждый файл по контрольной
+          сумме, поставит NeoForge и запустит игру. Сервер он добавит в список сам.
+          Первый вайп сезона «1936» завершился 17 октября 2026 года, дата следующего
+          пока неизвестна — объявим в Discord и Telegram. Пока сервера нет, лаунчер
+          запускает сборку в одиночном мире.</p>
       </div>
       <div class="step reveal">
         <div class="n">04</div>
-        <h3>Выбери державу</h3>
-        <p>Заходи, осматривайся на карте и подавай заявку на свою страну сезона.</p>
+        <h3>Зайди и выбери державу</h3>
+        <p>Осматривайся на карте и бери свою страну сезона. И привяжи Discord:
+          код даёт кнопка в <a href="cabinet.html">кабинете</a>
+          (или команда <b>/discord</b> в игре), в Discord вставь его командой
+          <b>/гражданство</b> — бот выдаст роль твоей державы.</p>
       </div>
     </div>
     <div class="join-note reveal">
       <div class="txt"><b>Сборка:</b> Minecraft 1.21.1 · NeoForge · Create, TFMG, Create Big Cannons
         и собственный мод AegisLive. Моды лаунчер качает сам и обновляет вместе с сервером.
-        Вход в лаунчер — имя в игре и пароль AEGIS, привязку выдаёт бот AEGIS в Discord.
-        <span class="muted">Если Windows покажет «неизвестный издатель» — «Подробнее» →
-        «Выполнить в любом случае»: подписи у нас пока нет. Если Java уже стоит, хватит
-        одного файла —
-        <!-- ссылки постоянные: релиз с фиксированным тегом, меняется только содержимое -->
-        <a href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher.jar">AEGIS-Launcher.jar</a>
-        (1,1 МБ).</span></div>
-      <a class="btn btn-primary" href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-win.zip">Скачать лаунчер · 44 МБ</a>
+        Вход в лаунчер — то самое имя и пароль, что заведены при регистрации на сайте:
+        второй учётки у лаунчера нет и заводить её не надо.
+        <b>Другого входа на сервер нет:</b> вбить адрес руками в обычный клиент не выйдет —
+        пускает только запуск через лаунчер, потому и версия, и моды, и учётная запись
+        у всех сходятся.</div>
+    </div>
+    <!-- Скачивание. Файлы лежали на дедике в /opt/aegis/dl; с 18.10.2026 — в
+         релизе dist репозитория AEGIS-SMP/launcher на GitHub (Windows-архив и
+         jar туда кладет publish.py, Mac и Linux — заливаются туда же).
+         Windows — package.ps1, Mac и Linux — dev\launcher\unix\pack_unix.py.
+         Свою систему js/main.js подсвечивает основной кнопкой и ставит первой;
+         без JS остается Windows. -->
+    <div class="join-note join-dl reveal" id="download">
+      <div class="txt"><b>Скачать лаунчер</b>
+        <span class="muted dl-hint" data-os="win">Windows 10 и 11: распакуй архив и запусти
+          AEGIS. Если Windows скажет «неизвестный издатель» — «Подробнее» → «Выполнить
+          в любом случае».</span>
+        <span class="muted dl-hint" data-os="mac">macOS 11 и новее, Intel и M1–M4: перетащи
+          AEGIS в «Программы» и открой. В первый раз macOS спросит, доверяешь ли ты
+          программе: правый щелчок по AEGIS → «Открыть», а на macOS 15 — «Системные
+          настройки» → «Конфиденциальность и безопасность» → «Все равно открыть».</span>
+        <span class="muted dl-hint" data-os="linux">Linux, x86_64 и ARM: на Ubuntu, Mint
+          и Debian открой пакет .deb двойным щелчком → «Установить». На Fedora, Arch,
+          Steam Deck и других — <a href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-linux.tar.gz" download>архив
+          .tar.gz</a>: распакуй и запусти файл AEGIS.</span>
+        <span class="muted dl-hint" data-os="mobile">Ты зашел с телефона. AEGIS пока
+          работает только на компьютере: открой эту страницу на компьютере с Windows,
+          macOS или Linux и скачай лаунчер там.</span>
+        <span class="muted">Подписи Microsoft и Apple у нас пока нет — отсюда эти
+          вопросы при первом запуске. Java 21 уже стоит? Хватит одного файла —
+          <a href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher.jar" download>AEGIS-Launcher.jar</a> на 1,1 МБ.
+          С телефона и планшета зайти пока нельзя.</span></div>
+      <div class="dl-row">
+        <a class="btn btn-primary" data-os="win" href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-win.zip" download>Для Windows</a>
+        <a class="btn btn-dark" data-os="mac" href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-mac.zip" download>Для Mac</a>
+        <a class="btn btn-dark" data-os="linux" href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-linux.deb" download>Для Linux</a>
+      </div>
     </div>
   </div>
 </section>
@@ -250,9 +397,16 @@
            переставлять не надо. -->
       <div class="card news news-lead reveal">
         <div class="news-top">
-          <span class="date">01.08.2026</span>
+          <span class="date">23.09.2026</span>
           <span class="news-fresh">Свежее</span>
         </div>
+        <h3>Первая оптимизация: 8 мобов на чанк</h3>
+        <p>Сервер разгрузили: при 45 игроках он держит 20 TPS. В одном чанке теперь живёт
+          не больше 8 мобов — в полном новые не разводятся и не спавнятся. Как держать фермы
+          под лимит — в вики, статья «Мобы и фермы».</p>
+      </div>
+      <div class="card news reveal">
+        <span class="date">01.08.2026</span>
         <h3>Три боевых снаряда</h3>
         <p>Термитный, газовый и контузионный — по типу фугаса CBC, но каждый бьёт по-своему.
           Термит выжигает, газ ползёт по ветру, контузионный выключает гарнизон, не трогая стен.</p>
@@ -281,12 +435,6 @@
         <p>Первый собственный боеприпас AEGIS: звезда на парашюте, настоящий движущийся свет
           и подсветка целей в радиусе 48 блоков. Ночь перестала прятать.</p>
       </div>
-      <div class="card news reveal">
-        <span class="date">25.07.2026</span>
-        <h3>Огневая позиция у Вашингтона</h3>
-        <p>Испытательная батарея на господствующей высоте: лафет, рычаг «СБОРКА», кнопка «ОГОНЬ»
-          и сундук с боекомплектом. Первые стрельбы — осветительными.</p>
-      </div>
     </div>
   </div>
 </section>
@@ -296,12 +444,20 @@
     <div class="cta-band reveal">
       <h2>Готов переписать <span class="grad-text">1936 год?</span></h2>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-win.zip">Скачать лаунчер</a>
-        <a class="btn btn-dark" href="donate.html">Военная казна</a>
+        <!-- Ведёт в «Как зайти», а не прямо на файл: там сначала регистрация,
+             без неё лаунчер не пустит, и уже потом кнопка скачивания. -->
+        <a class="btn btn-primary" href="#join">Начать игру</a>
+        <!-- Подпись та же, что у кнопки в шапке страницы: одна и та же дверь не
+             должна называться в трёх местах по-разному («Донат» в меню,
+             «Поддержать проект» вверху, «Военное снабжение» тут) — иначе человек
+             гадает, куда его ведут, вместо того чтобы просто нажать. -->
+        <a class="btn btn-dark" href="donate.html">Поддержать проект</a>
       </div>
     </div>
   </div>
 </section>
+
+</main>
 
 <footer>
   <div class="container">
@@ -311,21 +467,27 @@
         <a href="#season">Сезон 1936</a>
         <a href="#join">Как зайти</a>
         <a href="lands.html">Земли</a>
+        <a href="players.html">Игроки</a>
+        <a href="feed.html">Лента</a>
+        <a href="assets/img/map_1936.png" target="_blank" rel="noopener">Карта</a>
         <a href="wiki.html">Вики</a>
         <a href="tickets.html">Обращения</a>
         <a href="live.html">Эфиры</a>
         <a href="donate.html">Донат</a>
         <a href="#news">Новости</a>
+        <a href="offer.html">Оферта</a>
       </div>
     </div>
     <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
       и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+    <p class="foot-legal">Продавец: самозанятый, владелец проекта AEGIS. Связь — через <a href="tickets.html">обращения</a> на сайте. <a href="offer.html">Оферта</a>.</p>
   </div>
 </footer>
 
 <script src="js/config.js"></script>
-<script src="js/api.js"></script>
-<script src="js/main.js"></script>
+<script src="js/api.js?v=20260925"></script>
+<script src="js/main.js?v=20261010dl"></script>
 <script src="js/aegis3d.js"></script>
+<script src="js/event.js"></script>
 </body>
 </html>

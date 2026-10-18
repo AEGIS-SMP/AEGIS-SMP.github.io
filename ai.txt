@@ -1,0 +1,21 @@
+# AEGIS SMP — ai.txt
+# Использование материалов сайта для обучения и работы нейросетей запрещено.
+# No AI training, no dataset collection, no generative reuse. All rights reserved.
+# Rights holder: VineZerro (AEGIS project), (c) 2026. TDM rights reserved (EU DSM Art. 4(3)).
+
+User-Agent: *
+Disallow: /
+Disallow: *.html
+Disallow: *.json
+Disallow: *.js
+Disallow: *.css
+Disallow: *.png
+Disallow: *.jpg
+Disallow: *.jpeg
+Disallow: *.webp
+Disallow: *.gif
+Disallow: *.svg
+Disallow: *.mp4
+Disallow: *.webm
+Disallow: *.zip
+Disallow: *.jar

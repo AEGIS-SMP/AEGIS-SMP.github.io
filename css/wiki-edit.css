@@ -1,0 +1,404 @@
+/* AEGIS — правка вики на сайте (js/wiki-edit.js). Видят только Координатор
+   и выше: у игрока скрипт ничего не рисует, и этих классов на странице нет.
+   Правила сайта те же: один тёплый акцент, без свечения, блоки впритык не
+   ложатся нигде. */
+
+/* пометка черновика в боковом меню */
+.doc-nav a .dn-draft {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gold);
+  background: rgba(250, 212, 107, .1);
+  border-radius: 6px;
+  padding: 1px 7px;
+}
+
+.we-new {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px #34333a;
+  color: var(--gold);
+  font: 600 14px/1.4 var(--f-text);
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.we-new:hover { background: var(--panel-2); }
+
+/* полоса над страницей: кто правил последним, «Править», «История» */
+.we-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 22px;
+  padding: 10px 12px 10px 18px;
+  border-radius: 14px;
+  background: var(--panel-2);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.we-st { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; min-width: 0; }
+.we-st b { color: var(--ink); font-weight: 600; }
+.we-has { color: var(--or); }
+.we-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.we-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+  background: rgba(250, 212, 107, .1);
+  border-radius: 7px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.we-flash { margin: -4px 0 22px; }
+.we-err { color: #FF8A8A; }
+
+.we-b {
+  border: 0;
+  border-radius: 10px;
+  background: var(--panel-3);
+  color: var(--ink);
+  font: 600 13.5px/1.3 var(--f-text);
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.we-b:hover { background: #2c2b32; }
+.we-b:disabled { opacity: .45; cursor: default; }
+.we-b:disabled:hover { background: var(--panel-3); }
+.we-b-main { background: var(--or); color: #1b1206; }
+.we-b-main:hover { background: #ff9638; }
+.we-b-main:disabled:hover { background: var(--or); }
+.we-b:focus-visible, .we-op:focus-visible, .we-add:focus-visible, .we-new:focus-visible,
+.we-tools button:focus-visible, .we-tabs button:focus-visible, .we-back:focus-visible,
+.we-x:focus-visible, .we-link:focus-visible {
+  outline: 2px solid rgba(245, 134, 32, .7);
+  outline-offset: 2px;
+}
+
+.we-link {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--gold);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* пока правят — оглавление справа не нужно, текст получает его место */
+.doc.is-edit { grid-template-columns: 260px minmax(0, 1fr); }
+.doc.is-edit .doc-toc { display: none; }
+@media (max-width: 1180px) {
+  .doc.is-edit { grid-template-columns: 234px minmax(0, 1fr); }
+}
+
+/* ------------------------------------------------------------ редактор */
+
+.we-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 22px;
+}
+.we-top .we-b { margin-left: auto; }
+.we-back {
+  border: 0;
+  background: none;
+  padding: 6px 2px;
+  color: var(--muted);
+  font: 600 14px/1.3 var(--f-text);
+  cursor: pointer;
+}
+.we-back:hover { color: var(--ink); }
+.we-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--panel-2);
+}
+.we-tabs button {
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--muted);
+  font: 600 13.5px/1.3 var(--f-text);
+  padding: 7px 14px;
+  cursor: pointer;
+}
+.we-tabs button:hover { color: var(--ink); }
+.we-tabs button[aria-selected="true"] { background: var(--panel-3); color: var(--ink); }
+
+/* Заголовок редактора — служебный, не должен спорить с самой страницей. */
+.we-dh { margin-bottom: 26px; }
+.doc-body .we-dh h1 { font-size: clamp(24px, 2.6vw, 32px); }
+.we-dh p a { color: var(--gold); }
+.we-msg:empty { display: none; }
+.we-msg { margin-bottom: 22px; }
+.we-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+.we-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.we-hint { margin-top: 6px; font-size: 12.5px; line-height: 1.5; color: #8a867f; }
+.we-hint b { color: var(--ink); font-weight: 600; }
+.we-hint code, .we-help code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: .92em;
+  background: var(--panel-3);
+  border-radius: 5px;
+  padding: 1px 5px;
+  color: var(--ink);
+}
+.we-cnt.over { color: #FF8A8A; }
+.we-check label span { color: var(--ink); }
+.we-check label b { font-weight: 700; }
+
+/* Поля растут под текст сами (wiki-edit.js), ручка размера им не нужна. */
+.we-ed .field textarea {
+  min-height: 0;
+  resize: none;
+  overflow: hidden;
+}
+.we-ed .field textarea.we-body { min-height: 420px; line-height: 1.7; }
+.we-mono textarea { font-family: ui-monospace, Consolas, monospace; font-size: 14px; }
+
+/* Кнопки оформления едут вместе с длинным текстом — чтобы не листать
+   к началу ради «жирного». 72px — высота верхней шапки сайта. */
+.we-tools {
+  position: sticky;
+  top: 72px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0 10px;
+  background: var(--bg);
+}
+.we-tools button {
+  border: 0;
+  border-radius: 9px;
+  background: var(--panel-2);
+  color: var(--ink);
+  font: 500 13px/1.3 var(--f-text);
+  padding: 7px 11px;
+  cursor: pointer;
+}
+.we-tools button:hover { background: var(--panel-3); }
+.we-tools b { font-weight: 800; }
+.we-sep { width: 1px; height: 20px; background: #2c2b31; margin: 0 4px; }
+
+.we-help {
+  margin-top: 12px;
+  border-radius: 12px;
+  background: var(--panel-2);
+  padding: 12px 16px;
+}
+.we-help summary {
+  cursor: pointer;
+  color: var(--gold);
+  font-size: 14px;
+  font-weight: 600;
+}
+.we-help p { margin: 10px 0 0; font-size: 13.5px; line-height: 1.6; color: #c9c5bd; }
+
+/* карточки разделов, должностей, вопросов, групп модов */
+.we-card {
+  border-radius: 14px;
+  background: var(--panel-2);
+  padding: 16px 18px 4px;
+  margin-bottom: 16px;
+}
+.we-card-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.we-n { font-size: 13px; font-weight: 700; color: var(--gold); }
+.we-n i { font-style: normal; font-weight: 500; color: var(--muted); margin-left: 8px; }
+.we-ops { display: flex; gap: 4px; flex: none; }
+.we-op {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--panel-3);
+  color: var(--muted);
+  font: 600 14px/1 var(--f-text);
+  cursor: pointer;
+}
+.we-op:hover { color: var(--ink); background: #2c2b32; }
+.we-op-del:hover { color: #FF8A8A; }
+.we-op:disabled { opacity: .35; cursor: default; }
+.we-op:disabled:hover { color: var(--muted); background: var(--panel-3); }
+
+.we-rule {
+  border-radius: 12px;
+  background: rgba(0, 0, 0, .2);
+  padding: 10px 12px 12px;
+  margin-bottom: 12px;
+}
+.we-rule-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.we-rn { font-size: 13px; font-weight: 700; color: var(--gold); }
+.we-rule textarea { margin-bottom: 8px; display: block; }
+.we-rule textarea.we-one { margin-bottom: 0; font-size: 14px; }
+.we-pl { display: block; margin: 2px 0 5px 2px; font-size: 12px; font-weight: 600; color: #8a867f; }
+.we-more { margin-top: 10px; }
+.we-more > summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: #8a867f; padding: 4px 2px; }
+.we-more[open] > summary { margin-bottom: 6px; }
+
+.we-add {
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px #34333a;
+  color: var(--gold);
+  font: 600 13.5px/1.3 var(--f-text);
+  padding: 9px 14px;
+  margin: 0 0 16px;
+  cursor: pointer;
+}
+.we-add:hover { background: var(--panel-2); }
+.we-card .we-add:hover { background: var(--panel-3); }
+
+/* Сохранение всегда под рукой: низ редактора прилипает к низу окна. */
+.we-foot {
+  position: sticky;
+  bottom: 12px;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 26px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: 0 0 0 1px #2a2930, 0 12px 28px rgba(0, 0, 0, .45);
+}
+.we-note {
+  flex: 1 1 260px;
+  min-width: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--panel-3);
+  color: var(--ink);
+  font: 14px/1.4 var(--f-text);
+  padding: 10px 12px;
+  outline: none;
+}
+.we-note::placeholder { color: #66635e; }
+.we-note:focus { background: #26252b; box-shadow: 0 0 0 2px rgba(245, 134, 32, .55); }
+.we-status { font-size: 13px; line-height: 1.45; color: var(--muted); }
+.we-status:empty { display: none; }
+.we-fbtn { display: flex; gap: 8px; margin-left: auto; }
+.we-fbtn .btn { justify-content: center; }
+
+.we-prev { padding-top: 4px; }
+.we-prev > .dh { margin-bottom: 28px; }
+
+/* ------------------------------------------------------- окно истории */
+
+.we-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(8, 8, 10, .74);
+}
+.we-pop-in {
+  display: flex;
+  flex-direction: column;
+  width: min(820px, 100%);
+  max-height: calc(100vh - 32px);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 0 0 1px #2a2930;
+}
+.we-pop-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+}
+.we-pop-h h3 { margin: 0; font-size: 18px; font-weight: 700; color: var(--ink); min-width: 0; }
+.we-x {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--panel-3);
+  color: var(--ink);
+  font: 600 14px/1 var(--f-text);
+  cursor: pointer;
+}
+.we-x:hover { background: #2c2b32; }
+.we-pop-b { overflow-y: auto; padding: 0 18px 18px; overscroll-behavior: contain; }
+.we-pop-note { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+.we-pop-back { margin: 0 0 14px; }
+
+.we-hist { list-style: none; margin: 0; padding: 0; }
+.we-h { border-radius: 12px; background: var(--panel-2); padding: 13px 16px 14px; }
+.we-h + .we-h { margin-top: 10px; }
+.we-h.now { box-shadow: inset 3px 0 0 var(--gold); }
+.we-h-file { background: transparent; box-shadow: inset 0 0 0 1px #2c2b31; }
+.we-h-file.now { box-shadow: inset 0 0 0 1px #2c2b31, inset 3px 0 0 var(--gold); }
+.we-h-t { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; color: var(--ink); font-size: 14.5px; }
+.we-h-m { margin-top: 4px; font-size: 13px; color: var(--muted); }
+.we-h-n { margin-top: 6px; font-size: 14px; line-height: 1.5; color: #c9c5bd; overflow-wrap: anywhere; }
+.we-prev-pop .dh h1 { font-size: 26px; }
+
+/* отличия двух версий */
+.we-diff {
+  border-radius: 12px;
+  background: var(--panel-2);
+  padding: 8px 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.we-dl { display: flex; gap: 8px; padding: 1px 14px; }
+.we-dl i { flex: none; width: 12px; font-style: normal; font-weight: 700; }
+.we-dl span { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.we-d-eq { color: var(--muted); }
+.we-d-add { background: rgba(88, 194, 113, .12); color: var(--ink); }
+.we-d-add i { color: #58C271; }
+.we-d-del { background: rgba(255, 64, 64, .11); color: #e7c0c0; }
+.we-d-del i { color: #FF8A8A; }
+.we-d-gap { padding: 6px 14px 6px 34px; font-size: 12.5px; color: #6f6c66; }
+
+@media (max-width: 640px) {
+  .we-grid { grid-template-columns: 1fr; }
+  .we-bar { padding: 10px 12px; }
+  .we-acts, .we-acts .we-b { flex: 1 1 auto; }
+  .we-top .we-b { margin-left: 0; }
+  .we-card { padding: 14px 14px 2px; }
+  .we-foot { bottom: 8px; }
+  .we-fbtn { width: 100%; }
+  .we-fbtn .btn { flex: 1 1 0; }
+  .we-pop { padding: 0; align-items: stretch; }
+  .we-pop-in { max-height: none; border-radius: 0; }
+  .we-ed .field textarea.we-body { min-height: 300px; }
+}
+@media (pointer: coarse) {
+  .we-note { font-size: 16px; }
+}

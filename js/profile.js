@@ -32,6 +32,13 @@
   var live = null;        /* что стоит на сервере: {img, w, h, model, at} */
   var FILE_MAX = 160 * 1024;
 
+  /* На телефоне тащить картинку некуда — пальцем файл не перетащишь. Поэтому
+     на сенсорном вводе поле подписано «Нажми и выбери png», а на мыши остаётся
+     привычное «перетащи». Текст один на все три места, где поле сбрасывается,
+     иначе после отправки на телефоне снова появлялось бы «перетащи». */
+  var TOUCH = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  var DROP_IDLE = TOUCH ? 'Нажми и выбери png' : 'Перетащи png сюда';
+
   /* Где живёт служба — спрашиваем у js/api.js, а не ищем сами. Правила там одни
      на весь сайт: адрес берётся из js/config.js, http-служба с https-страницы
      не дёргается (браузер режет такой запрос молча), а ?svc= работает только на
@@ -207,6 +214,13 @@
   elDrop.addEventListener('click', function () {
     if (!elDrop.classList.contains('is-off')) elFile.click();
   });
+  /* Поле выбора файла спрятано, видимая кнопка — сама рамка. Значит рамка
+     обязана работать и с клавиатуры: иначе без мыши скин не поставить. */
+  elDrop.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+    e.preventDefault();
+    if (!elDrop.classList.contains('is-off')) elFile.click();
+  });
   elFile.addEventListener('change', function () {
     take(elFile.files && elFile.files[0]);
   });
@@ -226,12 +240,24 @@
     if (e.dataTransfer && e.dataTransfer.files) take(e.dataTransfer.files[0]);
   });
 
+  /* Выбранные руки отличаются только рамкой и цветом заголовка — тому, кто не
+     видит экрана, это не прочитают. aria-pressed говорит выбор словами. Отмечают
+     кнопки два места (клик и ответ сервера о том, что уже стоит), поэтому пометка
+     вынесена сюда: иначе одно из них рано или поздно забудут обновить. */
+  function markModel() {
+    var all = elModel.querySelectorAll('button');
+    for (var i = 0; i < all.length; i++) {
+      var on = all[i].getAttribute('data-m') === model;
+      all[i].classList.toggle('on', on);
+      all[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+
   elModel.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('button[data-m]') : null;
     if (!b) return;
     model = b.getAttribute('data-m');
-    var all = elModel.querySelectorAll('button');
-    for (var i = 0; i < all.length; i++) all[i].classList.toggle('on', all[i] === b);
+    markModel();
     view();
   });
 
@@ -251,10 +277,7 @@
         if (!s || !s.ok || !s.has) return;
         if (s.model === 'slim' || s.model === 'classic') {
           model = s.model;
-          var all = elModel.querySelectorAll('button');
-          for (var i = 0; i < all.length; i++) {
-            all[i].classList.toggle('on', all[i].getAttribute('data-m') === model);
-          }
+          markModel();
         }
         return fetch(base + '/skins/' + encodeURIComponent(nick) + '.png',
           { cache: 'no-store' }).then(function (r) {
@@ -330,7 +353,7 @@
         live = { img: picked.img, w: picked.w, h: picked.h, model: model, at: Date.now() };
         picked = null;
         elFile.value = '';
-        elName.textContent = 'Перетащи png сюда';
+        elName.textContent = DROP_IDLE;
         elDrop.classList.remove('is-set');
         view();
       });
@@ -346,7 +369,7 @@
       live = null;
       picked = null;
       elFile.value = '';
-      elName.textContent = 'Перетащи png сюда';
+      elName.textContent = DROP_IDLE;
       elDrop.classList.remove('is-set');
       view();
     });
@@ -355,6 +378,13 @@
   /* ---------------------------------- запуск ---------------------------------- */
 
   base = findBase();
+  /* Подпись поля выставляем кодом, а не в разметке: в html лежит «перетащи» —
+     вариант для мыши, и он же остаётся, если скрипт не выполнился. */
+  if (TOUCH) {
+    elName.textContent = DROP_IDLE;
+    var elHow = document.getElementById('pDropHow');
+    if (elHow) elHow.textContent = 'png 64×64, старые 64×32 тоже подойдут';
+  }
   var fromLauncher = new URLSearchParams(location.search).get('nick') || '';
   if (/^[A-Za-z0-9_]{3,16}$/.test(fromLauncher)) {
     elNick.value = fromLauncher;
@@ -362,7 +392,7 @@
   }
   view();
   if (!base) {
-    dead('Скины включатся вместе с сервером — сезон ещё готовится. Следи за новостями AEGIS.');
+    dead('Смена скина сейчас недоступна. Попробуй позже или напиши в тикет в Discord.');
   } else {
     /* Сначала спрашиваем службу, жива ли она вообще. Без этой проверки страница
        выглядела бы рабочей: человек вводил бы имя с паролем, выбирал картинку

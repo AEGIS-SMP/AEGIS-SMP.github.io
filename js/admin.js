@@ -259,7 +259,7 @@
       '<p class="cl-lead">Управление сайтом работает от службы игрового сервера: она хранит ' +
       'обращения, содержимое страниц, состав команды и экзамены. Пока адрес службы не ' +
       'прописан в <b>js/config.js</b>, показывать здесь нечего.</p></div>' +
-      '<div class="cab-why"><h4>Что будет внутри</h4><ul>' +
+      '<div class="cab-why"><h3>Что будет внутри</h3><ul>' +
       '<li>очередь обращений с сайта и из Discord — ответ прямо отсюда;</li>' +
       '<li>новости, эфиры, темы обращений и страницы вики — правятся без git;</li>' +
       '<li>состав команды, права и оценка работы на посту;</li>' +
@@ -281,7 +281,7 @@
       '<input id="adPass" type="password" autocomplete="current-password" ' +
       'placeholder="Пароль от аккаунта"></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="in">Войти</button>' +
-      '<span class="fg-note" id="adSay"></span></div></div>';
+      '<span class="fg-note" role="status" id="adSay"></span></div></div>';
     var n = el('adNick');
     if (n) n.focus();
   }
@@ -304,7 +304,9 @@
       '</div>';
 
     var o = d.home || {};
-    var n = '<nav class="cab-nav">';
+    /* Открытый раздел отличается только заливкой — читалке это не видно.
+       Это не нажатая кнопка, а «сейчас открыто вот это»: aria-current. */
+    var n = '<nav class="cab-nav" aria-label="Разделы управления">';
     NAV.forEach(function (t) {
       if (!can(t[2])) return;
       var b = '';
@@ -312,7 +314,7 @@
       if (t[0] === 'exams' && o.exams) b = String(o.exams.check || '');
       if (t[0] === 'staff' && o.staff) b = String(o.staff.apply || '');
       n += '<button type="button" data-nav="' + t[0] + '"' +
-        (view === t[0] ? ' class="on"' : '') + '>' + esc(t[1]) +
+        (view === t[0] ? ' class="on" aria-current="true"' : '') + '>' + esc(t[1]) +
         (b ? '<span class="cn-b">' + esc(b) + '</span>' : '') + '</button>';
     });
     n += '</nav>';
@@ -320,7 +322,10 @@
     return '<aside class="cab-side">' +
       '<div class="cab-me">' + av + '<div><div class="cm-n">' + esc(me.nick || '') +
       '</div><div class="cm-s">' + esc(me.role || 'команда') + '</div></div></div>' + n +
-      '<div class="cab-out"><a href="cabinet.html">Кабинет</a> · ' +
+      /* Точка-разделитель в своём теге: на телефоне «Выйти» становится отдельной
+         кнопкой под строкой, и точка повисала в хвосте «Кабинет ·». Голый текст
+         стилями не убрать, поэтому он завёрнут. */
+      '<div class="cab-out"><a href="cabinet.html">Кабинет</a><span class="cab-sep"> · </span>' +
       '<button type="button" data-act="out">Выйти</button></div></aside>';
   }
 
@@ -406,10 +411,11 @@
     var r = (d.tickets && d.tickets.rows) || [];
     var cur = d.tstate || 'open';
 
-    var tabs = '<div class="ad-sub">' + TSTATE.map(function (s) {
-      return '<button type="button" data-tst="' + s[0] + '"' +
-        (cur === s[0] ? ' class="on"' : '') + '>' + esc(s[1]) + '</button>';
-    }).join('') + '</div>';
+    var tabs = '<div class="ad-sub" role="group" aria-label="Состояние обращений">' +
+      TSTATE.map(function (s) {
+        return '<button type="button" data-tst="' + s[0] + '"' +
+          (cur === s[0] ? ' class="on" aria-current="true"' : '') + '>' + esc(s[1]) + '</button>';
+      }).join('') + '</div>';
 
     if (!r.length) {
       return tabs + empty('Пусто', cur === 'open'
@@ -450,7 +456,7 @@
       '<button class="btn btn-primary" data-act="t-reply">Отправить</button>' +
       '<button class="btn btn-dark" data-act="t-wait">Ждём игрока</button>' +
       '<button class="btn btn-dark" data-act="t-done">Закрыть обращение</button>' +
-      '<span class="fg-note" id="adTSay"></span></div>';
+      '<span class="fg-note" role="status" id="adTSay"></span></div>';
 
     return '<p class="tk-back"><a href="#/tickets">← к очереди</a></p>' +
       block('№' + esc(t.id || '') + ' · ' + esc(t.name || t.cat || ''),
@@ -465,10 +471,11 @@
   /* ---------------------------------------------------------- содержимое */
 
   function viewContent() {
-    var tabs = '<div class="ad-sub">' + SUBS.map(function (s) {
-      return '<button type="button" data-sub="' + s[0] + '"' +
-        (sub === s[0] ? ' class="on"' : '') + '>' + esc(s[1]) + '</button>';
-    }).join('') + '</div>';
+    var tabs = '<div class="ad-sub" role="group" aria-label="Что правим">' +
+      SUBS.map(function (s) {
+        return '<button type="button" data-sub="' + s[0] + '"' +
+          (sub === s[0] ? ' class="on" aria-current="true"' : '') + '>' + esc(s[1]) + '</button>';
+      }).join('') + '</div>';
 
     var c = d.content || {};
     var when = c.at ? '<span class="ad-h-r">правил ' + esc(c.by || 'кто-то') + ' ' +
@@ -510,7 +517,7 @@
       '<button class="btn btn-primary" data-act="n-save" data-i="' + i + '">' +
       (i >= 0 ? 'Сохранить' : 'Добавить') + '</button>' +
       (i >= 0 ? '<button class="btn btn-dark" data-act="n-cancel">Отмена</button>' : '') +
-      '<span class="fg-note" id="adCSay"></span></div></div>';
+      '<span class="fg-note" role="status" id="adCSay"></span></div></div>';
 
     /* Порядок здесь = порядок на главной, и первая строка — та самая крупная
        карточка наверху. Отдельной «главной новости» нет: добавил новую — она
@@ -547,7 +554,7 @@
       '<div class="field"><label for="sNick">Игровое имя</label>' +
       '<input id="sNick" placeholder="Ник на сервере, необязательно"></div></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="s-add">Добавить канал</button>' +
-      '<span class="fg-note" id="adCSay"></span></div></div>';
+      '<span class="fg-note" role="status" id="adCSay"></span></div></div>';
 
     return block('Каналы на странице «Эфиры»', '<div class="row-list">' + rows + '</div>') +
       block('Добавить канал', form) +
@@ -598,7 +605,7 @@
         '<div class="form-go">' +
         '<button class="btn btn-primary" data-act="w-save" data-i="' + i + '">Сохранить</button>' +
         '<button class="btn btn-dark" data-act="w-cancel">Отмена</button>' +
-        '<span class="fg-note" id="adCSay"></span></div></div>');
+        '<span class="fg-note" role="status" id="adCSay"></span></div></div>');
     }
 
     return block('Страницы вики', '<div class="row-list">' + rows + '</div>') + form +
@@ -650,7 +657,7 @@
         'Эту запись человек увидит."></textarea></div>' +
         '<div class="form-go"><button class="btn btn-primary" data-act="rv-save">Записать</button>' +
         '<button class="btn btn-dark" data-act="rv-cancel">Отмена</button>' +
-        '<span class="fg-note" id="adSSay"></span></div></div>');
+        '<span class="fg-note" role="status" id="adSSay"></span></div></div>');
     }
 
     return block('Заявки в команду', '<div class="row-list">' + app + '</div>') +
@@ -667,10 +674,11 @@
 
   function viewExams() {
     var cur = d.estate || 'all';
-    var tabs = '<div class="ad-sub">' + ESTATE.map(function (s) {
-      return '<button type="button" data-est="' + s[0] + '"' +
-        (cur === s[0] ? ' class="on"' : '') + '>' + esc(s[1]) + '</button>';
-    }).join('') + '</div>';
+    var tabs = '<div class="ad-sub" role="group" aria-label="Состояние экзаменов">' +
+      ESTATE.map(function (s) {
+        return '<button type="button" data-est="' + s[0] + '"' +
+          (cur === s[0] ? ' class="on" aria-current="true"' : '') + '>' + esc(s[1]) + '</button>';
+      }).join('') + '</div>';
 
     var rows = ((d.exams && d.exams.rows) || []).map(function (e) {
       var st = STATE[e.state] || ['', ''];
@@ -706,7 +714,7 @@
       '<div class="field"><label for="exMin">Времени на прохождение, минут</label>' +
       '<input id="exMin" type="number" min="15" max="240" value="60"></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="ex-issue">Выдать</button>' +
-      '<span class="fg-note" id="adESay"></span></div></div>');
+      '<span class="fg-note" role="status" id="adESay"></span></div></div>');
 
     return tabs +
       (rows ? block('Экзамены', '<div class="row-list">' + rows + '</div>')
@@ -770,7 +778,7 @@
       acts += '<button class="btn btn-dark" data-act="ex-regen">Перегенерировать</button>' +
         '<button class="btn btn-dark" data-act="ex-cancel">Погасить</button>';
     }
-    acts += '<span class="fg-note" id="adESay"></span></div>';
+    acts += '<span class="fg-note" role="status" id="adESay"></span></div>';
 
     var verdict = editable
       ? '<div class="field"><label for="exNote">Что сказать кандидату</label>' +
@@ -808,7 +816,7 @@
       '<input id="ntText" value="' + esc(n.text || '') +
       '" placeholder="Например: вайп 19 сентября, сервер уходит на профилактику"></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="set-save">Сохранить</button>' +
-      '<span class="fg-note" id="adNSay"></span></div></div>';
+      '<span class="fg-note" role="status" id="adNSay"></span></div></div>';
 
     var links = '<div class="row-list">' +
       row('Карта мира', esc(l.map || 'не задана'), '') +

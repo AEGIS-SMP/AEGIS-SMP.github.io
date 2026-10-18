@@ -4,43 +4,46 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Регистрация — AEGIS SMP</title>
-<meta name="description" content="Регистрация на AEGIS SMP: одно имя на человека. Проверка личности через VK ID или Яндекс ID — так требует закон об авторизации на сайтах (149-ФЗ, ст. 10.1-1). Ни телефона, ни документов сервер не видит.">
+<meta name="description" content="Регистрация на AEGIS SMP: одно имя на человека. Проверка личности через Discord или Telegram — работает в России, Украине и всём СНГ. Ни телефона, ни документов сервер не видит.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="canonical" href="https://aegis-smp.github.io/reg.html">
+<link rel="canonical" href="https://www.aegis-smp.com/reg.html">
 <meta name="theme-color" content="#0E0E10">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AEGIS SMP">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:url" content="https://aegis-smp.github.io/reg.html">
+<meta property="og:url" content="https://www.aegis-smp.com/reg.html">
 <meta property="og:title" content="Регистрация — AEGIS SMP">
-<meta property="og:description" content="Одно имя на человека. Проверка через VK ID или Яндекс ID — так требует закон. Ни телефона, ни документов сервер не видит.">
-<meta property="og:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta property="og:description" content="Одно имя на человека. Проверка через Discord или Telegram. Ни телефона, ни документов сервер не видит.">
+<meta property="og:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Регистрация — AEGIS SMP">
-<meta name="twitter:description" content="Одно имя на человека. Проверка через VK ID или Яндекс ID — так требует закон. Ни телефона, ни документов сервер не видит.">
-<meta name="twitter:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta name="twitter:description" content="Одно имя на человека. Проверка через Discord или Telegram. Ни телефона, ни документов сервер не видит.">
+<meta name="twitter:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
      кириллические гарнитуры — остальные алфавиты браузер возьмёт сам,
      только если они реально понадобятся. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=0925p">
 </head>
 <body>
+<a class="skip-link" href="#content">К содержанию</a>
 
 <header class="topbar">
   <div class="container topbar-in">
     <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
-    <button class="burger" aria-label="Меню"><span></span></button>
-    <nav class="topnav" id="topnav">
+    <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
+    <nav class="topnav" id="topnav" aria-label="Основное меню">
       <a href="index.html#season">Сезон 1936</a>
       <a href="index.html#arsenal">Арсенал</a>
       <a href="index.html#join">Как зайти</a>
       <a href="lands.html">Земли</a>
+      <a href="players.html">Игроки</a>
+      <a href="feed.html">Лента</a>
       <a href="wiki.html">Вики</a>
       <a href="tickets.html">Обращения</a>
       <a href="live.html">Эфиры</a>
@@ -49,6 +52,8 @@
     </nav>
   </div>
 </header>
+
+<main id="content" tabindex="-1">
 
 <div class="page-hero">
   <div class="container">
@@ -66,7 +71,25 @@
 
     <!-- ------------------------------- форма ------------------------------- -->
     <div class="reg-card">
-      <div class="reg-hard">
+      <!-- Что нужно: новое имя или новый пароль к своему. Второй режим открывает
+           и ссылка reg.html#recover (из кабинета, лавки, ответов в тикетах). -->
+      <div class="reg-mode" id="rMode" role="group" aria-label="Что нужно сделать">
+        <button type="button" data-m="reg" class="on" aria-pressed="true">Новое имя</button>
+        <button type="button" data-m="rec" aria-pressed="false">Забыл пароль</button>
+      </div>
+
+      <div class="reg-hard" data-only="rec" hidden>
+        <span class="mark">?</span>
+        <div>
+          <b>Забыл пароль — вернём доступ сами.</b>
+          Пройди ту же проверку, что при регистрации: той же службой и тем же аккаунтом.
+          Сервер сверит, что имя твоё, и даст задать новый пароль — в окне после проверки,
+          а у Telegram ссылкой от бота AEGIS. Новый пароль знаешь только ты: ни
+          администрация, ни бот его не видят.
+        </div>
+      </div>
+
+      <div class="reg-hard" data-only="reg">
         <span class="mark">!</span>
         <div>
           <b>На AEGIS возможен только один аккаунт на человека.</b>
@@ -74,17 +97,26 @@
           Отпечаток личности считается <b>не от страницы VK или Яндекса, а от номера
           телефона</b>, на который эта страница подтверждена. Завёл новую страницу
           на тот же номер — сервер видит того же человека и останавливает регистрацию.
-          Наказание тоже остаётся на человеке, а не на нике: перезайти под новым
-          именем нельзя, в том числе после блокировки.
+          У проверки через Discord и Telegram роль номера играет сам аккаунт. Наказание
+          тоже остаётся на человеке, а не на нике: перезайти под новым именем нельзя,
+          в том числе после блокировки.
         </div>
       </div>
 
-      <form class="reg-form" id="regForm" autocomplete="off">
+      <!-- autocomplete у формы не отключаем: каждое поле ниже само говорит, что
+           в нём (имя, новый пароль), и менеджер паролей ведёт себя как на любом
+           другом сайте — предлагает сохранить и подставляет при входе. Общий
+           «off» на форме этого не запрещает наверняка (браузеры трактуют его
+           по-разному), а только путает. -->
+      <form class="reg-form" id="regForm">
         <label for="rNick">Имя в игре</label>
         <input id="rNick" type="text" maxlength="16" placeholder="VineZerro" spellcheck="false"
                autocomplete="username">
-        <div class="reg-hint" id="rNickHint">3–16 знаков: латиница, цифры, подчёркивание.
+        <div class="reg-hint" id="rNickHint" data-only="reg">3–16 знаков: латиница, цифры, подчёркивание.
           Менять его потом нельзя.</div>
+        <div class="reg-hint" data-only="rec" hidden>Имя, к которому забыл пароль.</div>
+
+        <div data-only="reg">
 
         <label for="rPass">Пароль AEGIS</label>
         <input id="rPass" type="password" maxlength="64" placeholder="не меньше шести знаков"
@@ -95,38 +127,63 @@
         <label for="rPass2">Пароль ещё раз</label>
         <input id="rPass2" type="password" maxlength="64" placeholder="повтори пароль"
                autocomplete="new-password">
+        </div>
 
-        <label>Как подтвердим, что ты живой человек</label>
-        <div class="reg-pick" id="rPick">
-          <button type="button" data-p="vk">
+        <!-- Подпись относится к группе кнопок, а не к одному полю, поэтому у неё
+             нет «for»: связываем её с группой через aria-labelledby, иначе
+             экранный диктор прочитает три кнопки подряд без всякого вопроса. -->
+        <label id="rPickLbl"><span data-only="reg">Как подтвердим, что ты живой человек</span><span
+          data-only="rec" hidden>Чем подтверждал регистрацию</span></label>
+        <div class="reg-pick" id="rPick" role="group" aria-labelledby="rPickLbl">
+          <button type="button" data-p="ds" aria-pressed="false">
+            <b>Discord</b><span>аккаунту не меньше месяца</span>
+          </button>
+          <button type="button" data-p="tg" aria-pressed="false">
+            <b>Telegram</b><span>через бота AEGIS</span>
+          </button>
+          <button type="button" data-p="vk" aria-pressed="false">
             <b>VK&nbsp;ID</b><span>вход как во «ВКонтакте»</span>
           </button>
-          <button type="button" data-p="ya">
+          <button type="button" data-p="ya" aria-pressed="false">
             <b>Яндекс&nbsp;ID</b><span>вход как в Яндекс</span>
           </button>
-          <button type="button" data-p="local" hidden>
+          <button type="button" data-p="local" aria-pressed="false" hidden>
             <b>С этой машины</b><span>проверка разработчика</span>
           </button>
         </div>
-        <div class="reg-hint">Откроется окно самой службы. Пароль от VK или Яндекса
-          вводится там же, у них — к нам он не попадает.</div>
+        <div class="reg-hint" data-only="rec" hidden>Та же служба и тот же аккаунт, что
+          при регистрации, — иначе сервер не узнает в тебе хозяина имени. Telegram:
+          открой бота AEGIS, нажми «Запустить», и бот пришлёт ссылку на новый пароль.
+          Discord, VK&nbsp;ID и Яндекс&nbsp;ID: после их окна входа откроется окно
+          нового пароля.</div>
+        <div class="reg-hint" data-only="reg"><b>Зачем эти кнопки.</b> Выбери одну, любую — она только
+          подтверждает, что ты живой человек и имя у тебя одно. Ни на что в игре выбор
+          не влияет. Discord откроет своё окно входа: пароль вводится там, у них —
+          к нам он не попадает; аккаунту должно быть не меньше месяца. Telegram
+          откроет бота AEGIS: нажми в нём «Запустить», и имя закрепится.
+          Роли в нашем Discord эта кнопка не даёт — это отдельный шаг, он
+          <a href="#dslink">описан ниже</a>.</div>
 
         <label class="reg-check"><input type="checkbox" id="rOk1">
           <span>Согласен на обработку данных в объёме, описанном ниже, — чтобы AEGIS мог
           держать правило «одно имя на человека».</span></label>
-        <label class="reg-check"><input type="checkbox" id="rOk2">
+        <label class="reg-check" data-only="reg"><input type="checkbox" id="rOk2">
           <span>Мне есть 14 лет; если меньше — регистрацию видит кто-то из родителей.</span></label>
 
         <button class="btn btn-primary reg-go" type="submit" id="rGo">Пройти проверку
           и занять имя</button>
-        <div class="reg-say" id="rSay">Проверь имя и пароль, выбери службу проверки.</div>
+        <!-- Сюда попадают и подсказки, и отказы («пароли не совпали»). Строка
+             живая: role="status" заставляет браузер прочитать новый текст вслух
+             тому, кто не видит экрана, — иначе нажатие на кнопку для него
+             остаётся без ответа. -->
+        <div class="reg-say" id="rSay" role="status">Проверь имя и пароль, выбери службу проверки.</div>
       </form>
     </div>
 
     <!-- ---------------------- почему именно эти способы ---------------------- -->
     <div class="reg-side">
       <div class="reg-why">
-        <h3>Почему именно VK ID и Яндекс ID</h3>
+        <h2>Почему именно VK ID и Яндекс ID</h2>
         <p>Это не выбор администрации и не «удобно так». С <b>1 июня 2025 года</b> действует
           статья <b>10.1-1 Федерального закона № 149-ФЗ</b> «Об информации, информационных
           технологиях и о защите информации» (введена законом <b>№ 303-ФЗ от 08.08.2024</b>).
@@ -142,42 +199,83 @@
           значит хранить номера; Госуслуги и биометрия для входа на майнкрафт-сервер —
           дикость. VK ID и Яндекс ID уже есть почти у каждого, вход в один клик, и нам
           не достаётся ни номера, ни почты.</p>
-        <p class="reg-note">Discord, Telegram и обычная почта на роль такой проверки
-          по закону не годятся: это не российские информационные системы и они никого
-          не узнаю́т — под них можно наделать сколько угодно ящиков. Поэтому Discord у нас
-          остаётся для тикетов и ролей, а не пропуском.</p>
+        <p class="reg-note">VK ID и Яндекс ID подключим позже. Пока имя занимают через
+          <b>Discord</b> или <b>Telegram</b> — оба работают и в России, и в Украине,
+          и во всём СНГ. Правило то же: один аккаунт Discord или Telegram — одно имя.</p>
       </div>
 
       <div class="reg-why">
-        <h3>А если я не из России</h3>
+        <h2>А если я не из России</h2>
         <p>Регистрируйся так же. И VK ID, и Яндекс ID принимают номера всех стран СНГ —
           Беларуси, Казахстана, Армении, Кыргызстана, Узбекистана, Азербайджана,
           Молдовы, Таджикистана — и работают без российского номера. Гражданство мы
           не спрашиваем и не узнаём: сервер видит только «это тот же человек» или
           «это новый человек».</p>
-        <p>Если ни одной из этих служб у тебя нет — напиши в тикет в Discord, разберём
-          отдельно, без второго аккаунта.</p>
+        <p><b>Украина — отдельный случай, и скажем прямо:</b> VK и Яндекс там закрыты
+          на уровне провайдеров, и просить ради майнкрафта поднимать VPN и заводить
+          страницу во «ВКонтакте» мы не будем. Для тебя кнопки <b>Discord</b>
+          и <b>Telegram</b>. Они делают ровно то же самое: подтверждают, что за именем
+          живой человек, и закрепляют имя навсегда за тобой. У Discord условие одно —
+          аккаунту должно быть не меньше месяца, иначе проверка не засчитается.</p>
+        <p>Через Discord и Telegram регистрируются и те, кто вообще не из СНГ, и те, кто
+          просто не пользуется ни VK, ни Яндексом. Права в игре от способа проверки
+          не зависят ни на волос: держава, земли, экономика, заявки — всё одинаковое.
+          Роли в нашем Discord тоже от способа не зависят: их даёт бот после
+          привязки, а привязать Discord может любой, кто там есть.</p>
+        <p class="reg-note">Не сработала ни одна кнопка — это не тупик. Напиши
+          в <a href="tickets.html#/help">обращения</a>, тема «Вопросы | Помощь»:
+          регистрацию откроют руками, и это будет тот же единственный аккаунт,
+          а не второй в обход правила.</p>
+      </div>
+
+      <div class="reg-why" id="dslink">
+        <h2>Привязка Discord — отдельный шаг</h2>
+        <p>Кнопка Discord при регистрации только подтверждает, что ты живой человек.
+          Твой игровой ник с аккаунтом в нашем Discord она не связывает: это делает
+          <b>бот</b>, и для этого нужен <b>код</b>. Без связки бот не знает, чей
+          это ник, и роль твоей державы и города выдавать некому. После привязки
+          обращения подписаны твоим ником, а награды достаются тому, кто их заработал.
+          Привязка обязательна для всех — неважно, какой кнопкой ты регистрировался.
+          Discord у тебя нет — играть можно так же, просто ролей там не будет.</p>
+        <p>Привязать можно <b>без входа в игру</b>:</p>
+        <ol>
+          <li>открой <a href="cabinet.html">кабинет</a>, войди тем же ником и паролем
+            и нажми <b>«Получить код»</b> в строке Discord. В игре тот же код даёт
+            команда <b>/discord</b>;</li>
+          <li>в нашем Discord напиши <b>/гражданство</b>, вставь код в поле «пропуск»
+            и отправь. Бот ответит, что аккаунт привязан.</li>
+        </ol>
+        <p>Код живёт <b>15 минут</b>, срабатывает один раз и подписан сервером — чужой
+          не подойдёт. Держава ещё не выбрана? Привяжись всё равно. Когда тебя примут
+          в державу, возьми код ещё раз и снова отправь его <b>/гражданство</b>:
+          тогда бот выдаст роль державы. Один игровой аккаунт — один человек
+          в Discord; передумал — команда <b>/отвязаться</b>.</p>
       </div>
 
       <div class="reg-why">
-        <h3>Что сервер о тебе хранит</h3>
+        <h2>Что сервер о тебе хранит</h2>
         <p><b>Хранится:</b> имя в игре, пароль в виде необратимого хэша (сам пароль
-          не хранится нигде), пометка «проверен через VK ID / Яндекс ID» и одно
-          непрозрачное число — отпечаток личности. По этому числу нельзя узнать
+          не хранится нигде), пометка «проверен через VK ID / Яндекс ID / Discord /
+          Telegram», ник в этой службе (его видно в профиле в игре)
+          и одно непрозрачное число — отпечаток личности. По этому числу нельзя узнать
           человека, но по нему видно, что второе имя заводит тот же самый.</p>
         <p><b>Номер телефона не сохраняется.</b> В момент проверки служба сообщает
           серверу подтверждённый номер, сервер тут же считает от него то самое
           необратимое число и номер выбрасывает — обратно из числа номер не достать.
           Именно поэтому отпечаток не сбрасывается новой страницей VK или Яндекса.</p>
+        <p>У проверки через <b>Discord</b> и <b>Telegram</b> номера нет вовсе: отпечаток
+          там считается от номера самого аккаунта. Для Discord условие про месяц — новый
+          аккаунт заводится за минуту, месячный уже нет, и второе имя таким способом
+          не выкроить.</p>
         <p><b>Не хранится и не запрашивается:</b> почта, фамилия, дата рождения,
-          адрес, документы, пароль от VK или Яндекса, их токены доступа.</p>
+          адрес, документы, пароль от VK, Яндекса, Discord или Telegram, их токены доступа.</p>
         <p>Данные лежат на сервере проекта в России и никуда не передаются: ни рекламе,
           ни аналитике, ни третьим лицам. Удалить своё имя вместе с отпечатком можно
           в любой момент — тикетом в Discord.</p>
       </div>
 
       <div class="reg-why">
-        <h3>Зачем такая строгость</h3>
+        <h2>Зачем такая строгость</h2>
         <p>AEGIS — военно-политический сезон: державы, войны, договоры и репутация.
           Всё это держится на том, что за именем стоит человек, а не десять «мультов»
           для голосований, заявок на страны, обхода банов и ферм из червонцев.
@@ -189,7 +287,7 @@
       </div>
 
       <div class="reg-why">
-        <h3>Если аккаунт заблокировали</h3>
+        <h2>Если аккаунт заблокировали</h2>
         <p>Блокировка ложится на отпечаток личности, а не на ник. Пока она действует,
           регистрация нового имени этим же человеком не пройдёт — ни с другой страницы
           VK, ни через Яндекс вместо VK, ни с другого компьютера. Сроки блокировок
@@ -204,6 +302,8 @@
   </div>
 </section>
 
+</main>
+
 <footer>
   <div class="container">
     <div class="foot-in">
@@ -212,21 +312,25 @@
         <a href="index.html#season">Сезон 1936</a>
         <a href="index.html#join">Как зайти</a>
         <a href="lands.html">Земли</a>
+        <a href="players.html">Игроки</a>
+        <a href="feed.html">Лента</a>
         <a href="wiki.html">Вики</a>
         <a href="tickets.html">Обращения</a>
         <a href="live.html">Эфиры</a>
         <a href="donate.html">Донат</a>
         <a href="index.html#news">Новости</a>
+        <a href="offer.html">Оферта</a>
       </div>
     </div>
     <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
       и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+    <p class="foot-legal">Продавец: самозанятый, владелец проекта AEGIS. Связь — через <a href="tickets.html">обращения</a> на сайте. <a href="offer.html">Оферта</a>.</p>
   </div>
 </footer>
 
 <script src="js/config.js"></script>
-<script src="js/api.js"></script>
+<script src="js/api.js?v=20260925"></script>
 <script src="js/main.js"></script>
-<script src="js/reg.js"></script>
+<script src="js/reg.js?v=20260925rec"></script>
 </body>
 </html>

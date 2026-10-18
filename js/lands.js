@@ -39,6 +39,34 @@
     return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
 
+  /* Суточный налог с 17.09.2026 считается СТУПЕНЬКОЙ от цены и только целыми
+     червонцами — процентов в механике больше нет (ЭКОНОМИКА.md 4.4). Ступень
+     сгорает всегда, сверху держава кладёт надбавку себе: малый ×1, средний ×2,
+     большой ×3. Поэтому показываем вилку: у одной и той же земли в разных
+     странах налог разный. Поле tax из прайса врёт (оно недельное и одно на
+     всех) — считаем сами от цены. */
+  var TAX_STEPS = [[30, 1], [80, 2], [150, 3], [250, 5], [400, 8], [1e9, 12]];
+  function taxStep(price) {
+    price = Number(price) || 0;
+    for (var i = 0; i < TAX_STEPS.length; i++) {
+      if (price <= TAX_STEPS[i][0]) return TAX_STEPS[i][1];
+    }
+    return 12;
+  }
+  function taxDay(price) {
+    var s = taxStep(price);
+    return s + '–' + s * 3;
+  }
+
+  /* Дата в виде «10.09.2026». Своя, а не toLocaleDateString: у части игроков
+     локаль браузера нерусская, и дата приезжает как «9/10/2026». */
+  function day(ms) {
+    var d = new Date(Number(ms) || 0);
+    if (!ms || isNaN(d.getTime())) return '';
+    function p(n) { return (n < 10 ? '0' : '') + n; }
+    return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear();
+  }
+
   function plural(n, f) {
     n = Math.abs(Math.floor(n)) % 100;
     var d = n % 10;
@@ -53,6 +81,14 @@
     return String(s || '').toLowerCase().replace(/ё/g, 'е');
   }
 
+  /* Порог «дешёвой» провинции приходит из данных (lands_build.py считает его
+     по нижней четверти цен). Зашивать сюда число нельзя: цены карты уже
+     переезжали с 100-6000 на 12-600, и «дешевле 300 Ч» после такого переезда
+     называло дешёвыми три четверти мира. */
+  function cheapEdge() {
+    return (data && data.cheap_to) || 60;
+  }
+
   /* ------------------------------------------------------------- отбор строк */
 
   function rows() {
@@ -60,7 +96,7 @@
     var nq = norm(q);
     var out = all.filter(function (r) {
       if (country && r.country !== country) return false;
-      if (only === 'cheap' && r.price >= 300) return false;
+      if (only === 'cheap' && r.price >= cheapEdge()) return false;
       if (only === 'sea' && !r.coast) return false;
       if (only === 'cap' && !r.capital) return false;
       if (only === 'free' && taken && taken[r.id]) return false;
@@ -78,8 +114,8 @@
       'Цены пересчитываются под свежую нарезку карты.';
     body.innerHTML =
       '<div class="empty"><h4>Таблица цен ещё считается</h4>' +
-      '<p>' + esc(why) + ' Правила выше уже окончательные: минимальная ' +
-      'провинция стоит 100 червонцев, налог — 3% от цены в неделю. Полный ' +
+      '<p>' + esc(why) + ' Правила выше уже окончательные: землю покупают ' +
+      'один раз у государства и каждые сутки платят с неё налог. Полный ' +
       'список с ценой каждой земли появится здесь, как только карта отдаст ' +
       'пересчитанный прайс.</p></div>';
   }
@@ -94,7 +130,7 @@
 
     var chips = [
       ['', 'все'],
-      ['cheap', 'дешевле 300 Ч'],
+      ['cheap', 'дешевле ' + money(cheapEdge()) + ' Ч'],
       ['sea', 'с выходом к морю'],
       ['cap', 'столицы']
     ];
@@ -106,16 +142,21 @@
       'stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input id="lnQ" type="search" placeholder="Провинция или держава" ' +
       'value="' + esc(q) + '">' +
-      '<button type="button" class="s-clear" data-act="clear" aria-label="Очистить">×</button>' +
+      '<button type="button" class="s-clear" data-act="clear" aria-label="Очистить">✕</button>' +
       '</label>' +
       '<select id="lnC" aria-label="Держава">' + opts + '</select>' +
       '<select id="lnS" aria-label="Порядок">' +
       '<option value="up"' + (sort === 'up' ? ' selected' : '') + '>Сначала дешёвые</option>' +
       '<option value="down"' + (sort === 'down' ? ' selected' : '') + '>Сначала дорогие</option>' +
       '</select></div>' +
-      '<div class="ln-chips">' + chips.map(function (c) {
+      /* Выбранный отбор отличается только заливкой — читалке это не видно,
+         поэтому рядом с классом «on» ставится aria-pressed. */
+      '<div class="ln-chips" role="group" aria-label="Что показывать">' +
+      chips.map(function (c) {
+        var on = only === c[0];
         return '<button type="button" data-only="' + c[0] + '"' +
-          (only === c[0] ? ' class="on"' : '') + '>' + esc(c[1]) + '</button>';
+          (on ? ' class="on"' : '') + ' aria-pressed="' + (on ? 'true' : 'false') + '">' +
+          esc(c[1]) + '</button>';
       }).join('') + '</div>';
   }
 
@@ -123,10 +164,41 @@
     var d = data;
     var t = list.length + ' ' + plural(list.length, ['провинция', 'провинции', 'провинций']);
     if (list.length !== d.count) t += ' из ' + d.count;
-    var s = 'от ' + money(d.min) + ' до ' + money(d.max) + ' Ч, медиана ' +
-      money(d.med) + ' Ч';
-    if (!taken) s += ' · занятость появится вместе с сервером';
-    return '<div class="ln-sum"><b>' + esc(t) + '</b> · ' + esc(s) + '</div>';
+
+    /* Разброс цен считаем по тому, что человек СЕЙЧАС видит, а не по всему
+       файлу. Раньше строка всегда говорила «от 100 до 6 000 Ч, медиана 490» —
+       и рядом со списком одних столиц, где каждая стоит 900, читалась как
+       обещание найти среди них землю за сотню. */
+    var p = list.map(function (r) { return r.price; }).sort(function (a, b) {
+      return a - b;
+    });
+    var s;
+    if (!p.length) s = '';
+    else if (p[0] === p[p.length - 1]) s = 'все по ' + money(p[0]) + ' Ч';
+    else {
+      s = 'от ' + money(p[0]) + ' до ' + money(p[p.length - 1]) + ' Ч, медиана ' +
+        money(p[p.length >> 1]) + ' Ч';
+    }
+    if (!taken) s += (s ? ' · ' : '') + 'занятость появится вместе с сервером';
+    /* Возраст таблицы — не мелочь: нарезку мира правят чаще, чем пересчитывают
+       прайс, и тогда цены в списке старше самой карты. Пусть это видно, а не
+       выясняется уже на сервере. */
+    var src = day(d.src_at);
+    if (src) s += ' · цены посчитаны ' + src;
+
+    /* Список из четырёх с лишним сотен строк сам по себе выглядит полным, и
+       никто не догадается, что часть земель в него не попала. Если сборка
+       нашла провинции без ценника (lands_build.py сверяет прайс с живой
+       нарезкой) — говорим это прямо, отдельной строкой. */
+    var gap = '';
+    if (d.no_price > 0) {
+      gap = '<div class="ln-note">На карте ' + money(d.live) + ' ' +
+        plural(d.live, ['провинция', 'провинции', 'провинций']) + ', и у ' +
+        money(d.no_price) + ' из них ценника ещё нет: карту перерезали позже, ' +
+        'чем считали цены. Эти земли появятся в списке после пересчёта — ' +
+        'придумывать им цену сайт не станет.</div>';
+    }
+    return '<div class="ln-sum"><b>' + esc(t) + '</b> · ' + esc(s) + '</div>' + gap;
   }
 
   function line(r) {
@@ -150,7 +222,7 @@
       '<div class="rw-t">' + esc(r.name) + (st ? ' ' + st : '') + '</div>' +
       '<div class="rw-s">' + sub.join(' · ') + '</div></div>' +
       '<div class="rw-r ln-r"><b>' + money(r.price) + ' Ч</b>' +
-      '<span>налог ' + money(r.tax) + ' Ч в неделю</span></div></div>';
+      '<span>налог ' + taxDay(r.price) + ' Ч в сутки</span></div></div>';
   }
 
   function paint() {
@@ -164,10 +236,12 @@
           ? '<div class="ln-more"><button class="btn btn-dark" data-act="more">' +
             'Показать ещё ' + Math.min(STEP, list.length - shown) + '</button></div>'
           : '')
-      /* Числа берём из самого файла, а не из головы: нарезку карты меняли уже
-         дважды (1076 -> 487), и «больше тысячи» в тексте пережило бы правку. */
+      /* Числа берём из самого файла, а не из головы: и нарезку карты, и сам
+         прайс переделывали уже не раз (1076 -> 1053 -> 507 -> 495 провинций,
+         цены 100-6000 -> 10-600), а число в тексте такую правку переживает. */
       : '<div class="empty"><h4>Ничего не нашлось</h4><p>Попробуй другое название ' +
-        'или сними фильтр — всего провинций ' + (data.count || 0) +
+        'или сними фильтр — в списке ' + (data.count || 0) + ' ' +
+        plural(data.count || 0, ['провинция', 'провинции', 'провинций']) +
         ', что-нибудь подходящее есть точно.</p></div>';
 
     body.innerHTML = bar() + head(list) + body_;
@@ -207,6 +281,18 @@
       var i = document.getElementById('lnQ');
       if (i) { i.focus(); i.setSelectionRange(v.length, v.length); }
     }, 180);
+  });
+
+  /* Enter в поиске: список и так обновляется по ходу набора, но нажатие ждут
+     все — а оно ничего не делало. Дорисовываем сразу, не дожидаясь паузы, и
+     уводим фокус: на телефоне клавиатура закрывает собой половину найденного. */
+  body.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.target.id !== 'lnQ') return;
+    e.preventDefault();
+    clearTimeout(timer);
+    q = e.target.value; shown = STEP; paint();
+    var i = document.getElementById('lnQ');
+    if (i) i.blur();
   });
 
   body.addEventListener('change', function (e) {

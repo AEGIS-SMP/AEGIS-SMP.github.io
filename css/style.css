@@ -52,10 +52,21 @@
   --ember:   #854535;
   --burn:    #4D1C15;
   --brass:   #976B44;
-  --steel:   #636166;
+  /* Третий по яркости цвет текста: им написаны подписи под ценами, пометки
+     кейсов и китов, старые цены. Был #636166 — на панелях это 2,8:1, а буквы
+     там по 11–13 пикселей: днём с телефона строка «по отдельности · выгода»
+     просто не читается, и выгода, ради которой её и написали, проходит мимо.
+     Поднят до порога 4,5:1 на самой светлой из панелей (#232228). Остаётся
+     заметно темнее --muted, так что три ступени текста сохраняются. */
+  --steel:   #8A888F;
   --ink:     #E8E6E1;
   --muted:   #9b978f;
   --red:     #FF4040;
+  /* Тот же красный, но приглушённый до уровня, на котором белые буквы поверх
+     него берут порог 4,5:1. На ярком #FF4040 белая «−21%» давала всего 3,5:1 —
+     скидка написана мелко и жирно, и именно она должна читаться первой. Ярким
+     --red остаются полоски и подсветки, где текста нет. */
+  --red-lo:  #E03131;
   --grad:    linear-gradient(to top, var(--or), var(--gold-hi));
   --grad-h:  linear-gradient(90deg, var(--or), var(--gold-hi));
   --shadow:  0 14px 40px rgba(0, 0, 0, .5);
@@ -72,6 +83,12 @@ html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: #F58620 #0c0c0e;
+  /* Место под ленту прокрутки держится всегда, даже когда страница целиком
+     влезла в экран. Без этого переход с длинной страницы на короткую (например,
+     на 404) сдвигает всю вёрстку на ширину ленты — читается как рывок. На
+     телефоне лента рисуется поверх содержимого, и правило там ничего не
+     занимает. */
+  scrollbar-gutter: stable;
 }
 
 /* фирменная лента прокрутки */
@@ -135,6 +152,26 @@ h1, h2, h3, .display {
 
 .section-head { margin-bottom: 44px; }
 .section-head h2 { font-size: clamp(30px, 4.6vw, 52px); }
+
+/* Короткая черта над заголовком раздела: она дорисовывается слева направо,
+   когда раздел выезжает в окно. Держится на классе .in, который вешает
+   наблюдатель из main.js, — если скрипт не отработал, черта просто стоит
+   целиком, а не остаётся обрубком. */
+.section-head::before {
+  content: '';
+  display: block;
+  width: 62px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--grad-h);
+  margin-bottom: 20px;
+}
+.section-head.reveal::before {
+  transform: scaleX(.14);
+  transform-origin: left center;
+  transition: transform .75s cubic-bezier(.2,.8,.3,1) .12s;
+}
+.section-head.reveal.in::before { transform: scaleX(1); }
 .section-head .sub {
   margin-top: 14px;
   max-width: 640px;
@@ -142,6 +179,39 @@ h1, h2, h3, .display {
 }
 
 section { padding: 88px 0; }
+
+/* Общая метка фокуса с клавиатуры. У кнопок и плиток она была своя, а обычные
+   ссылки её не имели — идущий по сайту табом терял, где он сейчас стоит.
+   :where() даёт нулевой вес, поэтому все частные правила фокуса (в том числе
+   поля ввода со своей подсветкой вместо рамки) остаются главнее. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Первая остановка табуляции на любой странице. Шапка одинаковая везде, и без
+   этой ссылки человек с клавиатуры (и экранный диктор) каждый раз проходит
+   меню целиком, прежде чем добраться до текста. Мышью она не видна никогда:
+   лежит выше экрана и выезжает только под фокусом. Tabindex="-1" на <main>
+   нужен, чтобы после перехода табуляция продолжилась внутри содержимого, а не
+   вернулась в начало, — Safari сам этого не делает. */
+.skip-link {
+  position: fixed;
+  left: 14px;
+  top: -80px;
+  z-index: 300;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--panel-3);
+  color: var(--ink);
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+  transition: top .15s ease;
+}
+.skip-link:focus { top: 14px; }
 
 /* ---------- кнопки ---------- */
 
@@ -158,44 +228,92 @@ section { padding: 88px 0; }
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  position: relative;
+  overflow: hidden;
+  transition: background-color .18s ease, color .18s ease;
   white-space: nowrap;
+  /* Кнопкой бывает и <button>, и ссылка. У <button> браузер не наследует
+     межстрочный интервал страницы, а у ссылки наследует — те же 1.65, что у
+     абзацев. От этого одинаковые с виду кнопки стояли разной высоты: в
+     кабинете «Поменять» ссылкой выходило 43 пикселя, а «Сменить» кнопкой
+     строкой ниже — 38, и столбик из двух действий выглядел неровным. Задаём
+     интервал явно: normal — ровно то, что <button> и так считает, поэтому
+     настоящие кнопки не меняются, а ссылки подстраиваются под них. */
+  line-height: normal;
 }
+
+/* Отклик на наведение — только цвет заливки.
+   Кнопка ничего вокруг себя не подсвечивает: оранжевое зарево под ней и белый
+   блик, пробегавший по кнопке, овнер забраковал — «кнопки светятся». Раньше
+   она ещё и подпрыгивала на 2px, от чего у нижней кромки уезжала из-под
+   указателя и подсветка начинала мигать. Осталось то, что делают везде и что
+   не спутать ни с чем: под курсором заливка гуще, при нажатии — темнее.
+
+   В списке переходов выше стоит не сокращение background, а именно
+   background-color. Картинку-градиент браузер переливать не умеет:
+   background-image по стандарту меняется скачком, так что «плавные .18s» на
+   оранжевых кнопках были выдумкой — заливка перекладывалась за один кадр. И
+   кадр этот выходил кривой: слой кнопки (скруглённые углы + overflow) на нём
+   перерисовывался целиком, и между старым и новым градиентом успевал мелькнуть
+   собственный фон кнопки, то есть пустота, а сквозь неё — тёмная страница.
+   Овнер видел это как «оранжевые кнопки промаргивают чёрным». Тёмные кнопки
+   красятся цветом, а не картинкой, и переливаются честно — их правило ниже
+   осталось прежним. */
+.btn:active { filter: brightness(.94); }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 .btn-primary {
   background: var(--grad);
   color: #241203;
-  box-shadow: 0 10px 26px rgba(245, 134, 32, .32);
+  /* своя система координат: слой наведения лежит ниже нуля и не должен
+     провалиться под фон карточки, на которой стоит кнопка */
+  isolation: isolate;
 }
-.btn-primary:hover {
-  filter: brightness(1.09);
-  transform: translateY(-2px);
-  box-shadow: 0 14px 32px rgba(245, 134, 32, .44);
+/* Густой градиент лежит готовым слоем поверх обычного и просто проявляется.
+   Перерисовки нет — меняется одна прозрачность, а её браузер считает на
+   видеокарте, поэтому чёрному кадру взяться неоткуда. z-index: -1 держит слой
+   над собственной заливкой кнопки и под её надписью. */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(to top, #E0761A, var(--gold));
+  opacity: 0;
+  transition: opacity .18s ease;
+  pointer-events: none;
 }
+.btn-primary:hover::after { opacity: 1; }
 
 .btn-dark {
   background: var(--panel-2);
   color: var(--ink);
 }
-.btn-dark:hover {
-  background: var(--panel-3);
-  transform: translateY(-2px);
-}
+.btn-dark:hover { background: var(--panel-3); }
 
 .btn-sm { padding: 11px 20px; font-size: 13px; border-radius: 10px; }
 
-/* Пока идёт отправка кнопка выключена — она не должна при этом подпрыгивать
-   под курсором, иначе кажется, что по ней можно нажать ещё раз. */
+/* Выключенная кнопка не отвечает ничем — иначе кажется, что по ней можно
+   нажать ещё раз: заливка под курсором остаётся прежней. */
 .btn[disabled] { opacity: .55; cursor: default; }
-.btn[disabled]:hover { transform: none; filter: none; box-shadow: none; }
+.btn[disabled]:hover { filter: none; }
+/* У выключенной кнопки слоя наведения нет вовсе: иначе он проявился бы под
+   курсором и она снова выглядела бы живой. */
+.btn-primary[disabled]::after { content: none; }
+.btn-dark[disabled]:hover { background: var(--panel-2); }
 
 /* ---------- шапка ---------- */
 
+/* Шапка залита фоном наглухо. Было 0.96 — четыре процента на вид ничего не
+   добавляли, но текст, проезжающий под шапкой, просвечивал бледной тенью:
+   на телефоне под шапку попадают крошки и заголовки, и это читается как
+   недорисованный кадр, а не как приём. */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 90;
-  background: rgba(14, 14, 16, .96);
+  background: var(--bg);
   box-shadow: 0 6px 24px rgba(0, 0, 0, .45);
 }
 
@@ -216,7 +334,15 @@ section { padding: 88px 0; }
   align-items: center;
 }
 
-.topnav a {
+/* Правила пунктов меню написаны через :not(.btn) не для красоты. В том же ряду
+   стоят две кнопки — «Кабинет» и «Донат», — и раньше они попадали под общий
+   отбор: приглушённая прозрачность .78 гасила оранжевую заливку доната (она
+   сливалась с тёмной шапкой, овнер спросил, почему кнопка сверху справа такая
+   тёмная), а цвет var(--ink) перебивал тёмную надпись кнопки, потому что
+   `.topnav a` весит больше, чем `.btn-primary`. На наведении сверху ложился
+   ещё и золотой текст — на оранжевом фоне он почти не читался. Кнопка в меню
+   должна выглядеть как кнопка везде. */
+.topnav a:not(.btn) {
   font-family: var(--f-disp);
   font-weight: 700;
   font-size: 13px;
@@ -227,8 +353,8 @@ section { padding: 88px 0; }
   transition: opacity .15s, color .15s;
   white-space: nowrap;
 }
-.topnav a:hover { opacity: 1; color: var(--gold-hi); }
-.topnav a.active { opacity: 1; color: var(--gold); }
+.topnav a:not(.btn):hover { opacity: 1; color: var(--gold-hi); }
+.topnav a:not(.btn).active { opacity: 1; color: var(--gold); }
 
 .burger {
   display: none;
@@ -280,8 +406,15 @@ section { padding: 88px 0; }
     linear-gradient(100deg, rgba(14, 14, 16, .72) 0%, rgba(14, 14, 16, .1) 55%);
 }
 
+/* Поля пишем по одному, а не сокращением: сокращение `padding: 140px 0 84px`
+   заодно обнуляло боковые 24px, которые задаёт .container. На большом экране
+   это не видно — блок узкий и стоит посреди страницы, — а на телефоне ширина
+   контейнера равна ширине экрана, и заголовок, текст, обе кнопки и плашки
+   отсчёта упирались прямо в край стекла. Ниже по странице поля на месте, так
+   что первый экран выглядел съехавшим относительно всего остального. */
 .hero-in {
-  padding: 140px 0 84px;
+  padding-top: 140px;
+  padding-bottom: 84px;
   max-width: 760px;
 }
 
@@ -327,6 +460,207 @@ section { padding: 88px 0; }
 }
 .chip b { color: var(--gold-hi); font-weight: 700; margin-right: 6px; }
 
+/* ---------- обратный отсчёт до открытия ----------
+
+   Табло из четырёх ячеек: дни, часы, минуты, секунды. Каждая цифра сидит в
+   своей клетке с обрезкой по краям — уходящая уезжает вверх, приходящая
+   поднимается снизу. Никакого стекла и свечения: те же панели и та же
+   акцентная полоска сверху, что у карточек сайта.
+   Разметку собирает js/main.js от одной даты (OPEN_DATE). */
+
+.cdown { margin-top: 30px; }
+
+.cd-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.cd-cell {
+  position: relative;
+  min-width: 124px;
+  padding: 14px 20px 12px;
+  border-radius: 16px;
+  background: linear-gradient(to bottom, #1F1E23, #151417);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .45);
+  overflow: hidden;
+  text-align: center;
+  /* Появляются по очереди слева направо — порядковый номер ячейки js кладёт
+     в --i. Both, чтобы до своей задержки ячейка не мигнула готовой. */
+  animation: cd-rise .5s cubic-bezier(.22, .61, .36, 1) both;
+  animation-delay: calc(var(--i) * .08s);
+}
+
+/* Акцентная полоска по верхней кромке — приём карточек, повторённый здесь,
+   чтобы табло не выглядело деталью из другого проекта. */
+.cd-cell::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 2px;
+  background: var(--grad);
+}
+
+/* Искра по этой полоске. Пробегает один раз, когда в ячейке сменилось число,
+   и только у дней, часов и минут: подсвечивать каждую секунду — мельтешение. */
+.cd-cell::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 40%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--spark), transparent);
+  transform: translateX(-110%);
+  opacity: 0;
+}
+.cd-cell.bump::after { animation: cd-sweep .9s ease-out; }
+
+.cd-num {
+  display: flex;
+  justify-content: center;
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 56px;
+  line-height: 1.06;
+  color: var(--gold-hi);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ширина клетки задана в em: цифры в Montserrat разной ширины, и без
+   фиксированной клетки число дёргалось бы вбок на каждой смене.
+
+   Клетка обрезает содержимое (иначе уезжающая цифра вылезла бы на соседнюю),
+   и поэтому она обязана быть ШИРЕ самой широкой цифры, а не примерно равной
+   ей. Было .66em — 36.9px при кегле 56. Замер в браузере: у Montserrat 900
+   четвёрка занимает 40px по краске, ноль 38, восьмёрка 37 — то есть от каждой
+   широкой цифры отрезало по полтора пикселя с боков. Овнер видел это как
+   «цифры обрезаются чуть со сторон». .8em — 44.8px, запас по 2.4px с каждой
+   стороны; цифры по-прежнему стоят ровным столбиком, потому что ширина клетки
+   одна на всех. */
+.cd-slot {
+  position: relative;
+  display: block;
+  width: .8em;
+  height: 1.06em;
+  overflow: hidden;
+}
+.cd-slot b {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  display: block;
+  font-weight: inherit;
+}
+.cd-nxt { opacity: 0; }
+.cd-slot.roll .cd-cur { animation: cd-out .42s cubic-bezier(.22, .61, .36, 1) forwards; }
+.cd-slot.roll .cd-nxt { animation: cd-in  .42s cubic-bezier(.22, .61, .36, 1) forwards; }
+
+@keyframes cd-out { to   { transform: translateY(-105%); opacity: 0; } }
+@keyframes cd-in  { from { transform: translateY(105%);  opacity: 0; }
+                    to   { transform: translateY(0);     opacity: 1; } }
+@keyframes cd-rise { from { opacity: 0; transform: translateY(12px); } }
+@keyframes cd-sweep {
+  0%   { transform: translateX(-110%); opacity: 0; }
+  15%  { opacity: .95; }
+  100% { transform: translateX(300%);  opacity: 0; }
+}
+
+.cd-lbl {
+  margin-top: 4px;
+  font-family: var(--f-text);
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Отсчёт кончился. Строка заменяет табло целиком: нули на месте отсчёта
+   читаются как поломка, а не как «уже открыто». */
+.cd-open {
+  display: none;
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 44px;
+  letter-spacing: .01em;
+  color: var(--gold-hi);
+}
+.cdown.is-open .cd-row { display: none; }
+.cdown.is-open .cd-open { display: block; }
+
+/* Строка для читалок: табло от них скрыто (диктовать секунды нельзя),
+   а эта строка словами обновляется раз в минуту. */
+.cd-say {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Даты следующего вайпа нет (OPEN_DATE = null в js/main.js): вместо табло
+   одна панель того же вида, что ячейки отсчета, — с той же полоской сверху. */
+.cd-pause {
+  position: relative;
+  max-width: 640px;
+  padding: 18px 22px 16px;
+  border-radius: 16px;
+  background: linear-gradient(to bottom, #1F1E23, #151417);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .45);
+  overflow: hidden;
+  animation: cd-rise .5s cubic-bezier(.22, .61, .36, 1) both;
+}
+.cd-pause::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 2px;
+  background: var(--grad);
+}
+.cd-pause-h {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--gold-hi);
+}
+.cd-pause p {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.cd-pause a { color: var(--gold-hi); }
+@media (max-width: 700px) {
+  .cd-pause { padding: 16px 16px 14px; border-radius: 14px; }
+  .cd-pause-h { font-size: 20px; }
+  .cd-pause p { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd-pause { animation: none; }
+}
+
+.cdown + .count-strip { margin-top: 18px; }
+
+@media (max-width: 700px) {
+  .cd-row { gap: 8px; }
+  .cd-cell { flex: 1 1 0; min-width: 0; padding: 12px 6px 10px; border-radius: 14px; }
+  .cd-num { font-size: 40px; }
+  .cd-lbl { font-size: 10px; letter-spacing: .05em; }
+  .cd-open { font-size: 32px; }
+}
+@media (max-width: 380px) {
+  .cd-num { font-size: 33px; }
+  .cd-lbl { font-size: 9px; }
+  /* На узком экране кегль 33, и общей доли .8em остаётся всего по 1.2 px с
+     каждого бока — меньше, чем размазывает сглаживание. Клетка тут чуть шире:
+     запас становится 2.5 px, а в ячейку (63.8 px под две клетки) всё влезает. */
+  .cd-slot { width: .88em; }
+}
+
+/* Меньше движения — цифры просто меняются: ни прокрутки, ни появления. */
+@media (prefers-reduced-motion: reduce) {
+  .cd-cell { animation: none; }
+  .cd-cell.bump::after { animation: none; }
+  .cd-slot.roll .cd-cur, .cd-slot.roll .cd-nxt { animation: none; }
+}
+
 /* ---------- полоса цифр ---------- */
 
 .stats {
@@ -360,14 +694,38 @@ section { padding: 88px 0; }
 
 /* ---------- карточки ---------- */
 
+/* Общее правило отклика для всех плиток сайта.
+
+   Карточки больше НЕ подпрыгивают под курсором. Прыжок на 4–6px выглядел
+   бодро на середине карточки и ломался у её нижнего края: карточка уезжала
+   вверх, курсор оказывался уже вне её, отклик снимался, карточка падала
+   обратно — и так по кругу, пока не уберёшь мышь. Отсюда и «бульки».
+
+   Вместо движения: фон чуть светлеет, тень углубляется, а по верхней кромке
+   слева направо прочерчивается линия акцента. Сам блок при этом неподвижен,
+   попасть по нему можно откуда угодно. */
 .card {
+  position: relative;
   background: var(--panel);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
-  transition: transform .2s ease;
+  transition: background .22s ease, box-shadow .22s ease;
 }
-.card:hover { transform: translateY(-5px); }
+.card:hover { background: var(--panel-2); box-shadow: 0 18px 44px rgba(0, 0, 0, .55); }
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  z-index: 3;
+  background: var(--grad-h);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .42s cubic-bezier(.2, .8, .3, 1);
+}
+.card:hover::before, .card:focus-within::before { transform: scaleX(1); }
 
 /* сезонное бенто */
 
@@ -381,7 +739,21 @@ section { padding: 88px 0; }
 
 .card-map .shot { height: 380px; }
 .shot { position: relative; overflow: hidden; }
-.shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+/* Картинка под курсором подъезжает на 4% и так же уезжает обратно.
+   Покой записан явным scale(1), а не «никаким» transform: пока значение
+   есть всегда, браузер держит картинку отдельным слоем и в конце возврата
+   ничего не перерисовывает. Без этого последний кадр пересобирался заново —
+   картинка на волосок дёргалась, вставая на место (слова овнера: «встают и
+   такое микроподёргивание, чтобы встать на место»). will-change говорит о
+   намерении заранее, чтобы слой не заводился уже в движении. */
+.shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  will-change: transform;
+  transition: transform .5s ease;
+}
 .card:hover .shot img { transform: scale(1.04); }
 .shot::after {
   content: '';
@@ -394,9 +766,39 @@ section { padding: 88px 0; }
 .card-body h3 { font-size: 21px; margin-bottom: 10px; }
 .card-body p { color: var(--muted); font-size: 15px; }
 
-.card-map .card-body { position: relative; margin-top: -86px; z-index: 1; padding-top: 0; }
+/* Большая карточка карты: подпись лежит НА картинке целиком.
+   Раньше блок подписи поднимали числом — margin-top: -86px, ровно под
+   заголовок и две строки абзаца. Но числа в тексте живые (держав, провинций),
+   строка стала третьей — и абзац разрезало нижним краем картинки: половина
+   на карте, половина уже на серой панели.
+   Теперь подъём не число: картинка и подпись лежат в одной ячейке сетки,
+   подпись прижата к низу. Сколько бы строк в ней ни было, она целиком
+   остаётся на картинке, а картинка тянется под неё. */
+.card-map { display: grid; }
+.card-map .shot, .card-map .card-body { grid-area: 1 / 1; }
+.card-map .card-body {
+  align-self: end;
+  z-index: 1;
+  padding-top: 40px;
+  /* Затемнение под самой подписью, а не под низом картинки: у общей заливки
+     .shot::after высота считается от карточки, и на узком экране, где текст
+     занимает её половину, заголовок оказывался уже на светлой карте. */
+  background: linear-gradient(to top,
+    rgba(14, 14, 16, .92) 0%, rgba(14, 14, 16, .88) 62%, rgba(14, 14, 16, 0) 100%);
+}
 .card-map .card-body h3 { font-size: 26px; }
 .card-map .card-body p { max-width: 640px; }
+/* Подпись — нижняя полоса: текст слева, кнопка справа на линии последней
+   строки. Раньше кнопка стояла под абзацем вплотную, без единого пикселя
+   отступа (слова овнера: «кнопка лежит… некрасиво»). */
+.card-map .card-body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 36px;
+  padding: 56px 36px 34px;
+}
+.card-map .card-body .btn { flex: none; margin-bottom: 2px; }
 
 .icon-plate {
   width: 64px;
@@ -450,6 +852,9 @@ section { padding: 88px 0; }
   box-shadow: var(--shadow);
 }
 .step .n {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 12px;
   font-family: var(--f-disp);
   font-weight: 900;
   font-size: 44px;
@@ -458,6 +863,25 @@ section { padding: 88px 0; }
   background-clip: text;
   color: transparent;
 }
+/* Полоска под номером шага набегает вместе с появлением карточки — четыре
+   шага «Как зайти» дорисовываются один за другим и читаются как порядок,
+   а не как четыре одинаковых плитки. Ничего не двигается под курсором. */
+.step .n::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--grad-h);
+}
+.step.reveal .n::after {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .6s cubic-bezier(.2,.8,.3,1) .18s;
+}
+.step.reveal.in .n::after { transform: scaleX(1); }
 .step h3 { font-size: 16.5px; margin: 12px 0 8px; }
 .step p { color: var(--muted); font-size: 14px; }
 
@@ -477,6 +901,16 @@ section { padding: 88px 0; }
 /* второй, необязательный путь скачивания — тише основного текста */
 .join-note .txt .muted { display: block; margin-top: 8px; font-size: 14px; opacity: .72; }
 .join-note .txt .muted a { border-bottom: 1px solid rgba(214, 168, 74, .35); }
+/* Скачивание: три кнопки систем. Свою js/main.js делает основной и ставит
+   первой, а из подсказок оставляет только ее (без JS видны все). */
+.join-dl { margin-top: 18px; }
+.join-dl .txt > b { display: block; font-size: 17px; }
+.join-dl .dl-hint { opacity: .9; }
+.join-dl .dl-hint[hidden] { display: none; }
+.dl-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.dl-row .btn { min-width: 130px; justify-content: center; }
+.dl-row .btn-dark { background: var(--panel-3); }
+.dl-row .btn-dark:hover { background: #2b2a31; }
 
 /* ---------- новости ---------- */
 
@@ -513,12 +947,15 @@ section { padding: 88px 0; }
     radial-gradient(120% 160% at 0% 0%, rgba(245, 134, 32, .10), transparent 58%),
     var(--panel);
 }
+/* У свежей новости линия акцента горит всегда, а не только под курсором:
+   это её опознавательный знак. Отменяем общий для карточек scaleX(0). */
 .news-lead::before {
   content: '';
   position: absolute;
   inset: 0 0 auto;
   height: 3px;
   background: var(--grad-h);
+  transform: none;
 }
 .news-lead h3 { font-size: clamp(22px, 3.2vw, 32px); line-height: 1.18; }
 .news-lead p { font-size: clamp(15px, 1.5vw, 17px); max-width: 66ch; color: #c3bfb7; }
@@ -533,6 +970,168 @@ section { padding: 88px 0; }
   letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--gold);
+}
+
+/* Картинка новости — та же, что ушла с постом в Discord и Telegram.
+   В обычной карточке она сверху, у свежей новости — справа от текста;
+   на узком экране свежая тоже встаёт картинкой наверх. Нажал — открылась
+   целиком в новой вкладке. */
+.news-img {
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--panel-2);
+}
+.news-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform .5s ease;
+}
+.card.news:hover .news-img img { transform: scale(1.03); }
+.news-body { display: flex; flex-direction: column; gap: 12px; }
+.news-lead .news-body { gap: 14px; }
+.news-lead.has-img {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 34px;
+  align-items: center;
+}
+.news-lead.has-img .news-img { order: 2; }
+@media (max-width: 900px) {
+  .news-lead.has-img { grid-template-columns: 1fr; gap: 20px; }
+  .news-lead.has-img .news-img { order: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .news-img img { transition: none; }
+  .card.news:hover .news-img img { transform: scale(1); }
+}
+
+/* ---------- главная новость с роликом (ивент «Микроволновка») ----------
+   Крупнее обычной новости и выше всех разделов: сразу под полосой чисел.
+   Ролик во всю ширину карточки 16:9, под ним текст слева и топ справа.
+   Акцентная линия сверху горит всегда, как у свежей новости. */
+
+.event-sec { padding: 72px 0 8px; }
+.event-card {
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(245, 134, 32, .12), transparent 55%),
+    var(--panel);
+}
+.event-card::before { height: 3px; transform: none; }
+.event-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+.event-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+.event-body { padding: 30px 36px 34px; display: flex; flex-direction: column; gap: 16px; }
+.event-body .date {
+  font-family: var(--f-text);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .12em;
+  color: #201305;
+  background: var(--grad);
+  border-radius: 8px;
+  padding: 4px 12px;
+}
+.event-body h2 { font-size: clamp(24px, 3.4vw, 38px); line-height: 1.15; }
+.event-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.event-text p { color: #c3bfb7; font-size: clamp(15px, 1.4vw, 16.5px); max-width: 66ch; }
+.event-text p + p { margin-top: 12px; }
+.event-nums {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+.event-nums div {
+  background: var(--panel-3);
+  border-radius: 12px;
+  padding: 14px 12px 12px;
+  text-align: center;
+}
+.event-nums b {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: clamp(22px, 2.6vw, 30px);
+  line-height: 1.1;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.event-nums span { display: block; margin-top: 4px; font-size: 13px; color: var(--muted); }
+.event-top {
+  background: var(--panel-2);
+  border-radius: 14px;
+  padding: 20px 22px 18px;
+}
+.event-top-h {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.event-top ol { list-style: none; counter-reset: top; display: flex; flex-direction: column; gap: 8px; }
+.event-top li {
+  counter-increment: top;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--panel-3);
+  border-radius: 10px;
+  font-size: 14.5px;
+}
+.event-top li::before {
+  content: counter(top);
+  flex: 0 0 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 12.5px;
+  color: #201305;
+  background: var(--grad);
+}
+.event-top li span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.event-top li b { color: var(--gold); font-weight: 700; white-space: nowrap; }
+.event-next { margin-top: 14px; font-size: 13.5px; color: var(--muted); }
+.event-share { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.event-share .btn svg { flex: 0 0 auto; }
+.event-top li img {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  margin: -4px 0;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .45));
+}
+
+@media (max-width: 900px) {
+  .event-cols { grid-template-columns: 1fr; gap: 22px; }
+}
+@media (max-width: 560px) {
+  .event-sec { padding-top: 48px; }
+  .event-body { padding: 22px 18px 24px; }
+  .event-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ---------- CTA-полоса ---------- */
@@ -581,7 +1180,24 @@ footer {
   color: var(--muted);
 }
 .foot-links a:hover { color: var(--gold); }
-.foot-note { margin-top: 22px; color: #6d6a63; font-size: 13px; max-width: 720px; }
+/* На телефоне ссылки подвала были высотой 21 px — палец в такую строку
+   попадает через раз, а рядом ещё семь соседок. Добавляем поле сверху и снизу
+   (нажимается 43 px) и убираем межстрочный зазор, чтобы подвал от этого
+   не вырос. Вид строк не меняется: padding невидим. */
+@media (max-width: 760px) {
+  .foot-links { gap: 0 18px; }
+  .foot-links a { padding: 11px 0; }
+}
+/* Сноска про Mojang стоит на каждой странице и была темнее любого другого
+   текста на сайте (#6d6a63, 3,7:1) — а это юридическая строка, её должно быть
+   видно. Берём обычный приглушённый цвет, отдельного тут не нужно. */
+.foot-note { margin-top: 22px; color: var(--muted); font-size: 13px; max-width: 720px; }
+
+/* Реквизиты продавца в подвале — их требует платёжный сервис: «Самозанятый
+   ФИО, ИНН», почта и телефон на виду. Вписывает site-seller.py. */
+.foot-legal { margin-top: 10px; color: var(--muted); font-size: 13px; max-width: 720px; }
+.foot-legal a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.foot-legal a:hover { color: var(--gold); }
 
 /* ============================================================
    ДОНАТ
@@ -616,20 +1232,77 @@ footer {
 .page-hero.short h1 { font-size: clamp(30px, 3.6vw, 42px); }
 .page-hero.short .lead { font-size: 16px; }
 
+/* Полоса разделов липкая, и это её главная беда: пока страница едет, браузер
+   обязан перерисовывать её каждый кадр, а перерисовать он успевает не всегда —
+   строка отстаёт на кадр и возвращается, овнер видел это как «список категорий
+   сверху скачет и дёргается при пролистывании вниз и вверх».
+   Лечится двумя вещами сразу:
+   1) заливка непрозрачная. Просвечивающие 4% заставляли браузер подмешивать
+      к полосе то, что проезжает под ней, — а значит, считать её заново на
+      каждый кадр. Ровно по этой причине выше уже сделана глухой шапка;
+   2) will-change — просьба держать полосу отдельным слоем. Слой двигают
+      целиком, как картинку, и перерисовывать при прокрутке нечего. */
 .shop-tabs {
   position: sticky;
   top: 72px;
   z-index: 80;
-  background: rgba(14, 14, 16, .96);
+  background: var(--bg);
   box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  will-change: transform;
 }
+/* Поля пишем по одному: сокращение `padding: 12px 0` заодно обнуляло боковые
+   24px, которые задаёт .container. Полоса разделов из-за этого стояла на 24px
+   левее всего остального — и логотипа в шапке, и заголовков разделов под ней;
+   на телефоне первая вкладка вообще упиралась в край стекла, а последняя, если
+   долистать, упиралась в правый. Ряд, сдвинутый относительно всей страницы,
+   читается как съехавшая вёрстка. У листаемой полосы поле работает с обеих
+   сторон: содержимое становится шире на 48px, так что и в конце прокрутки
+   остаётся такой же зазор, как в начале. */
 .shop-tabs-in {
   display: flex;
   gap: 8px;
-  padding: 12px 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
   overflow-x: auto;
 }
+
+/* Разделов в лавке двенадцать, и в одну строку они не влезают даже на большом
+   мониторе: справа оставалось около 380 пикселей, спрятанных за боковой
+   прокруткой. Читается это так, будто после «Амнистии» ничего нет — за край
+   никто не листает то, о существовании чего не знает. На широком экране
+   пускаем полосу в две строки; на узком оставляем листаемой, там две строки
+   съели бы треть первого экрана, а листать вбок пальцем привычно.
+   Маску краёв main.js снимет сам: без прокрутки sc-l/sc-r не выставляются. */
+@media (min-width: 860px) {
+  .shop-tabs-in { flex-wrap: wrap; overflow-x: visible; }
+}
+
+/* Полоса, которую можно листать вбок (вкладки лавки, сетка боевого пропуска).
+   Класс и метки краёв вешает main.js. Затухание сделано маской, а не накладкой:
+   маска держится за край самой полосы и не уезжает вместе с содержимым.
+   Без скрипта не остаётся ничего лишнего — просто обычная прокрутка. */
+.hscroll { scrollbar-width: thin; scrollbar-color: rgba(250,212,107,.35) transparent; }
+.hscroll::-webkit-scrollbar { height: 8px; }
+.hscroll::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 4px; }
+.hscroll::-webkit-scrollbar-thumb { background: rgba(250,212,107,.35); border-radius: 4px; }
+.hscroll::-webkit-scrollbar-thumb:hover { background: rgba(250,212,107,.6); }
+.hscroll.sc-r {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 46px), transparent 100%);
+          mask-image: linear-gradient(to right, #000 calc(100% - 46px), transparent 100%);
+}
+.hscroll.sc-l {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 46px);
+          mask-image: linear-gradient(to right, transparent 0, #000 46px);
+}
+.hscroll.sc-l.sc-r {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 46px,
+                        #000 calc(100% - 46px), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 46px,
+                        #000 calc(100% - 46px), transparent 100%);
+}
 .shop-tabs a {
+  position: relative;
+  isolation: isolate;
   font-family: var(--f-disp);
   font-weight: 700;
   font-size: 12.5px;
@@ -640,17 +1313,46 @@ footer {
   padding: 10px 20px;
   border-radius: 10px;
   white-space: nowrap;
-  transition: color .15s, background .15s;
+  transition: color .15s ease;
 }
-.shop-tabs a:hover, .shop-tabs a.active { color: #201305; background: var(--grad); }
+/* Оранжевая заливка лежит готовым слоем и проявляется прозрачностью — тот же
+   приём, что у кнопок. Градиент браузер переливать не умеет: прежнее
+   `transition: background` перекладывало картинку за один кадр, и вся полоса
+   (липкая, со скруглениями) перерисовывалась целиком. При прокрутке подсветка
+   перескакивает с раздела на раздел постоянно — перерисовок набиралось столько,
+   что строка дёргалась. Прозрачность считает видеокарта, перерисовки нет. */
+.shop-tabs a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--grad);
+  opacity: 0;
+  transition: opacity .15s ease;
+}
+.shop-tabs a:hover, .shop-tabs a.active { color: #201305; }
+.shop-tabs a:hover::before, .shop-tabs a.active::before { opacity: 1; }
 
 .shop-section { padding: 70px 0 30px; }
+
+/* Переход по вкладке приводил ровно к нулю — а наверху висят ДВЕ липкие
+   полосы: своя шапка (72px) и полоса разделов. Заголовок раздела оказывался
+   под ними, и человек попадал сразу в середину текста, не понимая, куда его
+   принесло. Отступ считаем не от края секции, а от её заголовка: первые 70px
+   секции — пустое поле, спрятать его под полосу не жалко.
+   Два значения, потому что полоса разделов на широком экране идёт в две
+   строки (см. выше), а на узком — в одну. */
+.shop-section { scroll-margin-top: 80px; }
+@media (min-width: 860px) {
+  .shop-section { scroll-margin-top: 128px; }
+}
 
 /* привилегии */
 
 .ranks {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 22px;
   align-items: stretch;
 }
@@ -663,9 +1365,13 @@ footer {
   padding: 30px 26px 28px;
   display: flex;
   flex-direction: column;
-  transition: transform .2s ease;
+  transition: box-shadow .2s ease;
 }
-.rank:hover { transform: translateY(-5px); }
+/* Тонкая раскалённая кромка вместо прыжка вверх — см. комментарий у .card.
+   Фон тут не трогаем: у «Популярного» он свой, градиентом. */
+.rank:hover {
+  box-shadow: var(--shadow), inset 0 0 0 1px rgba(245, 134, 32, .38);
+}
 
 .rank .tier {
   font-family: var(--f-disp);
@@ -676,6 +1382,16 @@ footer {
   text-transform: uppercase;
 }
 .rank h3 { font-size: 24px; margin: 8px 0 2px; }
+
+/* Девиз звания. Высота задана в строках, а не в пикселях: девизы разной длины,
+   а ценники четырёх карточек должны стоять на одной линии. */
+.rank .r-mot {
+  margin: 6px 0 0;
+  min-height: 2.8em;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
 
 .rank .price {
   font-family: var(--f-disp);
@@ -734,11 +1450,43 @@ footer {
   text-transform: uppercase;
   border-radius: 8px;
   padding: 5px 16px;
-  box-shadow: 0 6px 18px rgba(245,134,32,.4);
 }
 
 .rank-top { background: linear-gradient(160deg, #2b1c08, #171616 60%); }
 .rank-top h3 { background: var(--grad-h); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Высшие ступени.
+   Их три, поэтому они идут отдельной строкой в три колонки — иначе в сетке
+   на четыре карточки оставалась дырка размером с карточку. */
+.ranks-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* Между «строевыми» и высшими званиями нужна не просто пустота, а объяснение,
+   зачем верхние вообще существуют: иначе цена в 1590 ₽ читается как «плати
+   за победу». */
+.ranks-split { margin: 34px 0 20px; }
+.ranks-split span {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--or);
+}
+.ranks-split p {
+  margin: 8px 0 0;
+  max-width: 76ch;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+/* Промежуточная ступень: чуть темнее панели, без «популярного» ярлыка и без
+   золота — золото оставлено одной верхней карточке. */
+.rank-elite { background: linear-gradient(165deg, #1e1b17, var(--panel) 62%); }
+
+/* У высших званий нет строки «по отдельности»: таких услуг поштучно не
+   продаётся, а выдуманный процент был бы враньём. */
+.valueline.uniq { color: var(--steel); font-style: italic; }
 
 .balance-note {
   margin-top: 30px;
@@ -788,9 +1536,12 @@ footer {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 30px 32px;
-  transition: transform .2s ease;
+  transition: background .2s ease, box-shadow .2s ease;
 }
-.bundle:hover { transform: translateY(-4px); }
+.bundle:hover {
+  background: var(--panel-2);
+  box-shadow: var(--shadow), inset 0 0 0 1px rgba(245, 134, 32, .3);
+}
 
 .bundle h3 { font-size: 23px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .bundle .save {
@@ -798,7 +1549,7 @@ footer {
   font-weight: 700;
   font-size: 12.5px;
   letter-spacing: .06em;
-  background: var(--red);
+  background: var(--red-lo);
   color: #fff;
   border-radius: 8px;
   padding: 4px 12px;
@@ -854,8 +1605,21 @@ footer {
   justify-content: center;
   padding: 20px;
   background: rgba(5, 5, 6, .8);
+  /* Прокручивается сама подложка. Карточка заказа выше экрана — на телефоне это
+     обычное дело, — и без этого нижний край с кнопкой «Оплатить» просто уходил
+     за стекло: доскроллить было некуда, окно фиксированное. */
+  overflow-y: auto;
 }
 .modal-wrap.open { display: flex; }
+
+/* Страница под открытым окном не должна ехать. Иначе палец, ведущий по
+   затемнению, листает лавку за окном: человек закрывает заказ и оказывается
+   в другом месте страницы, будто нажатие «сбросило» её. Запрет ставится и на
+   html, и на body — разные браузеры слушают разное. Содержимое под окном при
+   этом становится шире на ширину ленты прокрутки, но видно его сквозь
+   затемнение в 80%, так что перекладка не читается. */
+html:has(.modal-wrap.open),
+html:has(.modal-wrap.open) body { overflow: hidden; }
 
 .modal {
   width: min(480px, 100%);
@@ -864,6 +1628,10 @@ footer {
   box-shadow: 0 30px 80px rgba(0, 0, 0, .7);
   padding: 34px 32px 32px;
   position: relative;
+  /* Поля auto, а не только align-items: центрирование флексом при переполнении
+     срезает ВЕРХ карточки — прокрутка туда не доходит. Автополя схлопываются в
+     ноль, когда места не хватает, и тогда достаются оба края. */
+  margin: auto;
 }
 .modal h3 { font-size: 22px; margin-bottom: 4px; }
 .modal .m-item { color: var(--gold); font-weight: 600; font-size: 16.5px; }
@@ -926,6 +1694,13 @@ footer {
   line-height: 1;
 }
 .m-close:hover { color: var(--ink); background: var(--panel-3); }
+/* Заголовок не заезжает под крестик: на телефоне «Оформление заказа»
+   обрезался им посередине слова — окно оплаты выглядело сломанным. */
+.modal h3 { padding-right: 44px; }
+@media (max-width: 480px) {
+  .modal { padding: 28px 20px 24px; }
+  .modal h3 { font-size: 19px; }
+}
 
 /* ============================================================
    Объёмные элементы (js/aegis3d.js): скин, кубы блоков, шестерни
@@ -956,16 +1731,34 @@ footer {
 
 .p3d { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
 
-.mc-char {
+/* Разворот фигуры живёт отдельным узлом, потому что его двигает мышь
+   (js/aegis3d.js), а на самой фигуре крутится дыхание. Один узел не может
+   и то и другое: анимация перебивает transform целиком. Точка вращения —
+   там же, где была раньше, под ногами. */
+.mc-aim {
   position: absolute;
   left: 50%;
   bottom: 10px;
   transform-style: preserve-3d;
-  animation: mc-idle 5.5s ease-in-out infinite;
+  transform: rotateX(var(--mc-rx, -4deg)) rotateY(var(--mc-ry, -22deg));
+  transition: transform .35s cubic-bezier(.22, .61, .36, 1);
 }
-@keyframes mc-idle {
-  0%, 100% { transform: rotateX(-4deg) rotateY(-26deg) translateY(0); }
-  50%      { transform: rotateX(-4deg) rotateY(-16deg) translateY(-5px); }
+
+.mc-char {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  animation: mc-breathe 6.5s ease-in-out infinite;
+}
+/* Было: фигура за 5.5 с отъезжала на 10° по курсу и поднималась на 5 px —
+   со стороны это читалось как полёт, овнер так и сказал. Человек, стоящий
+   на земле, в покое почти неподвижен: грудь приподнимается на волос и вес
+   чуть переносится с ноги на ногу. Полтора пикселя на трёхсотпиксельной
+   фигуре — это и есть «почти неподвижен», ноги при этом стоят. */
+@keyframes mc-breathe {
+  0%, 100% { transform: translate3d(0, 0, 0) rotateZ(0deg); }
+  50%      { transform: translate3d(0, -1.5px, 0) rotateZ(.5deg); }
 }
 
 .p3d .f {
@@ -974,22 +1767,57 @@ footer {
   top: 50%;
   image-rendering: pixelated;
   background-repeat: no-repeat;
+  /* Грань блока односторонняя: изнутри её не видно. В CSS по умолчанию
+     наоборот — изнанка рисуется зеркальной копией лицевой стороны, и белая
+     маска с лица проступала на затылке. В самом скине затылок чистый:
+     head.back — сплошной тёмный, hat.back прозрачный и тёмный, маска есть
+     только на head.front и hat.front (сверено по пикселям skin.png).
+     Прячем изнанку — заодно до отрисовки доходит вдвое меньше граней. */
+  backface-visibility: hidden;
 }
 
-.head-sway { animation: head-sway 7s ease-in-out infinite; }
-@keyframes head-sway {
-  0%, 100% { transform: translate3d(0, var(--head-y, -196px), 0) rotateY(-8deg); }
-  50%      { transform: translate3d(0, var(--head-y, -196px), 0) rotateY(16deg); }
+/* Голова не водит из стороны в сторону без остановки — это и выглядело
+   механически. Большую часть круга она стоит, один раз оглядывается на
+   зрителя и возвращается. Долгие «полки» в кадрах ещё и дешевле: пока
+   значение не меняется, перерисовывать нечего. */
+/* Место головы задаёт не только анимация, но и сам узел: при «меньше
+   движения» (внизу файла) анимация снимается, и без этой строки голова
+   падала к ногам — так её и увидел игрок с выключенными эффектами Windows. */
+.head-sway {
+  transform: translate3d(0, var(--head-y, -196px), 0) rotateY(-2deg);
+  animation: mc-glance 11s ease-in-out infinite;
+}
+@keyframes mc-glance {
+  0%, 34%   { transform: translate3d(0, var(--head-y, -196px), 0) rotateY(-2deg) rotateZ(0deg); }
+  44%, 56%  { transform: translate3d(0, var(--head-y, -196px), 0) rotateY(14deg) rotateZ(-1.5deg); }
+  66%, 100% { transform: translate3d(0, var(--head-y, -196px), 0) rotateY(-2deg) rotateZ(0deg); }
 }
 
+/* Рука с ключом больше не машет по кругу каждые полторы секунды. Она держит
+   инструмент, еле заметно ведёт его вниз-вверх — и один раз за круг, ровно
+   когда голова обернулась, коротко машет дважды. Круг общий с головой, 11 с:
+   персонаж замечает зрителя, оглядывается и здоровается. */
 .arm-wave {
   transform-origin: 0 0;
-  animation: arm-wave 1.5s ease-in-out infinite;
+  transform: rotateZ(-128deg);   /* поза без анимации — то же, что у головы */
+  animation: mc-hail 11s ease-in-out infinite;
 }
-@keyframes arm-wave {
-  0%, 100% { transform: rotateZ(-122deg); }
-  50%      { transform: rotateZ(-150deg); }
+@keyframes mc-hail {
+  0%        { transform: rotateZ(-128deg); }
+  20%       { transform: rotateZ(-131deg); }
+  38%       { transform: rotateZ(-128deg); }
+  46%       { transform: rotateZ(-147deg); }
+  53%       { transform: rotateZ(-126deg); }
+  60%       { transform: rotateZ(-145deg); }
+  68%, 100% { transform: rotateZ(-128deg); }
 }
+
+/* Фигуры нет на экране — считать её незачем. Ровно это и подъедало кадры
+   при прокрутке: сорок с лишним граней внутри preserve-3d видеокарте не
+   отдать, их каждый кадр рисует тот же поток, что двигает страницу. */
+.mc-off .mc-char,
+.mc-off .head-sway,
+.mc-off .arm-wave { animation-play-state: paused; }
 
 .mc-tool {
   position: absolute;
@@ -1004,6 +1832,10 @@ footer {
 /* режим съёмки макета (?shot=1) */
 .shotmode .hero { min-height: 880px; }
 .shotmode .reveal { opacity: 1; transform: none; transition: none; }
+/* В режиме съёмки макета линии тоже должны быть дорисованы: наблюдателя
+   прокрутки там нет, класс .in никто не повесит. */
+.shotmode .section-head.reveal::before,
+.shotmode .step.reveal .n::after { transform: none; transition: none; }
 
 /* ---------- появление при скролле ---------- */
 
@@ -1019,17 +1851,21 @@ footer {
 @media (max-width: 1020px) {
   .bento { grid-template-columns: repeat(2, 1fr); }
   .bento .card-map { grid-column: span 2; }
+  /* Рядом с кнопкой абзац сжимается в узкий столбик и закрывает карту —
+     здесь кнопка встаёт под текст. */
+  .card-map .card-body { display: block; padding: 48px 30px 30px; }
+  .card-map .card-body .btn { margin: 20px 0 0; }
   .grid-3, .news-grid, .kits { grid-template-columns: repeat(2, 1fr); }
-  .ranks { grid-template-columns: repeat(2, 1fr); }
+  .ranks, .ranks-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .steps, .howto { grid-template-columns: repeat(2, 1fr); }
   .stats-in { grid-template-columns: repeat(2, 1fr); gap: 28px; }
 }
 
 /* Пунктов в шапке стало больше (земли, вики, обращения, эфиры, кабинет), и на
    ноутбучной ширине они начинали налезать на логотип. Поэтому меню
-   сворачивается в кнопку уже с 1160px, а не с телефонной ширины.
-   Порог поднимали дважды: 1080 хватало до появления «Земель». */
-@media (max-width: 1160px) {
+   сворачивается в кнопку уже с 1240px, а не с телефонной ширины.
+   Порог поднимали трижды: 1080 хватало до «Земель», 1160 — до «Игроков». */
+@media (max-width: 1240px) {
   .topnav {
     position: fixed;
     top: 72px;
@@ -1041,21 +1877,49 @@ footer {
     padding: 26px 24px 30px;
     gap: 20px;
     transform: translateY(-130%);
-    transition: transform .25s ease;
+    /* Закрытое меню уезжает за верхний край, но остаётся на странице: без
+       visibility табуляция с кнопки уходила в восемь невидимых ссылок, а
+       читалка их проговаривала. visibility переключается скачком в конце
+       перехода, поэтому выезд и уход остаются плавными. */
+    visibility: hidden;
+    transition: transform .25s ease, visibility .25s;
     box-shadow: 0 30px 40px rgba(0,0,0,.5);
     max-height: calc(100vh - 72px);
     overflow-y: auto;
   }
-  .topnav.open { transform: none; }
-  .topnav .btn { justify-content: center; }
+  .topnav.open { transform: none; visibility: visible; }
+  /* Выпавшее меню — это список строк, а не кучка ссылок: палец попадает в
+     строку целиком (46px), между строками волосяная черта. Раньше ссылка была
+     высотой в 21px, и в неё надо было целиться. */
+  .topnav { gap: 0; padding: 8px 24px 24px; }
+  .topnav a:not(.btn) {
+    display: flex;
+    align-items: center;
+    min-height: 46px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+  }
+  .topnav .btn { justify-content: center; margin-top: 16px; }
+  .topnav .btn + .btn { margin-top: 10px; }
   .burger { display: block; }
 }
 
 @media (max-width: 640px) {
   section { padding: 64px 0; }
-  .bento, .grid-3, .news-grid, .kits, .ranks, .steps, .howto, .cases { grid-template-columns: 1fr; }
+  /* У кнопок стоит white-space:nowrap — на десктопе это правильно, а на
+     телефоне длинная надпись («Пройти проверку и занять имя») задавала
+     колонке ширину в 364px и всю страницу тащило вбок. Разрешаем перенос. */
+  .btn { white-space: normal; text-align: center; }
+  .bento, .grid-3, .news-grid, .kits, .ranks, .ranks-3, .steps, .howto, .cases { grid-template-columns: 1fr; }
   .bento .card-map { grid-column: span 1; }
   .card-map .shot { height: 240px; }
+  /* На телефоне подпись на картинке не помещается: картинка тут 240 пикселей,
+     а текста в ней под две сотни — наложение закрыло бы саму карту. Поэтому на
+     узком экране карточка обычная: картинка сверху, подпись целиком под ней на
+     панели. Оба режима держат одно правило — текст не разрезан краем картинки. */
+  .card-map { display: block; }
+  .card-map .card-body { display: block; background: none; padding: 24px 28px 30px; }
+  .card-map .card-body .btn { margin: 20px 0 0; }
   /* На телефоне крупная карточка и так во всю ширину — лишние поля только
      съедают строку, оставляем обычные. */
   .news-lead { padding: 26px 24px 28px; }
@@ -1066,6 +1930,29 @@ footer {
   .hero-in { padding-top: 110px; padding-bottom: 40px; }
   .hero { min-height: 0; }
   .shop-tabs { top: 72px; }
+  /* Полоса призыва внизу: по 40 пикселей полей с каждой стороны на телефоне
+     оставляли содержимому 247 — и «Поддержать проект» не влезал в собственную
+     кнопку, ломаясь на две строки. */
+  .cta-band { padding: 48px 22px; }
+  /* Пары кнопок-призывов на телефоне — столбиком во всю ширину. Строкой они и
+     так переносились по одной, но ширину каждая брала по своей надписи:
+     выходила лесенка из прямоугольников разной длины, а самые длинные подписи
+     («Скачать лаунчер · 44 МБ») не помещались и рвались, оставляя «МБ» на
+     второй строке в одиночестве. Во всю ширину — то, как это выглядит на
+     телефоне везде, и подписи снова встают в одну строку. */
+  .hero-cta { flex-direction: column; align-items: stretch; width: 100%; }
+  /* По 30 пикселей внутри кнопки — это ещё 60 к длине надписи, и «Скачать
+     лаунчер · 44 МБ» (235 пикселей текста) переставал помещаться в отведённые
+     ему 267. На телефоне поля внутри кнопки во всю ширину не нужны: кнопку и
+     так не с чем спутать. */
+  .hero-cta .btn, .join-note .btn {
+    justify-content: center;
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+  .join-note { padding: 22px 20px; }
+  .join-note .btn { flex: 1 0 100%; }
+  .dl-row { width: 100%; }
 }
 
 /* ============================================================
@@ -1087,53 +1974,146 @@ footer {
   font-size: 14.5px;
 }
 .notice b { color: var(--ink); }
+/* Строка «что сейчас продаётся» — её дописывает js/shop-soon.js. */
+.notice .shop-soon { display: block; margin-top: 8px; }
+/* «Откроется позже» длиннее «Купить» — на телефоне не даём ей ломаться в две строки. */
+.btn[data-soon] { white-space: nowrap; padding-left: 18px; padding-right: 18px; }
 
-/* ---------- пакеты червонцев ---------- */
-
-.coins {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 18px;
+/* ---------- пересчёт в валюту игрока под рублёвой ценой ---------- */
+/* Дорисовывает js/money.js в каждый .price. Ценники в лавке набраны
+   градиентом с background-clip:text, то есть у них color:transparent —
+   поэтому здесь заливка текста возвращается принудительно, иначе строка
+   наследует прозрачный цвет и просто исчезает. Строки не бывает вовсе,
+   когда выбраны рубли: пересчитывать нечего.
+   Отдельных классов под пакеты червонцев нет нарочно: раздел #coins собран
+   на обычных .good, ценник у него такой же рублёвый, как у всего остального. */
+.pr-rub {
+  display: block;
+  margin-top: 7px;
+  font-family: var(--f-text);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-transform: none;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: var(--gold);
+  -webkit-text-fill-color: var(--gold);
+  font-variant-numeric: tabular-nums;
 }
-.coin-pack {
-  position: relative;
+
+/* ---------- выбор валюты ---------- */
+
+.cur-pick {
+  display: flex;
+  align-items: center;
+  gap: 12px 16px;
+  flex-wrap: wrap;
   background: var(--panel);
   border-radius: var(--radius);
-  padding: 26px 22px 24px;
-  text-align: center;
+  padding: 16px 20px;
+  margin-bottom: 22px;
   box-shadow: var(--shadow);
-  transition: transform .2s ease;
+}
+.cur-lab {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+/* Свой список вместо системного <select>: раскрытый список рисует
+   операционная система, и на Windows он выходит белым, чужим шрифтом и с
+   чужими отступами — посреди тёмной лавки это окно из другой программы.
+   Разметку собирает js/money.js. */
+.cur-box { position: relative; }
+.cur-btn,
+.cur-opt {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.coin-pack:hover { transform: translateY(-5px); }
-.cp-amount {
-  font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 34px;
-  line-height: 1.1;
-  background: var(--grad-h);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.cp-amount small { font-size: 17px; }
-.cp-rub {
-  font-family: var(--f-disp);
-  font-weight: 700;
-  font-size: 18px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  font-family: var(--f-text);
+  font-size: 14.5px;
   color: var(--ink);
+  text-align: left;
+  background: var(--panel-2);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 11px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease;
 }
-.cp-note {
+.cur-btn { min-width: 250px; }
+.cur-btn:hover, .cur-opt:hover { background: var(--panel-3); border-color: rgba(245, 134, 32, .45); }
+.cur-btn:focus-visible, .cur-opt:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+/* Знак валюты фишкой: у знаков разная ширина («₽» и «сум»), и без
+   фиксированной клетки названия стран в списке стояли лесенкой. */
+.cur-sign {
+  flex: 0 0 34px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: var(--gold);
+  background: rgba(250, 212, 107, .12);
+  border-radius: 8px;
+}
+.cur-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cur-code {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--steel);
+}
+.cur-arr { flex: 0 0 12px; width: 12px; height: 8px; color: var(--muted); transition: transform .18s ease; }
+.cur-box.open .cur-arr { transform: rotate(180deg); }
+
+.cur-menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  display: grid;
+  gap: 2px;
+  padding: 6px;
+  background: var(--panel-2);
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 13px;
+  box-shadow: var(--shadow);
+  /* Одиннадцать стран влезают целиком на мониторе, но не на телефоне
+     в альбомной ориентации — там список прокручивается. */
+  max-height: min(58vh, 420px);
+  overflow-y: auto;
+}
+/* Закрытый список прячет атрибут hidden, но собственный display: grid выше
+   бьёт браузерное [hidden] { display: none } — без этой строки список висел
+   раскрытым поверх страницы всегда. Гасим явно. */
+.cur-menu[hidden] { display: none; }
+.cur-menu .cur-opt { border-color: transparent; background: transparent; }
+.cur-menu .cur-opt:hover { background: var(--panel-3); border-color: transparent; }
+.cur-opt.on { background: rgba(245, 134, 32, .14); }
+.cur-opt.on .cur-name { font-weight: 600; }
+/* Safari на айфоне увеличивает страницу, когда трогают элемент управления
+   со шрифтом мельче 16px. На сенсорных экранах поднимаем до порога;
+   такое же правило для полей форм — в pages.css. */
+@media (pointer: coarse) {
+  .cur-btn, .cur-opt { font-size: 16px; padding: 10px 12px; }
+}
+.cur-note {
+  flex: 1 1 320px;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.45;
-  flex: 1;
-  margin-bottom: 6px;
+  line-height: 1.5;
 }
-.coin-pack .btn { width: 100%; justify-content: center; }
-.cp-hot { background: linear-gradient(to bottom, #241a0c, var(--panel) 45%); }
+.cur-note b { color: var(--ink); font-weight: 600; }
 
 /* ---------- переключатель срока / уровня ---------- */
 
@@ -1432,9 +2412,12 @@ footer {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  transition: transform .2s ease;
+  transition: background .2s ease, box-shadow .2s ease;
 }
-.good:hover { transform: translateY(-4px); }
+.good:hover {
+  background: var(--panel-2);
+  box-shadow: var(--shadow), inset 0 0 0 1px rgba(245, 134, 32, .3);
+}
 .g-head { display: flex; align-items: center; gap: 16px; }
 .g-head .icon-plate { margin: 0; flex: 0 0 auto; }
 .g-head > div:nth-child(2) { flex: 1; }
@@ -1449,6 +2432,24 @@ footer {
 }
 .g-head .price small { font-size: 13px; }
 .good > .btn { align-self: flex-start; }
+
+@media (max-width: 440px) {
+  /* Три колонки в строке — плитка, название, цена — на телефоне делят 279 px,
+     и названию оставалось 138: «Приоритетный вход» налезал на ценник, а у
+     «Полёта» цена вовсе срывалась на отдельную строку и висела в пустоте.
+     Плитка теперь держит обе строки слева, название занимает всю оставшуюся
+     ширину, цена встаёт под описанием справа — как в обычном магазине:
+     сначала что это, потом сколько стоит, потом кнопка. */
+  .g-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 14px;
+    row-gap: 4px;
+    align-items: center;
+  }
+  .g-head .icon-plate { grid-row: 1 / span 2; align-self: start; }
+  .g-head .price { grid-column: 2; justify-self: end; font-size: 21px; }
+}
 
 /* ---------- чего нет в лавке ---------- */
 
@@ -1506,6 +2507,20 @@ footer {
 .free-card h3 { font-family: var(--f-disp); font-weight: 800; font-size: 17px; margin: 6px 0 8px; }
 .free-card p { color: var(--muted); font-size: 14px; }
 
+/* Скупщик — не одна из наград, а основной заработок: поэтому он идёт широкой
+   карточкой над сеткой бонусов, а не теряется в общем ряду третьим слева. */
+.free-lead {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.free-lead .fl-l { flex: 0 0 auto; }
+.free-lead .fc-sum { font-size: 34px; }
+.free-lead h3 { margin-bottom: 0; }
+.free-lead p { flex: 1 1 400px; font-size: 14.5px; line-height: 1.65; }
+
 .free-total {
   margin-top: 22px;
   background: linear-gradient(150deg, #2b1c08, var(--panel) 60%);
@@ -1537,7 +2552,86 @@ footer {
 
 .icon-plate .pix.wide { width: 44px; height: 22px; }
 .modal .m-price small { font-size: 15px; color: var(--muted); font-weight: 500; }
+.modal .m-alt {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--f-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
 .modal #mAlt { margin-top: 10px; }
+/* старая цена рядом с итоговой, когда служба посчитала скидку */
+.modal .m-was {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--muted);
+  -webkit-text-fill-color: var(--muted);
+  margin-right: 4px;
+}
+.modal .m-q { display: block; margin-top: 8px; color: var(--gold); }
+
+/* «Что будет дальше» в окне заказа: короткие шаги с номерами — читаются
+   быстрее абзаца и заранее отвечают, куда уводит кнопка и где ждать покупку. */
+.m-how { list-style: none; counter-reset: how; margin: 0; padding: 0; }
+.m-how li { counter-increment: how; position: relative; padding-left: 34px; line-height: 1.5; }
+.m-how li + li { margin-top: 10px; }
+.m-how li::before {
+  content: counter(how);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--panel-3);
+  color: var(--gold);
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.m-how a, .m-sure a { color: var(--gold); }
+/* под кнопкой оплаты: что делать при ошибке, продавец, оферта */
+.m-sure { margin-top: 12px; color: var(--steel); font-size: 12.5px; line-height: 1.5; text-align: center; }
+
+/* Вход в окне заказа: на чей аккаунт уйдёт покупка — строкой над кнопкой,
+   а без входа вместо кнопки оплаты форма входа. Вид тот же, что у полей. */
+.m-acc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--panel-2);
+  border-radius: 10px;
+  padding: 11px 12px 11px 16px;
+  margin-bottom: 18px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+.m-acc b { color: var(--ink); font-weight: 700; overflow-wrap: anywhere; }
+.m-out {
+  flex: none;
+  background: var(--panel-3);
+  color: var(--ink);
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-family: var(--f-text);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.m-out:hover { background: #2c2b32; }
+.m-out:focus-visible { outline: 2px solid rgba(245,134,32,.6); outline-offset: 2px; }
+.m-login-lead { color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 18px; }
+.m-login .btn { margin-bottom: 14px; }
+.m-login-help { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+.m-login-help a { color: var(--gold); }
+.m-login-help.is-bad { color: #ff8a80; }
+.m-login-help.is-bad a { color: var(--gold); }
 /* у .modal label задан display: block — без этого атрибут hidden на нём не
    срабатывает, и подпись «Игровой ник» висит над спрятанным полем */
 .modal [hidden] { display: none !important; }
@@ -1545,7 +2639,6 @@ footer {
 /* ---------- адаптив лавки ---------- */
 
 @media (max-width: 1100px) {
-  .coins { grid-template-columns: repeat(3, 1fr); }
   .goods, .free-grid { grid-template-columns: repeat(2, 1fr); }
   .kits, .cases { grid-template-columns: repeat(3, 1fr); }
   .bp-facts { grid-template-columns: repeat(2, 1fr); }
@@ -1559,7 +2652,15 @@ footer {
 }
 
 @media (max-width: 640px) {
-  .coins, .goods, .free-grid { grid-template-columns: 1fr; }
+  /* 1fr — это minmax(auto, 1fr), то есть колонка не бывает уже самой широкой
+     карточки. У «Приоритетного входа» шапка в строку (иконка + заголовок +
+     ценник с пересчётом в валюту, оба nowrap) даёт min-content 384 px, и на
+     экране 375 px весь столбец вылезал за край на ~57 px. minmax(0, 1fr)
+     держит колонку по контейнеру, а ценник переносится на свою строку. */
+  .goods, .free-grid { grid-template-columns: minmax(0, 1fr); }
+  .g-head { flex-wrap: wrap; }
+  .g-head > div:nth-child(2) { flex: 1 1 130px; min-width: 0; }
+  .g-head .price { margin-left: auto; }
   .kits, .cases { grid-template-columns: 1fr 1fr; }
   .bp-facts { grid-template-columns: 1fr 1fr; }
   .bp-legend { position: static; flex-basis: 130px; }
@@ -1650,8 +2751,10 @@ footer {
 .pfx-2 { background: #23301f; color: #9fd07a; }
 .pfx-3 { background: #3d2712; color: var(--or); }
 .pfx-4 { background: var(--grad); color: #201305; }
+.pfx-5 { background: #3a1418; color: #ef9a9a; }
+.pfx-7 { background: linear-gradient(90deg, var(--gold-hi), #fffdf5); color: #241a05; }
 
-/* ---------- ежедневные киты званий ---------- */
+/* ---------- киты званий ---------- */
 
 .rank-kits {
   margin-top: 26px;
@@ -1668,7 +2771,17 @@ footer {
   color: var(--or);
   margin-bottom: 18px;
 }
+.rk-sub {
+  margin: -8px 0 18px;
+  max-width: 88ch;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
 .rk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+/* Верхние три кита идут своей строкой — по числу высших званий. */
+.rk-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.rk-grid + .rk-grid { margin-top: 16px; }
 .rk-card {
   background: var(--panel);
   border-radius: 14px;
@@ -1780,6 +2893,11 @@ footer {
 }
 .bp-jump button:hover { color: var(--ink); background: var(--panel-3); }
 .bp-jump button.on { color: #201305; background: var(--grad); }
+@media (max-width: 760px) {
+  /* Номера этапов — 37 px в ширину и 32 в высоту, между ними 8: на телефоне
+     это меньше подушечки пальца, и прыжок уезжал на соседний этап. */
+  .bp-jump button { padding: 11px 16px; }
+}
 
 .bp-col.half { background: rgba(99, 97, 102, .12); }
 .bp-col.half .bp-lvl { color: var(--ink); }
@@ -1852,10 +2970,13 @@ footer {
   flex-direction: column;
   cursor: pointer;
   outline: none;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: background .2s ease, box-shadow .2s ease;
 }
 .kit-tile:hover,
-.kit-tile:focus-visible { transform: translateY(-5px); box-shadow: 0 20px 44px rgba(0, 0, 0, .55); }
+.kit-tile:focus-visible {
+  background: var(--panel-2);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(245, 134, 32, .34);
+}
 .kit-tile:focus-visible { box-shadow: 0 0 0 2px var(--or), 0 20px 44px rgba(0, 0, 0, .55); }
 
 .kt-icons { display: flex; gap: 8px; margin-bottom: 16px; }
@@ -1868,9 +2989,11 @@ footer {
   align-items: center;
   justify-content: center;
 }
-.kt-cell img { width: 30px; height: 30px; object-fit: contain; }
-.kt-cell img.pix { width: 32px; height: 32px; image-rendering: pixelated; }
-.kt-cell img.pix.wide { width: 34px; height: 17px; }
+/* Ячейка осталась 46 px, а картинку внутри распустили почти во всю ширину:
+   предмет узнаётся, а ряд из трёх ячеек никуда не поехал. */
+.kt-cell img { width: 40px; height: 40px; object-fit: contain; }
+.kt-cell img.pix { width: 40px; height: 40px; image-rendering: pixelated; }
+.kt-cell img.pix.wide { width: 40px; height: 20px; }
 
 .kit-tile h3 { font-family: var(--f-disp); font-weight: 800; font-size: 18px; }
 .kt-sub {
@@ -1915,9 +3038,173 @@ footer {
 .kit-tile:hover .kt-open { color: var(--or); }
 .kit-tile:hover .kt-open span { transform: translateX(4px); }
 
+/* ---------- наборы мода AEGIS ----------
+   Карточки статические: наводить на них нечего, нажимать нечего — поэтому
+   ни подъёма, ни подсветки на :hover тут нарочно нет. Живой только ценник,
+   и тот считает js/shop.js из data-price и data-v в самой разметке. */
+
+.packs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.pack {
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 24px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pk-head { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+.pk-head .kt-icons { margin-bottom: 0; flex: 0 0 auto; }
+.pk-title .tier {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+.pk-title h3 { font-family: var(--f-disp); font-weight: 800; font-size: 21px; margin: 3px 0 6px; }
+.pk-sub { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+.pk-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 15px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 1;
+}
+.pk-list li { display: flex; align-items: center; gap: 11px; font-size: 13.5px; }
+/* 22 px было мало: снаряды и посты в моде — высокие блоки, на такой картинке
+   от них оставались цветные полоски и «непонятная текстура». Размер подняли
+   до 34 px, а сами иконки пересняли с поднятой камеры (tools\icons_render.py):
+   теперь у снаряда видна крышка, по которой он и узнаётся. */
+.pk-list li img { width: 34px; height: 34px; object-fit: contain; flex: 0 0 34px; }
+.pk-list li img.pix { image-rendering: pixelated; }
+/* Замок вместо предмета: модель ещё не показывали. */
+img.hid { opacity: .7; }
+.pk-list li span { flex: 1; color: var(--muted); line-height: 1.35; }
+.pk-list li span b { color: var(--ink); font-weight: 700; }
+.pk-list li em {
+  font-style: normal;
+  flex: 0 0 auto;
+  color: var(--steel);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pk-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.pk-foot .valueline { margin: 0; font-size: 12.5px; }
+.pk-buy { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.pk-buy .price { font-family: var(--f-disp); font-weight: 800; font-size: 26px; color: var(--gold); line-height: 1; }
+.pk-buy .price small { font-size: 14px; color: var(--muted); font-weight: 700; }
+
+.pk-note {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  color: var(--steel);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.pk-note b { color: var(--muted); }
+
+/* ---------- весь арсенал одним заказом ---------- */
+
+.pack-all {
+  margin-top: 18px;
+  background: var(--panel-2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 26px 28px;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.pa-left { flex: 1 1 380px; }
+.pack-all h3 {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 23px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pack-all .save {
+  font-family: var(--f-text);
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: .06em;
+  background: var(--red-lo);
+  color: #fff;
+  border-radius: 8px;
+  padding: 4px 12px;
+}
+.pack-all p { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 10px 0 14px; max-width: 62ch; }
+.pa-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.pa-chips span {
+  background: var(--panel-3);
+  border-radius: 999px;
+  padding: 5px 13px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.pa-buy { flex: 0 0 auto; text-align: right; }
+.pa-buy .old { color: var(--steel); font-size: 12.5px; }
+.pa-buy .old b { color: var(--muted); font-weight: 600; text-decoration: line-through; }
+.pa-buy .price {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 34px;
+  color: var(--gold);
+  line-height: 1.05;
+  margin: 3px 0 2px;
+}
+.pa-buy .price small { font-size: 17px; color: var(--muted); }
+.pa-sub { color: var(--steel); font-size: 12px; margin-bottom: 14px; }
+.pa-sub b { color: var(--muted); font-weight: 600; }
+
+@media (max-width: 1020px) {
+  /* тот же случай, что и у .goods: 1fr = minmax(auto, 1fr) и колонка тянулась
+     под самый широкий пак (360 px при экране 375) */
+  .packs { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .pack { padding: 20px 18px 16px; }
+  .pk-head { gap: 13px; }
+  .pk-title h3 { font-size: 19px; }
+  .pk-list li { font-size: 13px; }
+  .pk-foot { align-items: flex-start; }
+  .pk-buy { margin-left: 0; width: 100%; justify-content: space-between; }
+  .pack-all { padding: 22px 18px; gap: 20px; }
+  .pa-buy { text-align: left; width: 100%; }
+  .pa-buy .btn { width: 100%; }
+}
+@media (max-width: 440px) {
+  /* Три значка набора занимают 154 px, и на телефоне заголовку рядом с ними
+     оставалось 124 — «ОПОВЕЩЕНИЕ» упиралось в правый край карточки. Ставим
+     значки строкой сверху, название под ними во всю ширину: так же устроена
+     плитка кита, глазу это привычно. */
+  .pk-head { flex-direction: column; gap: 12px; }
+  .pk-title { width: 100%; }
+}
+
 /* ---------- карточка кита ---------- */
 
-.modal-wide { width: min(760px, 100%); max-height: 88vh; overflow-y: auto; }
+/* Высоту не ограничиваем и внутри не прокручиваем: крестик приклеен к верхнему
+   правому углу самой карточки, и при внутренней прокрутке он уезжал вместе с
+   содержимым — длинный кит листался, а закрыть его было нечем. Теперь длинную
+   карточку целиком прокручивает подложка, крестик остаётся на своём углу. */
+.modal-wide { width: min(760px, 100%); }
 
 .km-head { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; padding-right: 44px; }
 .km-icons { display: flex; gap: 8px; flex: 0 0 auto; }
@@ -1989,10 +3276,15 @@ footer {
   cursor: pointer;
   outline: none;
   overflow: hidden;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: box-shadow .2s ease;
 }
+/* Плитка кейса стоит на месте — движется только её содержимое: крышка
+   отъезжает, значок подаётся вверх, изнутри бьёт свет. Так отклик заметнее
+   прежнего прыжка, а курсор всё это время остаётся на плитке. */
 .case-tile:hover,
-.case-tile:focus-visible { transform: translateY(-6px); box-shadow: 0 22px 48px rgba(0, 0, 0, .6); }
+.case-tile:focus-visible {
+  box-shadow: 0 22px 48px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(245, 134, 32, .34);
+}
 .case-tile:focus-visible { box-shadow: 0 0 0 2px var(--or), 0 22px 48px rgba(0, 0, 0, .6); }
 .ct-top { background: linear-gradient(165deg, #2b1c08, var(--panel) 58%); }
 .ct-pass { background: linear-gradient(165deg, #1b2430, var(--panel) 58%); }
@@ -2020,6 +3312,10 @@ footer {
   background: linear-gradient(180deg, #3a3741, #2a2831);
   box-shadow: 0 3px 0 rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .05);
   transform-origin: 50% 0;
+  /* покой записан значением, а не пропуском — см. .shot img: слой крышки
+     живёт всё время, и возврат не заканчивается лишней перерисовкой */
+  transform: translateY(0);
+  will-change: transform;
   transition: transform .28s cubic-bezier(.2, .8, .3, 1);
   z-index: 3;
 }
@@ -2043,6 +3339,7 @@ footer {
   align-items: center;
   justify-content: center;
   transform: translateY(6px);
+  will-change: transform;
   transition: transform .28s cubic-bezier(.2, .8, .3, 1);
 }
 .ct-icon img { width: 46px; height: 46px; object-fit: contain; }
@@ -2071,15 +3368,15 @@ footer {
 .ct-strip { display: flex; gap: 5px; margin-bottom: 14px; }
 .ct-mini {
   flex: 1;
-  height: 32px;
+  height: 38px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.ct-mini img { width: 20px; height: 20px; object-fit: contain; }
-.ct-mini img.pix { width: 22px; height: 22px; image-rendering: pixelated; }
-.ct-mini img.pix.wide { width: 24px; height: 12px; }
+.ct-mini img { width: 28px; height: 28px; object-fit: contain; }
+.ct-mini img.pix { width: 28px; height: 28px; image-rendering: pixelated; }
+.ct-mini img.pix.wide { width: 28px; height: 14px; }
 
 .ct-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .ct-price {
@@ -2398,16 +3695,35 @@ footer {
 }
 .b-min { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
 
-.b-slider { margin: 22px 0 16px; }
+/* Дорожка тонкая, но пальцем ловить надо всю полосу. Раньше сам `input` был
+   высотой в дорожку — восемь пикселей, — и попадание чуть выше или ниже
+   уходило мимо ползунка, хотя на вид ползунок 24px и промахнуться вроде бы
+   негде. На телефоне это читается как «ползунок не берётся». Поэтому поле
+   растянуто до 28px и само прозрачно, а полоску рисует дорожка: вид прежний,
+   а ловится вся высота (проверено попаданием в 2, 14 и 26px от верха).
+   Поля .b-slider уменьшены ровно на те же 20px, чтобы блок не подрос. */
+.b-slider { margin: 12px 0 6px; }
 .b-slider input[type=range] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
+  height: 28px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+/* Два одинаковых правила, а не одно через запятую: браузер выбрасывает ВЕСЬ
+   набор, если хоть один селектор в списке ему незнаком, — и дорожка пропала бы
+   в Chrome из-за соседнего -moz-, а в Firefox из-за -webkit-. */
+.b-slider input[type=range]::-webkit-slider-runnable-track {
   height: 8px;
   border-radius: 5px;
   background: linear-gradient(90deg, #3a3038, #6a4a1e);
-  outline: none;
-  cursor: pointer;
+}
+.b-slider input[type=range]::-moz-range-track {
+  height: 8px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #3a3038, #6a4a1e);
 }
 .b-slider input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -2416,7 +3732,11 @@ footer {
   height: 24px;
   border-radius: 50%;
   background: var(--grad);
-  box-shadow: 0 4px 14px rgba(245, 134, 32, .55);
+  /* Тень тёмная, а не оранжевая: ползунок должен выступать над дорожкой,
+     а не гореть. */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .55);
+  /* (8 − 24) / 2: без этого ползунок сел бы на верх дорожки, а не по центру. */
+  margin-top: -8px;
   cursor: pointer;
 }
 .b-slider input[type=range]::-moz-range-thumb {
@@ -2425,8 +3745,15 @@ footer {
   border: 0;
   border-radius: 50%;
   background: var(--or);
-  box-shadow: 0 4px 14px rgba(245, 134, 32, .55);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .55);
   cursor: pointer;
+}
+/* Пальцем целятся хуже, чем мышью: на сенсорном экране растягиваем поле до 40px
+   и ровно на столько же поджимаем поля блока — вид не меняется (полоску рисует
+   дорожка, само поле прозрачное), а ловится вся высота. */
+@media (pointer: coarse) {
+  .b-slider { margin: 6px 0 0; }
+  .b-slider input[type=range] { height: 40px; }
 }
 .b-marks { display: flex; gap: 4px; margin-top: 10px; }
 .b-marks button {
@@ -2444,6 +3771,12 @@ footer {
 }
 .b-marks button:hover { color: var(--ink); background: var(--panel-3); }
 .b-marks button.on { color: #201305; background: var(--grad); }
+@media (max-width: 760px) {
+  /* Метки множителя ловили палец в 31 px, а стоят они вплотную друг к другу:
+     промах попадал в соседнюю ставку и молча менял цену. Высота 39 px, вид
+     тот же. */
+  .b-marks button { padding: 12px 2px; }
+}
 
 .b-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .b-foot p { color: var(--muted); font-size: 14px; max-width: 720px; line-height: 1.55; }
@@ -2540,11 +3873,23 @@ footer {
   html { scroll-behavior: auto; }
   .mc-char, .head-sway, .arm-wave { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .kit-tile, .case-tile, .coin-pack, .good, .rank, .bundle { transition: none; }
-  .kit-tile:hover, .case-tile:hover, .coin-pack:hover,
-  .good:hover, .rank:hover, .bundle:hover { transform: none; }
+  .kit-tile, .case-tile, .good, .rank, .bundle, .card {
+    transition: none;
+  }
+  /* Подсветка кромки остаётся — она не движение, а цвет; убираем только то,
+     что едет: прочерк линии, крышку ящика, зум картинки. */
+  .card::before { transition: none; transform: scaleX(1); opacity: 0; }
+  .card:hover::before, .card:focus-within::before { opacity: 1; }
+  .card:hover .shot img { transform: none; }
   .ct-lid, .ct-icon, .ct-shine { transition: none; }
   .case-tile:hover .ct-lid { transform: none; }
+  .stat .num { transition: none; }
+  /* Меню на узком экране не выезжает, а просто появляется: visibility при этом
+     переключается сразу, без ожидания конца перехода. */
+  .topnav { transition: none; }
+  /* Черта над разделом и полоска под номером шага рисуются сразу целиком. */
+  .section-head.reveal::before,
+  .step.reveal .n::after { transform: none; transition: none; }
   .reel-track { transition-duration: .4s !important; }
 }
 
@@ -2584,6 +3929,33 @@ footer {
   top: 92px;
 }
 
+/* что нужно: новое имя или новый пароль к своему */
+.reg-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: var(--panel-2);
+  border-radius: 12px;
+  padding: 5px;
+  margin-bottom: 20px;
+}
+.reg-mode button {
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+  padding: 10px 12px;
+  color: var(--muted);
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease;
+}
+.reg-mode button:hover { color: var(--ink); }
+.reg-mode button.on { background: var(--panel-3); color: var(--or); }
+/* Скрытое режимом прячем всегда: у .reg-hard и .reg-check свой display сильнее атрибута hidden. */
+.reg-card [hidden] { display: none !important; }
+
 /* важное: один аккаунт на человека */
 .reg-hard {
   display: flex;
@@ -2610,7 +3982,11 @@ footer {
   align-items: center;
   justify-content: center;
 }
-.reg-hard b { color: var(--or); display: block; margin-bottom: 4px; }
+/* Первая строка блока — заголовок предупреждения, он и стоит отдельной строкой.
+   Остальные выделения живут внутри предложения: пока блочными были ВСЕ <b>,
+   фраза разрывалась и следующая строка начиналась с запятой. */
+.reg-hard b { color: var(--or); }
+.reg-hard > div > b:first-child { display: block; margin-bottom: 4px; }
 
 .reg-form label {
   display: block;
@@ -2726,7 +4102,12 @@ footer {
   border-radius: var(--radius);
   padding: 24px 26px 20px;
 }
-.reg-why h3 {
+/* Здесь и ниже у .pf-view-say заголовок стал h2 вместо h3, а у .cab-why — h3
+   вместо h4. Размер и начертание те же: правка не про вид, а про порядок
+   заголовков. На странице стояли h1 и сразу h3 — экранный диктор читает такой
+   разрыв как «пропущен уровень», и список заголовков, по которому незрячий
+   ходит вместо прокрутки, разваливается. */
+.reg-why h2 {
   font-family: var(--f-disp);
   font-weight: 800;
   font-size: 19px;
@@ -2735,7 +4116,10 @@ footer {
 .reg-why p { color: var(--muted); font-size: 14.5px; line-height: 1.65; margin: 0 0 12px; }
 .reg-why p:last-child { margin-bottom: 4px; }
 .reg-why b { color: var(--ink); }
-.reg-why ul { margin: 0 0 12px; padding-left: 20px; }
+/* Нумерованный список появился вместе с шагами привязки Discord: без своей
+   строки он брал отступ браузера (40px) и висел правее соседнего маркированного. */
+.reg-why ul, .reg-why ol { margin: 0 0 12px; padding-left: 20px; }
+.reg-why ol { padding-left: 22px; }
 .reg-why li { color: var(--muted); font-size: 14.5px; line-height: 1.6; margin-bottom: 6px; }
 .reg-why li::marker { color: var(--or); }
 .reg-why .reg-note {
@@ -2747,7 +4131,9 @@ footer {
 }
 
 @media (max-width: 1000px) {
-  .reg-wrap { grid-template-columns: 1fr; }
+  /* minmax(0,1fr), а не 1fr: у колонки «1fr» нижняя граница — min-content,
+     и один широкий потомок (кнопка в одну строку) растягивал всю страницу. */
+  .reg-wrap { grid-template-columns: minmax(0, 1fr); }
   .reg-card { position: static; }
 }
 @media (max-width: 640px) {
@@ -2810,6 +4196,8 @@ footer {
 }
 .pf-drop-off:hover:not([disabled]) { color: #dd7f68; }
 .pf-drop-off[disabled] { opacity: .45; cursor: default; }
+/* Пальцем: 32px на строку мало, добираем полями до 36. Вид тот же. */
+@media (pointer: coarse) { .pf-drop-off { padding: 10px 0; } }
 
 /* предпросмотр: игрок спереди прямо из текстуры скина */
 .pf-view {
@@ -2831,7 +4219,7 @@ footer {
   border-radius: 12px;
   image-rendering: pixelated;
 }
-.pf-view-say h3 {
+.pf-view-say h2 {
   font-family: var(--f-disp);
   font-weight: 800;
   font-size: 19px;
@@ -2844,3 +4232,1135 @@ footer {
   .pf-view-in { grid-template-columns: 1fr; justify-items: center; gap: 18px; }
   .pf-view-say { text-align: center; }
 }
+
+
+/* ---------- апелляция и амнистия ----------
+   Бесплатный путь стоит первым и набран крупнее платного. Это не вкусовщина:
+   разбор ошибки модерации ничего не стоит по правилам, деньгами закрывается
+   только лёгкий срок, и порядок блоков обязан читаться так же. */
+
+.amn-free {
+  background: linear-gradient(150deg, #2b1c08, var(--panel) 60%);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow);
+}
+.amn-free-txt { flex: 1 1 520px; }
+.amn-free h3 {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 24px;
+  margin: 4px 0 10px;
+  text-transform: uppercase;
+}
+.amn-free p { color: var(--muted); font-size: 14.5px; line-height: 1.65; max-width: 720px; }
+.amn-free p b { color: var(--ink); }
+.amn-back { margin-top: 10px; }
+.amn-back b { color: var(--gold); }
+
+.amn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.amn {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.amn-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.amn-h h3 { font-family: var(--f-disp); font-weight: 800; font-size: 17.5px; margin-top: 3px; }
+.amn-h .price {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--gold);
+  white-space: nowrap;
+  text-align: right;
+}
+.amn-h .price small { font-size: 13px; }
+.amn p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+.amn-no { list-style: none; display: grid; gap: 6px; }
+.amn-no li { color: var(--steel); font-size: 13px; line-height: 1.5; padding-left: 18px; position: relative; }
+.amn-no li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 9px;
+  height: 2px;
+  background: var(--steel);
+}
+/* кнопка прижата к низу карточки: текста в карточках разное количество,
+   а ряд кнопок должен стоять на одной линии */
+.amn > .btn { align-self: flex-start; margin-top: auto; }
+
+/* третья карточка не товар, а условие — поэтому тише и без ценника деньгами */
+.amn-rule { background: var(--panel-2); }
+.amn-rule .price { color: var(--steel); }
+.amn-where { color: var(--steel) !important; font-size: 13px !important; }
+
+.amn-note { margin-top: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.65; }
+.amn-note b { color: var(--gold); }
+
+@media (max-width: 1100px) {
+  .amn-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .amn-grid { grid-template-columns: 1fr; }
+  .amn-free { padding: 24px 22px; }
+  .amn-free .btn { width: 100%; text-align: center; }
+}
+
+/* ======================= РАНЦЫ =======================
+   Ярусов шесть, а модель ранца в моде одна: ярус там отличается только цветом
+   застёжки — полоска в три пикселя, которой в кадре предмета и не видно.
+   Поэтому шести одинаковых картинок тут нет: ранец нарисован один раз крупно,
+   а ярус читается числом ячеек и своим цветом строки (--t) — тем самым,
+   что стоит у застёжки этого яруса в текстуре мода. */
+.bags-hero {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  background: linear-gradient(120deg, #241a14, var(--panel) 62%);
+  border-radius: var(--radius);
+  padding: 30px 34px;
+  box-shadow: var(--shadow);
+  margin-bottom: 26px;
+}
+.bh-art {
+  flex: 0 0 auto;
+  width: 148px;
+  height: 148px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 45%, rgba(245, 134, 32, .18), transparent 68%);
+}
+.bh-art img { width: 132px; height: 132px; object-fit: contain; }
+.bh-rules { flex: 1; display: grid; gap: 14px; }
+.bh-rule { padding-left: 16px; position: relative; }
+.bh-rule::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--grad);
+}
+.bh-rule b {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 15.5px;
+  margin-bottom: 3px;
+}
+.bh-rule span { color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+
+.bag-ladder { list-style: none; display: grid; gap: 10px; }
+.bag-row {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 96px 96px 104px auto;
+  align-items: center;
+  gap: 18px;
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 16px 20px 16px 0;
+  box-shadow: inset 4px 0 0 var(--t);
+}
+.bg-n {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--t);
+  text-align: center;
+  line-height: 1;
+}
+.bg-name h3 { font-family: var(--f-disp); font-weight: 800; font-size: 18px; }
+.bg-name p { color: var(--muted); font-size: 13px; line-height: 1.45; margin-top: 3px; }
+.bg-num { text-align: right; }
+.bg-num b {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--ink);
+}
+.bg-num span { display: block; color: var(--steel); font-size: 12px; margin-top: 2px; }
+.bag-row .price {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 24px;
+  color: var(--gold);
+  text-align: right;
+  line-height: 1;
+}
+.bag-row .price small { font-size: 13px; color: var(--muted); }
+/* I–III крафтятся — вместо цены и кнопки простая пометка (19.09.2026) */
+.bag-row .price.craft { font-size: 15px; font-weight: 800; color: var(--steel); }
+.bag-row .bag-craft { background: none; border-color: transparent; box-shadow: none; color: var(--steel); pointer-events: none; cursor: default; }
+
+.bag-up { margin-top: 16px; color: var(--muted); font-size: 13.5px; line-height: 1.65; }
+.bag-up b { color: var(--ink); }
+
+/* два столбца модулей: что открывается и чего на сервере не будет.
+   align-items:start — в правой колонке вдвое меньше строк, и если тянуть
+   карточки на одну высоту, под запретами висит пустая панель в треть экрана */
+.mods-two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 34px; align-items: start; }
+.mod-col {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  box-shadow: var(--shadow);
+}
+.mod-col > .tier {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 11.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--or);
+}
+.mod-col.no > .tier { color: var(--steel); }
+.mod-col h3 { font-family: var(--f-disp); font-weight: 800; font-size: 21px; margin: 5px 0 6px; }
+.mod-col > p { color: var(--muted); font-size: 13.5px; line-height: 1.6; margin-bottom: 18px; }
+.mod-list { list-style: none; display: grid; gap: 13px; }
+.mod-list li { display: flex; gap: 12px; align-items: flex-start; }
+.mod-list img {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: var(--panel-3);
+  border-radius: 8px;
+  padding: 3px;
+}
+.mod-list div { min-width: 0; }
+.mod-list b { font-size: 14px; font-weight: 700; }
+.mod-list span { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.5; margin-top: 2px; }
+.mod-col.no .mod-list img { filter: grayscale(1) brightness(.72); }
+.mod-col.no .mod-list b { color: var(--steel); text-decoration: line-through; }
+
+@media (max-width: 1040px) {
+  .mods-two { grid-template-columns: 1fr; }
+  /* ярус и название в строке, числа и цена — вторым рядом: так ничего
+     не приходится ужимать до нечитаемого */
+  .bag-row {
+    grid-template-columns: 44px auto minmax(0, 1fr) auto;
+    row-gap: 14px;
+    padding: 16px 18px 16px 0;
+  }
+  .bg-name { grid-column: 2 / -1; }
+  .bg-num { grid-column: auto; text-align: left; }
+  /* первый .bg-num — это третий ребёнок строки (ярус, название, ячейки…);
+     nth-of-type здесь не годится: он считает все div, а первый div — ярус */
+  .bag-row > .bg-num:nth-child(3) { grid-column: 2; }
+  .bag-row .price { text-align: right; }
+  .bag-row .btn { grid-column: 1 / -1; justify-self: center; }
+}
+@media (max-width: 640px) {
+  .bags-hero { flex-direction: column; padding: 26px 22px; gap: 22px; }
+  .bh-art { width: 112px; height: 112px; }
+  .bh-art img { width: 104px; height: 104px; }
+  .bag-row { grid-template-columns: 38px auto minmax(0, 1fr) auto; gap: 12px 12px; padding-left: 0; }
+  .bag-row .btn { width: 100%; text-align: center; justify-self: stretch; justify-content: center; }
+  .mod-col { padding: 22px 20px; }
+}
+
+
+/* ============================================================
+   ПОДДЕРЖАТЬ ПРОЕКТ (donate.html, раздел без товара)
+   Та же посуда, что у лавки: тёмная плита, кнопки-фишки .switch,
+   крупный ценник. Отличие одно — число в ценнике задаёт человек.
+   ============================================================ */
+
+.sup {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 30px 32px;
+  box-shadow: var(--shadow);
+}
+.sup-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.sup .switch { flex: 1 1 auto; }
+.sup-own { flex: 0 1 190px; }
+.sup-own label {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+/* Знак валюты — не внутри поля, а рядом с ним в общей рамке: так он не
+   уезжает вместе с набранным числом и его нельзя стереть. */
+.sup-in {
+  display: flex;
+  align-items: center;
+  background: var(--panel-2);
+  border-radius: 10px;
+}
+.sup-in:focus-within {
+  background: var(--panel-3);
+  box-shadow: inset 0 0 0 2px rgba(245, 134, 32, .5);
+}
+.sup-in input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--ink);
+  font-family: var(--f-text);
+  font-weight: 600;
+  font-size: 16.5px;
+  padding: 13px 4px 13px 16px;
+}
+/* Стрелки-крутилки у числового поля: мелкие, попасть пальцем нечем, а
+   ширину отъедают. Сумму и так набирают с клавиатуры или берут фишкой. */
+.sup-in input::-webkit-outer-spin-button,
+.sup-in input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sup-in input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+.sup-in span {
+  padding: 0 16px 0 2px;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.sup-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+}
+.sup-foot .price {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 34px;
+  line-height: 1.05;
+  color: var(--gold);
+}
+.sup-foot .price small { font-size: 17px; color: var(--muted); }
+
+.sup-note {
+  margin-top: 16px;
+  color: var(--steel);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.sup-note b { color: var(--muted); }
+
+/* Своё число червонцев — та же плита, только под пакетами. Под ценой —
+   во что обходится один червонец: ради этой строки и берут крупнее. */
+.coin-own { margin-top: 22px; }
+.coin-per {
+  margin-top: 6px;
+  color: var(--steel);
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .sup { padding: 24px 20px; }
+  /* Столбиком: фишки во всю ширину, своё поле под ними. Строкой поле
+     ужималось до 90 пикселей, и «1000» в нём уже не помещалось целиком. */
+  .sup-row { flex-direction: column; align-items: stretch; gap: 18px; }
+  .sup-own { flex: 1 1 auto; }
+  /* Пять сумм в ряд на телефоне: при общих полях «1000 ₽» переносилось на
+     вторую строку, и фишка вырастала вдвое против соседних. Поджимаем поля
+     и запрещаем перенос — ряд остаётся ровным. */
+  .sup .switch { gap: 3px; }
+  .sup .switch button { padding: 11px 4px; font-size: 12.5px; white-space: nowrap; }
+  .sup-foot { gap: 16px; }
+  .sup-foot .btn { width: 100%; justify-content: center; }
+}
+
+/* ---------- чеки заказов ----------
+   Список живёт в браузере игрока (localStorage) и появляется только когда
+   в нём что-то есть: пустая плашка «чеков нет» никому не нужна. Это
+   единственная бумажка, с которой можно прийти в обращения, если ошибся
+   ником, — поэтому номер заказа тут крупнее всего остального. */
+
+.rcpts {
+  margin-top: 26px;
+  background: var(--panel-2);
+  border-radius: var(--radius);
+  padding: 26px 28px 24px;
+}
+.rcpts-h { margin-bottom: 16px; }
+.rcpts-h h3 { font-size: 19px; }
+.rcpts-h span {
+  display: block;
+  margin-top: 4px;
+  color: var(--steel);
+  font-size: 13px;
+}
+.rcpts-list { display: grid; gap: 12px; }
+
+.rcpt {
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 16px 18px 14px;
+}
+.rcpt-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+.rcpt-top b { font-family: var(--f-disp); font-weight: 700; font-size: 15px; }
+.rcpt-sum {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--gold);
+  white-space: nowrap;
+}
+/* Номер заказа читают вслух в тикете и перепечатывают руками — моноширинный
+   шрифт и разрядка тут не украшение, а защита от «ноль или буква О». */
+.rcpt-meta {
+  margin-top: 6px;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 12.5px;
+  letter-spacing: .02em;
+  color: var(--muted);
+  word-break: break-word;
+}
+/* Что с заказом сейчас — словами службы: «выдаёт команда сервера»,
+   «червонцы зачислены». Статус-плашка ниже слишком короткая для этого. */
+.rcpt-note {
+  margin-top: 8px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+/* Заказ, с оплаты которого человек только что вернулся, — полоса акцента
+   слева, чтобы среди старых чеков его не пришлось искать. */
+.rcpt.is-focus { box-shadow: inset 3px 0 0 var(--gold); }
+.rcpt-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+.rcpt-st {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  padding: 5px 10px;
+  background: var(--panel-3);
+  color: var(--muted);
+}
+.rcpt-st.is-paid { background: rgba(250, 212, 107, .14); color: var(--gold); }
+.rcpt-st.is-failed { background: rgba(224, 49, 49, .16); color: #f08a8a; }
+
+.rcpt-copy {
+  background: var(--panel-3);
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: var(--f-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.rcpt-copy:hover { background: var(--or); color: #201305; }
+.rcpt-copy:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* Запасной путь: если в браузере нет доступа к буферу, скрипт показывает сам
+   текст чека и выделяет его — копировать руками неудобно, но возможно. */
+.rcpt-text {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--panel-3);
+  border-radius: 10px;
+  color: var(--muted);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.rcpts-note {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  color: var(--steel);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.rcpts-note a { color: var(--gold); }
+
+/* В окне заказа кнопок теперь две: «Оплатить» и «Скопировать чек». Вторая
+   появляется по ходу дела, поэтому отступ вешаем на саму пару, а не на
+   кнопку — иначе он остаётся висеть, пока чека ещё нет. */
+.modal .btn + .btn { margin-top: 10px; }
+
+/* ---------- «оплатить за меня» ----------
+   Ссылку на чужой заказ открывает человек, который в лавке впервые: ему
+   надо за секунду понять, что, кому и сколько, и найти одну кнопку. Поэтому
+   блок стоит первым под плашкой, а не среди чеков, и строки в нём — как
+   в чеке. Тот же блок встречает вернувшегося с неудачной оплаты. */
+.payfor {
+  margin-top: 18px;
+  background: var(--panel-2);
+  border-radius: var(--radius);
+  padding: 26px 28px 22px;
+  box-shadow: inset 4px 0 0 var(--gold);
+  /* к блоку листаем сами — верх не должен уйти под шапку и полосу разделов */
+  scroll-margin-top: 150px;
+}
+@media (min-width: 860px) {
+  .payfor { scroll-margin-top: 200px; }
+}
+.pf-kick {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--gold);
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.pf-head h2 { font-size: 22px; line-height: 1.25; }
+.pf-rows {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 16px 18px;
+  background: var(--panel);
+  border-radius: 14px;
+}
+.pf-rows > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.pf-rows dt { color: var(--steel); font-size: 13.5px; flex: none; }
+.pf-rows dd {
+  margin: 0;
+  text-align: right;
+  font-size: 14.5px;
+  font-weight: 600;
+  word-break: break-word;
+}
+.pf-rows dd small { display: block; color: var(--muted); font-weight: 400; font-size: 12.5px; }
+.pf-sum { font-family: var(--f-disp); font-weight: 800; font-size: 17px; color: var(--gold); }
+/* номер заказа перепечатывают руками — как в чеке, моноширинным */
+.pf-id { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; letter-spacing: .02em; }
+.pf-text { margin-top: 14px; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+.pf-acts { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+/* блок сам в --panel-2 — тёмная кнопка того же цвета читалась бы надписью */
+.pf-acts .btn-dark { background: var(--panel-3); }
+.pf-acts .btn-dark:hover { background: #2C2B32; }
+.pf-friend { margin-top: 18px; }
+.pf-friend > span { display: block; margin-bottom: 8px; color: var(--steel); font-size: 13px; }
+.pf-foot { margin-top: 16px; color: var(--steel); font-size: 13px; }
+.pf-foot a { color: var(--gold); }
+
+/* Строка «ссылка + Скопировать» — в окне заказа и в блоке выше. Поле только
+   для чтения: по фокусу выделяется целиком, чтобы копировалось и руками. */
+.m-friend {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: var(--panel-2);
+  border-radius: 12px;
+}
+.m-friend p { font-size: 13.5px; line-height: 1.55; color: var(--muted); margin-bottom: 10px; }
+.m-friend p b { color: var(--ink); }
+.m-friend-row { display: flex; gap: 8px; }
+.m-friend-row input {
+  flex: 1;
+  min-width: 0;
+  background: var(--panel);
+  color: var(--ink);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 12.5px;
+}
+.m-friend-row input:focus-visible { outline: 2px solid rgba(245,134,32,.6); outline-offset: 1px; }
+
+/* «Сейчас действует код» под полем промокода: строка поверх отступа поля,
+   «Применить» — текстовой кнопкой в цвет акцента, без подложки. */
+.m-promo-hint {
+  margin: -8px 0 18px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.m-promo-hint b { color: var(--gold); font-weight: 700; letter-spacing: .02em; }
+.m-promo-use {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 2px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.m-promo-use:focus-visible { outline: 2px solid rgba(245,134,32,.6); outline-offset: 2px; border-radius: 4px; }
+
+/* Донат на DonationAlerts: сумма и номер заказа, которые человек сам
+   вписывает на их странице, — две строки «поле + Скопировать» и кнопка. */
+.m-da { margin: 0 0 16px; }
+.m-da-head {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.m-da-lab { display: block; margin: 12px 0 6px; color: var(--steel); font-size: 12.5px; }
+.m-da-alt { display: block; margin-top: 6px; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+.m-da-alt b { color: var(--ink); font-weight: 600; }
+.m-da p.m-da-note { margin: 12px 0 0; font-size: 12.5px; }
+.m-da-go { margin-top: 14px; }
+/* в блоке «оплата за игрока» фон сам --panel-2 — донат темнее, как поле */
+.payfor .m-da { margin: 18px 0 0; background: var(--panel); }
+.payfor .m-da .m-friend-row input { background: var(--panel-2); }
+/* Валюты страницы доната: в каждой кнопке — сумма, уже закреплённая за
+   заказом. Выбранная подсвечена, как вариант карты выше. */
+.m-da-curs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 6px;
+  margin: 12px 0 2px;
+}
+.m-da-cur {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 7px 10px;
+  background: var(--panel);
+  color: var(--ink);
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.m-da-cur b { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.m-da-cur span { font-size: 11px; letter-spacing: .06em; color: var(--muted); }
+.m-da-cur:hover { background: var(--panel-3); }
+.m-da-cur.on { background: var(--panel-3); box-shadow: inset 3px 0 0 var(--gold); }
+.m-da-cur.on span { color: var(--gold); }
+.m-da-cur:focus-visible { outline: 2px solid rgba(245,134,32,.6); outline-offset: 1px; }
+.payfor .m-da .m-da-cur { background: var(--panel-2); }
+.payfor .m-da .m-da-cur.on, .payfor .m-da .m-da-cur:hover { background: var(--panel-3); }
+.m-da-cn { color: var(--ink); font-weight: 600; }
+.m-da-steps {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.m-da-steps li + li { margin-top: 2px; }
+.m-da-steps b { color: var(--ink); font-weight: 600; }
+.m-da p.m-da-part { color: var(--ink); padding-left: 10px; box-shadow: inset 3px 0 0 var(--gold); }
+
+/* ---------- выбор карты в окне заказа ----------
+   Два варианта плашками, как поля окна; выбранный — светлее и с полосой
+   акцента слева, как у блока оплаты выше. Родная радиокнопка остаётся
+   (с ней работают клавиатура и читалка), но видна только её метка-кружок. */
+.m-card { border: none; margin: 0 0 18px; padding: 0; min-width: 0; }
+.m-card legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.modal .m-card-opt {
+  position: relative;
+  margin: 0;
+  font-family: var(--f-text);
+  font-weight: 400;
+  font-size: 14.5px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+.modal .m-card-opt + .m-card-opt { margin-top: 8px; }
+.modal .m-card-opt input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+}
+.m-card-opt > span {
+  position: relative;
+  display: block;
+  padding: 11px 14px 12px 44px;
+  background: var(--panel-2);
+  border-radius: 10px;
+}
+.m-card-opt > span::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--steel);
+}
+.m-card-opt:hover > span { background: var(--panel-3); }
+.m-card-opt input:checked + span { background: var(--panel-3); box-shadow: inset 3px 0 0 var(--gold); }
+.m-card-opt input:checked + span::before { box-shadow: inset 0 0 0 5px var(--gold); }
+.m-card-opt input:focus-visible + span { outline: 2px solid rgba(245,134,32,.6); outline-offset: 2px; }
+.m-card-opt b { display: block; font-weight: 600; line-height: 1.35; }
+.m-card-opt small { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+
+@media (max-width: 640px) {
+  .rcpts { padding: 22px 20px 20px; }
+  .rcpt-foot { flex-direction: column; align-items: stretch; gap: 10px; }
+  .rcpt-st { text-align: center; }
+  .rcpt-copy { width: 100%; }
+  .payfor { padding: 22px 20px 20px; }
+  .pf-head h2 { font-size: 19px; }
+  .pf-rows { padding: 14px; }
+  .pf-acts .btn { width: 100%; justify-content: center; }
+  /* узко: поле со ссылкой на всю ширину, кнопка под ним */
+  .m-friend-row { flex-direction: column; }
+  .m-friend-row input { padding: 10px; }
+  .m-da-go { width: 100%; justify-content: center; }
+}
+
+/* ======================= ЛАВКА ЗАКРЫТА =======================
+   Флаг стоит в js/config.js (shopClosed), класс на <html> вешает строка
+   в голове donate.html — до первой отрисовки, иначе ценники мигают.
+   Здесь только «что спрятать»; ценники, которые лавка рисует сама, и подписи
+   кнопок — в js/shop-closed.js.
+
+   Правило простое: уходит всё, где названа сумма деньгами. Проценты («−29%»,
+   «выгода 61%») сами по себе остаются — это разница, а не цена; уходят они
+   только там, где стоят в одной строке с рублями (.valueline).
+
+   Пары «открыто / закрыто» сделаны наоборот, через :not(): у .shut-only
+   и .price-off нет своего display, они просто прячутся, пока лавка работает.
+   Так их нормальный вид не надо угадывать и потом чинить. */
+html.shop-closed .price:not([data-no-rub]),
+html.shop-closed .valueline,
+html.shop-closed .km-value,
+html.shop-closed .pa-sub,
+html.shop-closed .pk-list em,
+html.shop-closed .old,
+html.shop-closed .pc-code,
+html.shop-closed .ct-price,
+html.shop-closed .ki-v,
+html.shop-closed .m-alt,
+html.shop-closed .cur-pick,
+html.shop-closed .sup,
+html.shop-closed .sup-note,
+html.shop-closed .rub { display: none !important; }
+
+html:not(.shop-closed) .shut-only,
+html:not(.shop-closed) .price-off { display: none !important; }
+
+/* Вместо ценника — короткая строка того же места, чтобы карточка не выглядела
+   сломанной и не приходилось гадать, потерялась цена или её пока нет. */
+.price-off {
+  color: var(--steel);
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* Кнопка, которая никуда не ведёт, и выглядеть должна так же: без заливки
+   акцентом, без курсора-руки и без реакции на наведение.
+
+   Правило нарочно без «html.shop-closed» впереди: закрытая дверь бывает не
+   только в лавке — этим же видом помечена загрузка лаунчера на главной, а
+   класса shop-closed там нет и быть не должно. Ничего лишнего это не красит:
+   .btn-off ставится только руками и только там, где закрыто. */
+.btn-off,
+.btn-off:hover,
+.btn-off:focus {
+  background: rgba(255, 255, 255, .04);
+  color: var(--steel);
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+}
+/* Заодно снимаем с неё слой наведения оранжевых кнопок — он лежит отдельной
+   картинкой и заливку rgba выше не спрашивает. */
+.btn-off::after { content: none; }
+
+/* Кейс при закрытой лавке: смотреть можно всё, крутить нельзя. «Сколько
+   крутить» и «Анимация» настраивают именно прокрутку — пока её нет, они
+   только обманывают, поэтому уходят вместе с ней, а на их место встаёт
+   строка .cm-shut. Кнопка прокрутки остаётся видимой, но выключенной: так
+   сразу понятно, что это не поломка, а закрытая дверь. */
+html.shop-closed .cm-controls .cm-row { display: none; }
+html.shop-closed #cmSpin { margin-left: 0; }
+.cm-shut {
+  /* Основа именно auto. Стояло 220px — и на узком экране это выходило боком:
+     ниже 900 px .cm-controls разворачивается в столбец, а основа в столбце —
+     это ВЫСОТА. Строка в три строчки распирала панель до 220 px, и между ней
+     и кнопкой зияла пустота. */
+  flex: 1 1 auto;
+  min-width: 200px;
+  color: var(--steel);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ============================ оферта (offer.html) ============================
+   Слева — оглавление (липнет при прокрутке), справа — разделы карточками
+   .reg-why из регистрации: тот же вид текста, без нового набора стилей.
+   Между карточками 18px — блоки не касаются друг друга. */
+
+.offer-sec { padding: 10px 0 80px; }
+.offer-wrap {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+.offer-toc {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 20px 20px 14px;
+  position: sticky;
+  top: 92px;
+}
+.offer-toc h2 {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.offer-toc ol { margin: 0; padding-left: 22px; }
+.offer-toc li { color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 7px; }
+.offer-toc li::marker { color: var(--or); }
+.offer-toc a { color: var(--muted); text-decoration: none; }
+.offer-toc a:hover, .offer-toc a:focus-visible { color: var(--ink); }
+.offer-body { display: grid; gap: 18px; min-width: 0; }
+/* якорь не должен уезжать под липкую шапку */
+.offer-body .reg-why { scroll-margin-top: 92px; }
+
+@media (max-width: 1000px) {
+  .offer-wrap { grid-template-columns: minmax(0, 1fr); }
+  .offer-toc { position: static; }
+}
+
+/* =====================================================================
+   ЛАВКА, РЕДИЗАЙН 24.09.2026: карточки званий, мандат, кейсы, наборы.
+   Правила сайта: без стекла и светлых окантовок — только заливки и тени.
+   ===================================================================== */
+
+/* ---------- лестница званий ---------- */
+
+.rk2-row { padding-top: 14px; }  /* место под ленту «Лучший выбор» */
+.rank.rk2 { padding: 26px 22px 22px; }
+.rk2-head { display: flex; align-items: center; gap: 14px; }
+.rank.rk2 h3 { margin: 3px 0 0; font-size: 22px; line-height: 1.15; }
+
+/* Знак ступени нарисован кодом: пластина с римской цифрой и шевронами
+   снизу — чем выше ступень, тем больше шевронов и теплее заливка. */
+.rk2-mark {
+  flex: 0 0 auto;
+  position: relative;
+  width: 54px;
+  height: 60px;
+  border-radius: 12px 12px 20px 20px;
+  background: linear-gradient(180deg, #2c2a31, #1d1c21);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 9px;
+}
+.rk2-mark b {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+  background: var(--grad-h);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.rk2-mark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 9px;
+  width: 24px;
+  height: var(--chev-h, 3px);
+  transform: translateX(-50%);
+  border-radius: 1px;
+  /* лычки: полоса 3px, зазор 3px — сколько полос, такая ступень */
+  background: repeating-linear-gradient(180deg, var(--or) 0 3px, transparent 3px 6px);
+}
+.rk2-lvI   { --chev-h: 3px; }
+.rk2-lvII  { --chev-h: 9px; }
+.rk2-lvIII { --chev-h: 15px; }
+.rk2-lvIV  { --chev-h: 21px; background: linear-gradient(180deg, #3a2710, #1f1a14); }
+.rk2-lvV, .rk2-lvVI, .rk2-lvVII { --chev-h: 21px; background: linear-gradient(180deg, #43290c, #231a10); }
+/* звёзды высших ступеней: одна, две, три точки над цифрой */
+.rk2-lvV::before, .rk2-lvVI::before, .rk2-lvVII::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  height: 8px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, var(--gold-hi) 0 3px, transparent 3.5px) 0 0 / 10px 8px repeat-x;
+}
+.rk2-lvV::before   { width: 10px; }
+.rk2-lvVI::before  { width: 20px; }
+.rk2-lvVII::before { width: 30px; }
+.rk2-lvVII { background: var(--grad); }
+.rk2-lvVII b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #201305; }
+.rk2-lvVII::after { background: repeating-linear-gradient(180deg, #201305 0 3px, transparent 3px 6px); }
+
+.rank.rk2 .r-mot { min-height: 3.9em; margin-top: 12px; }
+.rank.rk2 .price { margin: 12px 0 14px; font-size: 36px; line-height: 1.05; }
+
+/* что лежит в ките звания */
+.rk2-kit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel-2);
+  border-radius: 12px;
+  padding: 10px 12px 10px 10px;
+  margin-bottom: 14px;
+  min-height: 78px;
+}
+.rk2-kit .icon-plate {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  border-radius: 10px;
+  background: var(--panel-3);
+}
+.rk2-kit .icon-plate .pix { width: 34px; height: 34px; image-rendering: pixelated; }
+.rk2-kit b { display: block; font-family: var(--f-disp); font-weight: 800; font-size: 13.5px; color: var(--ink); }
+.rk2-kit i { display: block; font-style: normal; font-size: 12.5px; line-height: 1.4; color: var(--steel); margin-top: 3px; }
+
+/* список возможностей с иконками вместо чёрточек */
+.rk2-perks { margin-bottom: 20px; }
+.rk2-perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.rk2-perks li::before { display: none; }
+.rk2-perks li code { color: var(--gold); font-size: 13px; }
+.rk2-perks li b { color: var(--ink); font-weight: 600; }
+.rk2-ic {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--panel-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -2px;
+}
+.rk2-ic img.pix { width: 20px; height: 20px; image-rendering: pixelated; object-fit: contain; }
+.rk2-ic img.pix.wide { width: 22px; height: 11px; }
+.rk2-perks li.inherit {
+  display: block;
+  background: rgba(252, 230, 143, .07);
+  border-radius: 9px;
+  padding: 7px 10px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+/* лучший выбор */
+.rank.rank-best {
+  background: linear-gradient(180deg, #2c1d0a, var(--panel) 46%);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, .6), 0 0 0 2px rgba(245, 134, 32, .55), 0 0 44px rgba(245, 134, 32, .16);
+}
+.rank.rank-best:hover {
+  box-shadow: 0 26px 60px rgba(0, 0, 0, .6), 0 0 0 2px rgba(245, 134, 32, .8), 0 0 54px rgba(245, 134, 32, .24);
+}
+.rk2-ribbon {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: var(--grad);
+  color: #201305;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 11.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  padding: 5px 16px;
+  box-shadow: 0 6px 16px rgba(245, 134, 32, .35);
+}
+.rank.rk2.rank-top { background: linear-gradient(165deg, #33210a, var(--panel) 58%); }
+
+/* ---------- «позже» ---------- */
+
+.soon-tag {
+  display: inline-block;
+  vertical-align: 2px;
+  margin-left: 6px;
+  padding: 2px 7px 1px;
+  border-radius: 6px;
+  background: #2b2a31;
+  color: var(--steel);
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  -webkit-text-fill-color: var(--steel);
+}
+.perks-soon li { color: var(--steel); }
+.perks-soon li::before { background: #3a3942; }
+
+/* ---------- кейсы: шансы на плитке и в окне ---------- */
+
+.ct-odds {
+  margin: -4px 0 14px;
+  font-size: 12px;
+  color: var(--steel);
+}
+.ct-odds b { color: var(--gold); font-weight: 700; }
+
+.cm-odds { margin-bottom: 14px; }
+.co-bar {
+  display: flex;
+  gap: 2px;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--panel-2);
+}
+.co-bar span { min-width: 4px; flex-basis: 0; }
+.co-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 10px 0 0;
+}
+.co-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.co-legend i { width: 10px; height: 10px; border-radius: 3px; }
+.co-legend b { color: var(--ink); font-weight: 700; }
+.co-note { margin: 10px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--steel); }
+.co-note b { color: var(--gold); }
+
+.cd-rar {
+  display: block;
+  font-style: normal;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 1px;
+}
+.cd-lv0 .cd-rar { color: #8f8b84; }
+.cd-lv1 .cd-rar { color: var(--gold); }
+.cd-lv2 .cd-rar { color: var(--or); }
+.cd-lv3 .cd-rar { color: #c39bf5; }
+.cd-lv4 .cd-rar { color: var(--gold-hi); }
+.cm-drops li.cd-lv2 { box-shadow: inset 3px 0 0 var(--or); }
+.cm-drops li.cd-lv3 { background: linear-gradient(90deg, rgba(195, 155, 245, .1), var(--panel-2) 55%); box-shadow: inset 3px 0 0 #c39bf5; }
+.cm-drops li.cd-lv4 { background: linear-gradient(90deg, rgba(245, 134, 32, .16), var(--panel-2) 60%); box-shadow: inset 3px 0 0 var(--gold-hi); }
+
+/* лента до первой прокрутки стоит на месте */
+.reel-idle .cell { opacity: .78; }
+
+/* ---------- наборы: что внутри, ещё до клика ---------- */
+
+.kt-peek {
+  list-style: none;
+  margin: 0 0 14px;
+  display: grid;
+  gap: 3px;
+}
+.kt-peek li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--panel-2);
+  border-radius: 7px;
+  padding: 5px 9px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.kt-peek li span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kt-peek li b { flex: 0 0 auto; color: var(--gold); font-weight: 700; }
+.kt-peek li.kt-more { background: none; padding: 2px 9px 0; color: var(--steel); font-size: 12px; }
+.kit-tile:hover .kt-peek li:not(.kt-more) { background: var(--panel-3); }
+
+@media (max-width: 640px) {
+  .rank.rk2 { padding: 24px 18px 20px; }
+  .rank.rk2 .r-mot { min-height: 0; }
+  .rank.rk2 .price { font-size: 32px; }
+  .rk2-kit { min-height: 0; }
+  .co-legend { gap: 6px 12px; }
+}
+
+/* полоса шансов: заливки ярче фона ячеек, иначе «обычное» сливается с дорожкой */
+.co-bar .r-common, .co-legend i.r-common { background: #77736c; }
+.co-bar .r-often,  .co-legend i.r-often  { background: #c9a54a; }
+.co-bar .r-rare,   .co-legend i.r-rare   { background: var(--or); }
+.co-bar .r-epic,   .co-legend i.r-epic   { background: #a57ce4; }
+.co-bar .r-leg,    .co-legend i.r-leg    { background: var(--grad); }

@@ -56,7 +56,28 @@
     legL: { right: [16, 52], front: [20, 52], left: [24, 52], back: [28, 52], top: [20, 48], bottom: [24, 48] },
   };
 
+  /* Шутка овнера: изредка фигура стоит без головы, а голова лежит рядом на
+     земле. Примерно раз на двадцать заходов, весь день 1 апреля и 31 октября.
+     Новичку в первый заход не показываем — без привычной фигуры шутка
+     читается как поломка. Проверить: ?mc=headless */
+  function headless() {
+    if (/[?&]mc=headless\b/.test(location.search)) return true;
+    let seen = false;
+    try {
+      seen = !!localStorage.getItem('aegis_mc_seen');
+      localStorage.setItem('aegis_mc_seen', '1');
+    } catch (e) { return false; }
+    if (!seen) return false;
+    const d = new Date(), md = d.getMonth() * 100 + d.getDate();
+    return md === 301 || md === 931 || Math.random() < 0.05;
+  }
+  const NO_HEAD = headless();
+
   function buildChar(stage, pose) {
+    // Разворот фигуры и её собственное дыхание — разные узлы: анимация
+    // перебивает transform целиком, на одном узле они бы дрались.
+    const aim = document.createElement('div');
+    aim.className = 'mc-aim';
     const char = document.createElement('div');
     char.className = 'mc-char';
 
@@ -73,7 +94,16 @@
       box(headSlot, { w: 9, h: 4.5, d: 9, img: ICONS + 'crown.png',
         uv: { front: [0, 0], back: [0, 0], right: [0, 0], left: [0, 0] }, pos: [0, 5.4, 0] });
     }
-    char.appendChild(headSlot);
+    if (NO_HEAD) {
+      // лежит на боку у ног, справа; живёт на неподвижном узле, чтобы не
+      // «дышать» вместе с телом
+      headSlot.className = 'p3d head-drop';
+      headSlot.style.transform =
+        `translate3d(${12 * S}px, ${-4.4 * S}px, ${5 * S}px) rotateY(28deg) rotateZ(90deg)`;
+      aim.appendChild(headSlot);
+    } else {
+      char.appendChild(headSlot);
+    }
 
     box(char, { w: 3, h: 12, d: 4, uv: UV.armR, pos: [-5.5, 18, 0] });
 
@@ -96,8 +126,53 @@
       box(char, { w: 3, h: 12, d: 4, uv: UV.armL, pos: [5.5, 18, 0] });
     }
 
-    stage.appendChild(char);
+    aim.appendChild(char);
+    stage.appendChild(aim);
   }
 
-  document.querySelectorAll('[data-skin3d]').forEach(el => buildChar(el, el.dataset.skin3d));
+  /* Пока фигура за краем экрана, её анимации незачем считать: сорок с лишним
+     граней лежат внутри preserve-3d, видеокарте такой слой не отдать, и рисует
+     их тот же поток, который двигает страницу. Именно это и отнимало кадры у
+     прокрутки. Уходит из виду — ставим на паузу, возвращается — снимаем. */
+  function watch(stage) {
+    if (!('IntersectionObserver' in window)) return;
+    new IntersectionObserver(
+      es => es.forEach(e => stage.classList.toggle('mc-off', !e.isIntersecting)),
+      { rootMargin: '120px' }
+    ).observe(stage);
+  }
+
+  /* Фигура провожает курсор взглядом. Это заменяет прежний вечный разворот
+     корпуса: пока мышь стоит, персонаж стоит тоже — то есть в покое страница
+     вообще ничего не пересчитывает. Углы маленькие и считаются от центра окна,
+     чтобы не получилось «подсолнуха», который таращится в упор.
+     На тач-экранах и при выключенной анимации не включаем вовсе. */
+  function follow(stages) {
+    if (!matchMedia('(pointer: fine)').matches) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let x = 0, y = 0, tick = 0;
+    const clamp = v => v < -1 ? -1 : v > 1 ? 1 : v;
+
+    const apply = () => {
+      tick = 0;
+      const ry = (-22 + x * 12).toFixed(1) + 'deg';
+      const rx = (-4 - y * 4).toFixed(1) + 'deg';
+      for (const s of stages) {
+        if (s.classList.contains('mc-off')) continue;
+        s.style.setProperty('--mc-ry', ry);
+        s.style.setProperty('--mc-rx', rx);
+      }
+    };
+
+    addEventListener('pointermove', e => {
+      x = clamp((e.clientX - innerWidth / 2) / (innerWidth / 2));
+      y = clamp((e.clientY - innerHeight / 2) / (innerHeight / 2));
+      if (!tick) tick = requestAnimationFrame(apply);
+    }, { passive: true });
+  }
+
+  const stages = [...document.querySelectorAll('[data-skin3d]')];
+  stages.forEach(el => { buildChar(el, el.dataset.skin3d); watch(el); });
+  if (stages.length) follow(stages);
 })();

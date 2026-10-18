@@ -18,19 +18,21 @@
      только если они реально понадобятся. -->
 <link rel="preload" href="/assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css?v=0925p">
 </head>
 <body>
+<a class="skip-link" href="#content">К содержанию</a>
 
 <header class="topbar">
   <div class="container topbar-in">
     <a class="brand" href="/index.html"><img src="/assets/img/logo.png" alt="AEGIS SMP"></a>
-    <button class="burger" aria-label="Меню"><span></span></button>
-    <nav class="topnav" id="topnav">
+    <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
+    <nav class="topnav" id="topnav" aria-label="Основное меню">
       <a href="/index.html#season">Сезон 1936</a>
       <a href="/index.html#arsenal">Арсенал</a>
       <a href="/index.html#join">Как зайти</a>
       <a href="/lands.html">Земли</a>
+      <a href="/feed.html">Лента</a>
       <a href="/wiki.html">Вики</a>
       <a href="/tickets.html">Обращения</a>
       <a href="/live.html">Эфиры</a>
@@ -39,6 +41,8 @@
     </nav>
   </div>
 </header>
+
+<main id="content" tabindex="-1">
 
 <div class="page-hero">
   <div class="container">
@@ -53,11 +57,14 @@
   <div class="container reg-wrap">
     <div class="reg-card">
       <div class="reg-why">
-        <h3>Куда идти</h3>
+        <h2>Куда идти</h2>
         <ul>
           <li><a href="/index.html">Главная</a> — про сезон «1936», арсенал и как зайти;</li>
-          <li><a href="/donate.html">Лавка</a> — червонцы, привилегии, киты и кейсы;</li>
+          <li><a href="/lands.html">Земли</a> — кто какой державой играет и что свободно;</li>
+          <li><a href="/wiki.html">Вики</a> — правила, механики и ответы на частые вопросы;</li>
+          <li><a href="/donate.html">Лавка</a> — привилегии, киты, кейсы и наборы мода;</li>
           <li><a href="/profile.html">Профиль</a> — поставить свой скин;</li>
+          <li><a href="/live.html">Эфиры</a> — стримы и записи;</li>
           <li><a href="/index.html#news">Новости</a> — что сделано за неделю.</li>
         </ul>
       </div>
@@ -66,13 +73,20 @@
 
     <div class="reg-side">
       <div class="reg-why">
-        <h3>Если ссылку дали мы</h3>
+        <h2>Если ссылку дали мы</h2>
+        <!-- Раньше отсюда отправляли в Discord, хотя на сайте есть своя страница
+             «Обращения», которая прямо говорит, что Discord для этого не нужен.
+             Сначала своё, Discord — как второй путь. -->
         <p>Бывает, что страница ещё не выложена, а ссылка на неё уже разошлась.
-          Напиши в тикет в Discord — поправим и подскажем, где искать.</p>
+          Напиши в <a href="/tickets.html">обращения</a> — поправим и подскажем,
+          где искать. Discord для этого не нужен, но если тебе так привычнее —
+          в нём та же команда и те же темы.</p>
       </div>
     </div>
   </div>
 </section>
+
+</main>
 
 <footer>
   <div class="container">
@@ -82,15 +96,18 @@
         <a href="/index.html#season">Сезон 1936</a>
         <a href="/index.html#join">Как зайти</a>
         <a href="/lands.html">Земли</a>
+        <a href="/feed.html">Лента</a>
         <a href="/wiki.html">Вики</a>
         <a href="/tickets.html">Обращения</a>
         <a href="/live.html">Эфиры</a>
         <a href="/donate.html">Донат</a>
         <a href="/index.html#news">Новости</a>
+        <a href="/offer.html">Оферта</a>
       </div>
     </div>
     <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
       и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+    <p class="foot-legal">Продавец: самозанятый, владелец проекта AEGIS. Связь — через <a href="/tickets.html">обращения</a> на сайте. <a href="/offer.html">Оферта</a>.</p>
   </div>
 </footer>
 

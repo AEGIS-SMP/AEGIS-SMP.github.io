@@ -19,11 +19,35 @@
         -> {ok, nick, uuid, role, admin, coins, online, firstAt, lastAt,
             playedMin, country, countryName,
             skin:{has, model}, link:{provider, name},
-            punish:[P], prizes:[Z], orders:[O], lands:{n, debt}}
+            discord:{linked, name, how}, telegram:{linked, name, how, can},
+            punish:[P], prizes:[Z], orders:[O], lands:{n, short}}
+        link — чем подтвердили регистрацию ({provider:'discord'|'telegram', name}).
+        discord — привязка к боту Discord (с 18.09.2026 служба её знает: бот
+        раз в минуту сверяется с ней, /shop/links). how: 'reg' — Discord из
+        регистрации, привязан сам; 'code' — принесли код в /гражданство.
+        Роль державы бот выдаёт и меняет сам по державе в игре.
+        telegram — how: 'reg' из регистрации, 'bot' через ссылку /cab/tg-link;
+        can:false — бот Telegram ещё не отметился, ссылку не дадут.
+        Старая служба этих двух полей не отдаёт — тогда строка Discord только
+        даёт код, а строки Telegram нет.
+   POST /cab/discord-pass                            (Bearer)
+        -> {ok, code, life:15, until(мс), country}
+        Код для /гражданство в Discord — тот же пропуск, что в игре /discord,
+        подписан ключом игры. Берут заранее, до открытия, без входа в игру.
+        Не чаще раза в 5 с (иначе {ok:false, code:'slow'}).
+   POST /cab/tg-link                                 (Bearer)
+        -> {ok, url, life:15, until(мс)}
+        Разовая ссылка на бота Telegram (t.me/<бот>?start=link_…): открыл,
+        нажал «Запустить» — Telegram привязан. Не чаще раза в 5 с.
    GET  /cab/coins?limit=60                           (Bearer)
-        -> {ok, coins, paid, rows:[{at, delta, why, by}]}
+        -> {ok, coins, rows:[{at, delta, why, by}]}
    GET  /cab/lands                                    (Bearer)
-        -> {ok, max, taxPct, debt, nextAt, rows:[L]}
+        -> {ok, max, taxLevel, nextAt, rows:[L]}
+        taxLevel — положение налога в стране игрока: 1 малый, 2 средний,
+        3 большой (ЭКОНОМИКА.md 4.4). Процентов больше нет: налог считается
+        ступенькой от цены земли и всегда целыми червонцами, а положение
+        говорит, во сколько ступеней он обходится мэру.
+        nextAt — ближайшая полночь МСК, когда движок пойдёт списывать
    POST /cab/password {old, new}                      (Bearer)  -> {ok, text}
    POST /cab/prize {id}                               (Bearer)  -> {ok, text, coins}
 
@@ -41,13 +65,21 @@
    POST /cab/admin/give {nick, coins, why}               -> {ok, text, coins}
 
    P = {id, kind:"warn|mute|kick|ban", reason, at, until, by, active}
-   L = {id, name, country, chunks, price, tax, boughtAt, nextAt, debt, cutAt}
+   L = {id, name, country, chunks, price, tax, boughtAt, nextAt, capital}
        price и tax считает игра, сайт их только показывает: два счёта в двух
        местах разойдутся, и на сайте будет одна сумма, а спишется другая.
-       debt — недоимка по этой земле, cutAt — когда её заберут (0, если долга нет)
+       tax — сколько спишется В БЛИЖАЙШУЮ ПОЛНОЧЬ по этой земле. Всегда целое
+       число червонцев: ступень по цене (1/2/3/5/8/12) умножить на положение
+       страны. capital:true — столичная провинция: за неё платит казна
+       державы, и за налог её не отбирают (ЭКОНОМИКА.md 4.4).
+       Полей debt и cutAt больше нет: рассрочки в 14 суток не существует с
+       17.09.2026 — не хватило в 00:00, и мэр в ту же полночь перестаёт быть мэром
    Z = {id, name, text, coins, at, taken}
-   O = {id, name, rub, coin, at, status:"wait|paid|failed"}  — те же слова,
-       что отдаёт GET /shop/order, чтобы у заказа было одно состояние на всё
+   O = {id, name, rub, at, status:"wait|paid|failed"}  — те же слова,
+       что отдаёт GET /shop/order, чтобы у заказа было одно состояние на всё.
+       Поле coin умерло вместе с ценниками в червонцах (16.09.2026): платят
+       за заказ всегда рублями. Пакет червонцев — такой же заказ, как любой
+       другой: rub — цена, а сколько червонцев пришло, видно в истории счёта
 
    Времена — миллисекунды (как Date.now()). until:0 = навсегда. */
 (function () {
@@ -64,6 +96,8 @@
   var pnick = '';       // чей профиль открыла команда
   var msg = null;       // разовая полоска ответа {k:'ok'|'bad', t:'...'}
   var showPass = false;
+  var dsPass = null;          // код для Discord: {code, until, country} или {err}
+  var tgLink = null;          // ссылка привязки Telegram: {url, until} или {err}
 
   var coins = null;     // история червонцев
   var lands = null;     // свои провинции: цена, налог, сроки
@@ -293,7 +327,7 @@
       '<p class="cl-lead">Личный кабинет работает от службы игрового сервера. ' +
       'Пока сезон готовится, показывать тут нечего — как только сервер поднимется, ' +
       'вход появится на этой же странице.</p></div>' +
-      '<div class="cab-why"><h4>Что будет внутри</h4><ul>' +
+      '<div class="cab-why"><h3>Что будет внутри</h3><ul>' +
       '<li>сколько у тебя червонцев и на что они уходили;</li>' +
       '<li>наказания: за что, на сколько и когда кончатся;</li>' +
       '<li>награды с розыгрышей — забрать себе;</li>' +
@@ -310,8 +344,8 @@
   function paintLogin() {
     body.innerHTML = flash() +
       '<div class="cab-login"><h2>Вход в кабинет</h2>' +
-      '<p class="cl-lead">Имя и пароль те же, что в лаунчере. Вход держится ' +
-      'до закрытия вкладки и не пускает в игру — это только сайт.</p>' +
+      '<p class="cl-lead">Имя и пароль те же, что в лаунчере. Вход запоминается ' +
+      'на этом устройстве и не пускает в игру — это только сайт.</p>' +
       '<div class="field"><label for="cbNick">Игровое имя</label>' +
       '<input id="cbNick" type="text" autocomplete="username" ' +
       'spellcheck="false" placeholder="Например, VineZerro"></div>' +
@@ -319,11 +353,11 @@
       '<input id="cbPass" type="password" autocomplete="current-password" ' +
       'placeholder="Пароль от аккаунта"></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="in">Войти</button>' +
-      '<span class="fg-note" id="cbSay"></span></div></div>' +
-      '<div class="cab-why"><h4>Если не заходит</h4><ul>' +
+      '<span class="fg-note" role="status" id="cbSay"></span></div></div>' +
+      '<div class="cab-why"><h3>Если не заходит</h3><ul>' +
       '<li>аккаунта ещё нет — <a href="reg.html">заведи его</a>, это пара минут;</li>' +
-      '<li>забыл пароль — напиши <a href="tickets.html#/help">обращение</a>, ' +
-      'команда сбросит после проверки;</li>' +
+      '<li>забыл пароль — <a href="reg.html#recover">сбрось его сам</a>: ссылку на новый пароль ' +
+      'пришлёт то, чем подтверждал регистрацию; не выходит — напиши <a href="tickets.html#/help">обращение</a>;</li>' +
       '<li>пароль не подходит после бана — кабинет всё равно откроется, ' +
       'наказание там видно.</li></ul></div>';
     var n = el('cbNick');
@@ -359,24 +393,24 @@
 
   function side() {
     var letter = esc((me.nick || '?').charAt(0).toUpperCase());
-    var skin = me.skin && me.skin.has
-      ? A.base() + '/skins/' + encodeURIComponent(me.nick) + '.png'
-      : '';
+    /* Голова того скина, что стоит у игрока, объёмом — как в обращениях.
+       Своего скина нет — голова стандартного, какой игра выдаёт этому нику.
+       Пока картинка грузится, видна буква. Рисует AegisTk.heads после вставки. */
     var av = '<div class="cm-av"><span class="cm-let">' + letter + '</span>' +
-      (skin ? '<img src="' + esc(skin) + '" alt="" onerror="this.style.display=\'none\'">' : '') +
-      '</div>';
+      '<canvas class="tk-av cm-face" data-nick="' + esc(me.nick) + '" aria-hidden="true"></canvas></div>';
 
     var sub = me.online ? 'сейчас на сервере'
       : (me.lastAt ? 'заходил ' + A.ago(me.lastAt) : 'ещё не заходил');
     if (me.role) sub = esc(me.role) + ' · ' + sub;
 
-    var n = '<nav class="cab-nav">';
+    var n = '<nav class="cab-nav" aria-label="Разделы кабинета">';
     NAV.forEach(function (t) {
       var b = '';
       if (t[0] === 'coins') b = money(me.coins);
-      /* Значок у «Провинций» — восклицательный знак при недоимке: это
-         единственное место в кабинете, где промедление стоит земли. */
-      if (t[0] === 'lands') b = me.lands && me.lands.debt ? '!' : String(me.lands && me.lands.n || '');
+      /* Значок у «Провинций» — восклицательный знак, когда на ближайшее
+         списание не хватает: это единственное место в кабинете, где
+         промедление до полуночи стоит земли. */
+      if (t[0] === 'lands') b = me.lands && me.lands.short ? '!' : String(me.lands && me.lands.n || '');
       if (t[0] === 'punish') b = String(actives(me.punish).length || '');
       if (t[0] === 'prizes') b = String(unTaken(me.prizes).length || '');
       n += btn(t[0], t[1], b);
@@ -389,21 +423,25 @@
       ANAV.forEach(function (t) { n += btn(t[0], t[1], ''); });
       /* Управление сайтом живёт отдельной страницей: сюда её не тащим, но
          искать по закладкам тоже не заставляем. */
-      n += '<a class="cn-go" href="admin.html">Управление сайтом</a>';
+      n += '<a class="cn-go" href="admin.html"><svg viewBox="0 0 20 20" aria-hidden="true">' +
+        '<path d="M10 2.5l6 2.3v5c0 3.5-2.6 5.7-6 6.7-3.4-1-6-3.2-6-6.7v-5z"/></svg>' +
+        '<span><b>Пульт обращений</b><small>тикеты игроков по вашим темам</small></span></a>';
     }
     n += '</nav>';
 
     return '<aside class="cab-side">' +
       '<div class="cab-me">' + av + '<div><div class="cm-n">' + esc(me.nick) +
       '</div><div class="cm-s">' + sub + '</div></div></div>' + n +
-      '<div class="cab-out">Вход держится до закрытия вкладки. ' +
+      '<div class="cab-out">Вход запомнен на этом устройстве. ' +
       '<button type="button" data-act="out">Выйти</button></div></aside>';
   }
 
+  /* Открытый раздел меню отличается только заливкой — читалке это не видно.
+     Это не нажатая кнопка, а «сейчас открыто вот это»: aria-current. */
   function btn(id, title, badge) {
     var on = (view === id) || (view === 'player' && id === 'players');
-    return '<button type="button" data-nav="' + id + '"' + (on ? ' class="on"' : '') +
-      '>' + esc(title) +
+    return '<button type="button" data-nav="' + id + '"' +
+      (on ? ' class="on" aria-current="true"' : '') + '>' + esc(title) +
       (badge ? '<span class="cn-b">' + esc(badge) + '</span>' : '') + '</button>';
   }
 
@@ -428,28 +466,129 @@
       '<div class="rw-r">' + (r || '') + '</div></div>';
   }
 
+  /* Значок мессенджера перед названием строки привязки — чтобы Discord и
+     Telegram читались с одного взгляда, а не голым словом. Рисуем в цвете
+     бренда встроенным SVG (лишних файлов не тащим), 17 px, класс rw-ic ловит
+     выравнивание в pages.css. */
+  var BRAND = {
+    discord: ['#5865F2', 'M20.317 4.3698a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.211.375-.445.865-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037 19.74 19.74 0 0 0-4.885 1.515.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.058a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.011c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .079.01c.12.099.245.198.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.029 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.029zM8.02 15.331c-1.183 0-2.157-1.086-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.211 0 2.176 1.095 2.157 2.419 0 1.333-.956 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.086-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.211 0 2.176 1.095 2.157 2.419 0 1.333-.946 2.419-2.157 2.419z'],
+    telegram: ['#29A9EA', 'M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z']
+  };
+  function brand(kind, label) {
+    var b = BRAND[kind];
+    if (!b) return label;
+    return '<svg class="rw-ic" viewBox="0 0 24 24" width="17" height="17" ' +
+      'fill="' + b[0] + '" aria-hidden="true"><path d="' + b[1] + '"/></svg>' + label;
+  }
+
+  /* Шапка профиля: скин в объёме и главное о человеке. Саму фигуру строит
+     js/skin3d.js уже после вставки разметки (skinFig в paint). Наигранное и
+     заходы служба берёт из данных мода (aegis-playtime.json). */
+  function hero() {
+    var st = me.online ? '<span class="pill green">сейчас в игре</span>'
+      : '<span class="ch-st">' + (me.lastAt ? 'был в игре ' + esc(A.ago(me.lastAt)) : 'ещё не заходил в игру') + '</span>';
+    var tags = '';
+    if (me.role) tags += '<span class="pill gold">' + esc(me.role) + '</span>';
+    if (me.priv && me.priv.title) {
+      tags += '<span class="pill">' + esc(me.priv.title) +
+        (me.priv.until ? ' · до ' + esc(day(me.priv.until)) : '') + '</span>';
+    }
+    var fact = function (k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; };
+    var sk = me.skin && me.skin.has
+      ? (me.skin.model === 'slim' ? 'свой скин, тонкие руки' : 'свой скин')
+      : 'стандартный скин игры';
+    return '<section class="cab-hero" aria-label="Профиль">' +
+      '<div class="ch-fig"><div class="sk3" id="cabSkin"></div>' +
+      '<div class="ch-hint" aria-hidden="true">потяни, чтобы повернуть</div></div>' +
+      '<div class="ch-info"><div class="ch-nick">' + esc(me.nick) + '</div>' +
+      '<div class="ch-tags">' + st + tags + '</div>' +
+      '<dl class="ch-facts">' +
+      fact('Последний вход', me.online ? 'сейчас в игре' : (me.lastAt ? esc(date(me.lastAt)) : 'ещё не было')) +
+      fact('Наиграно', me.playedMin ? esc(hours(me.playedMin)) : 'нисколько') +
+      fact('Играет с', me.firstAt ? esc(day(me.firstAt)) : '—') +
+      fact('Город', me.town ? esc(me.town) : 'нет') +
+      '</dl>' +
+      '<div class="ch-go"><a class="btn btn-dark btn-sm" href="profile.html">Поменять скин</a>' +
+      '<span>' + sk + '</span></div>' +
+      '</div></section>';
+  }
+
   function viewMe() {
     var act = actives(me.punish);
     var tiles =
       tile('Червонцы', money(me.coins),
-        'Тратятся в лавке. <a href="donate.html">Пополнить</a>') +
-      tile('Наиграно', me.playedMin ? hours(me.playedMin) : 'нисколько',
-        me.firstAt ? 'играет с ' + esc(day(me.firstAt)) : '') +
+        'Заработок игрой · <a href="donate.html#free">откуда берутся</a>') +
+      tile('Привилегия', me.priv && me.priv.title ? me.priv.title : 'нет',
+        me.priv && me.priv.title
+          ? (me.priv.until ? 'до ' + esc(day(me.priv.until)) : 'бессрочно')
+          : '<a href="donate.html">что она даёт</a>') +
       tile('Страна', me.countryName || me.country || 'нет',
         me.countryName ? 'приват по историческим границам' : 'выбирается на сервере') +
       tile('Наказания', act.length ? String(act.length) : 'нет',
         act.length ? 'смотри раздел «Наказания»' : 'чисто, так держать');
 
+    var PROV = { discord: 'Discord', telegram: 'Telegram', vk: 'VK ID', yandex: 'Яндекс ID' };
     var link = me.link && me.link.provider
-      ? esc(me.link.name || me.link.provider)
+      ? esc(PROV[me.link.provider] || me.link.provider) +
+        (me.link.name && me.link.name !== PROV[me.link.provider] ? ' · ' + esc(me.link.name) : '')
       : 'не привязан';
+
+    /* Discord — связка ника с ботом: роль державы и города, подпись
+       обращений. Привязка ОБЯЗАТЕЛЬНА (решение овнера). Служба знает, привязан
+       ли человек (me.discord, бот сверяется раз в минуту): кто регистрировался
+       через Discord, привязан сам, остальным — код /cab/discord-pass, тот же
+       пропуск, что в игре /discord. Старая служба поля не отдаёт — тогда
+       строка, как раньше, только даёт код. */
+    var dsNew = !!(me.discord && typeof me.discord.linked === 'boolean');
+    var dsOn = dsNew && me.discord.linked;
+    var dsVal, dsSub;
+    if (dsOn) {
+      dsVal = (me.discord.name ? '<span class="rw-v">' + esc(me.discord.name) + '</span>' : '') +
+        '<span class="pill green">привязан</span>';
+      dsSub = (me.discord.how === 'reg' ? 'привязан при регистрации' : 'привязан кодом') +
+        ' · роль державы бот выдаёт и меняет сам · сменить Discord — ' +
+        '/отвязаться в Discord, потом новый код здесь';
+    } else {
+      dsVal = '<button class="btn btn-dark btn-sm" data-act="dspass">' +
+        (dsPass && dsPass.code ? 'Новый код' : 'Получить код') + '</button>';
+      dsSub = dsNew
+        ? 'не привязан · без привязки бот не выдаст роль державы и города · код нужен один раз'
+        : 'код для бота: без него роль державы и города выдать некому · ' +
+          'привязался — повторять не надо, пока не вступишь в державу';
+    }
+
+    /* Напоминание сверху. Служба знает привязку — висит, пока Discord не
+       привязан; старая служба — пока человек ни разу не брал код в этом браузере. */
+    var dsWarn = dsOn || (!dsNew && dsSeen()) ? '' :
+      '<div class="nbox"><span class="n-ic">!</span><div>' +
+      '<b>Привяжи Discord</b> — один раз, заходить в игру для этого не нужно. ' +
+      'Роль державы и города выдаёт бот в нашем Discord, и без привязки он не ' +
+      'знает, чей это ник. Нажми <b>«Получить код»</b> в строке Discord ниже — ' +
+      'там же подсказка, куда его вставить.' +
+      (dsNew ? '' : ' Кнопка Discord или Telegram при регистрации — это другое: ' +
+        'она только подтвердила, что ты живой человек.') +
+      '</div></div>';
+
+    /* Telegram — по желанию: туда бот пришлёт чек покупки. Строка есть,
+       только если служба знает привязки. */
+    var tgRow = '';
+    if (me.telegram && typeof me.telegram.linked === 'boolean') {
+      tgRow = me.telegram.linked
+        ? row(brand('telegram', 'Telegram'),
+          (me.telegram.how === 'reg' ? 'привязан при регистрации' : 'привязан через бота') +
+          ' · сюда бот присылает чеки покупок',
+          (me.telegram.name ? '<span class="rw-v">' + esc(me.telegram.name) + '</span>' : '') +
+          '<span class="pill green">привязан</span>')
+        : row(brand('telegram', 'Telegram'), 'не привязан · по желанию: бот будет присылать туда чеки покупок',
+          '<button class="btn btn-dark btn-sm" data-act="tglink">' +
+          (tgLink && tgLink.url ? 'Новая ссылка' : 'Привязать') + '</button>');
+    }
+
     var acc = '<div class="row-list">' +
       row('Игровое имя', 'меняется только через обращение', esc(me.nick)) +
-      row('Привязка входа',
-        'один аккаунт на человека — привязка сохраняется даже после бана', link) +
-      row('Скин', 'загружается на отдельной странице',
-        (me.skin && me.skin.has ? 'свой' : 'стандартный') +
-        ' · <a href="profile.html">поменять</a>') +
+      row('Регистрация', 'чем подтвердили, что ты живой человек', link) +
+      row(brand('discord', 'Discord'), dsSub, dsVal) +
+      tgRow +
       row('Пароль', 'тот же, что в лаунчере',
         '<button class="btn btn-dark btn-sm" data-act="pw">Сменить</button>') +
       '</div>';
@@ -464,13 +603,13 @@
             : o.status === 'failed' ? '<span class="pill red">не прошло</span>'
               : '<span class="pill gold">ждём оплату</span>';
           return row(esc(o.name || 'Заказ'),
-            esc(date(o.at)) + ' · ' + (o.rub ? esc(o.rub) + ' ₽' : '') +
-            (o.coin ? ' · ' + money(o.coin) + ' червонцев' : ''), st);
+            esc(date(o.at)) + (o.rub ? ' · ' + esc(o.rub) + ' ₽' : ''), st);
         }).join('') + '</div></div>';
     }
 
-    return '<div class="cab-tiles">' + tiles + '</div>' +
-      '<div class="cab-block"><h2>Аккаунт</h2>' + acc + pw + '</div>' + ord;
+    return dsWarn + hero() + '<div class="cab-tiles">' + tiles + '</div>' +
+      '<div class="cab-block"><h2>Аккаунт</h2>' + acc + (dsOn ? '' : dsBox()) +
+      (me.telegram && me.telegram.linked ? '' : tgBox()) + pw + '</div>' + ord;
   }
 
   function passForm() {
@@ -486,7 +625,160 @@
       '<input id="pwNew2" type="password" autocomplete="new-password"></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="pwgo">Сменить пароль</button>' +
       '<button class="btn btn-dark" data-act="pwoff">Отмена</button>' +
-      '<span class="fg-note" id="pwSay"></span></div></div></div>';
+      '<span class="fg-note" role="status" id="pwSay"></span></div></div></div>';
+  }
+
+  /* ------------------------------------------------ код для Discord */
+
+  /* Брал ли человек код в этом браузере — только чтобы не висело напоминание.
+     Хранилище может быть закрыто (приватное окно) — тогда напоминание просто
+     остаётся. */
+  function dsSeen() {
+    try { return localStorage.getItem('aegis-ds-code') === '1'; } catch (x) { return false; }
+  }
+
+  function hhmm(ms) {
+    var d = new Date(ms);
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+
+  function dsBox() {
+    if (!dsPass) return '';
+    if (dsPass.err) {
+      return '<div class="nbox warn ds-box"><span class="n-ic">!</span><div>' +
+        esc(dsPass.err) + '</div></div>';
+    }
+    var inv = A.link('discord');
+    var ds = inv ? '<a href="' + esc(inv) + '" target="_blank" rel="noopener">наш Discord</a>'
+      : 'наш Discord';
+    return '<div class="nbox ds-box"><div>' +
+      '<b>Код для Discord</b> — действует до ' + esc(hhmm(dsPass.until)) +
+      ' (15 минут) и срабатывает один раз.' +
+      '<div class="ds-code"><code id="dsCode">' + esc(dsPass.code) + '</code>' +
+      '<button class="btn btn-primary btn-sm" data-act="dscopy">Скопировать</button></div>' +
+      '<ol class="ds-steps">' +
+      '<li>Открой ' + ds + '.</li>' +
+      '<li>В любом канале, где можно писать, набери <b>/гражданство</b> и выбери ' +
+      'команду бота AEGIS.</li>' +
+      '<li>В поле «пропуск» вставь код и отправь. Бот ответит, что аккаунт привязан, ' +
+      'и выдаст роль.</li></ol>' +
+      (dsPass.country
+        ? '<div class="ds-note">Держава в коде: ' + esc(dsPass.country) + '.</div>'
+        : (me && me.discord && typeof me.discord.linked === 'boolean'
+          ? '<div class="ds-note">Державы у тебя пока нет — не страшно: когда тебя ' +
+            'примут в державу, бот сам выдаст её роль, код второй раз не нужен.</div>'
+          : '<div class="ds-note">Державы у тебя пока нет — привязка пройдёт без её ' +
+            'роли. Когда тебя примут в державу, возьми код ещё раз и отправь его снова.</div>')) +
+      (me && me.discord && typeof me.discord.linked === 'boolean'
+        ? '<div class="ds-note">Бот ответил — вернись на эту вкладку: в течение минуты ' +
+          'строка Discord покажет «привязан».</div>' : '') +
+      '</div></div>';
+  }
+
+  /* ------------------------------------------------ ссылка для Telegram */
+
+  function tgBox() {
+    if (!tgLink) return '';
+    if (tgLink.err) {
+      return '<div class="nbox warn ds-box"><span class="n-ic">!</span><div>' +
+        esc(tgLink.err) + '</div></div>';
+    }
+    return '<div class="nbox ds-box"><div>' +
+      '<b>Привязка Telegram</b> — ссылка действует до ' + esc(hhmm(tgLink.until)) +
+      ' (15 минут) и срабатывает один раз.' +
+      '<div class="ds-code"><a class="btn btn-primary btn-sm" href="' + esc(tgLink.url) +
+      '" target="_blank" rel="noopener">Открыть бота в Telegram</a></div>' +
+      '<ol class="ds-steps">' +
+      '<li>Нажми кнопку — откроется наш бот в Telegram.</li>' +
+      '<li>Нажми «Запустить» (или «Start»). Бот ответит, что Telegram привязан.</li>' +
+      '<li>Вернись на эту вкладку — строка Telegram покажет «привязан».</li></ol>' +
+      '<div class="ds-note">Ссылку никому не отправляй: кто откроет её первым, ' +
+      'к тому Telegram и привяжется.</div>' +
+      '</div></div>';
+  }
+
+  /* Пока открыт код или ссылка — раз в 30 с спрашиваем, не привязался ли:
+     Discord доходит до службы со сверкой бота (до минуты), Telegram сразу.
+     Перерисовываем, только если что-то поменялось, — иначе сбили бы выделение
+     кода. Старая служба привязок не знает — там и спрашивать нечего. */
+  var linkT = 0;
+
+  function knowsLinks() {
+    return !!(me && me.discord && typeof me.discord.linked === 'boolean');
+  }
+
+  function refreshLinks() {
+    var ds0 = !!(me && me.discord && me.discord.linked);
+    var tg0 = !!(me && me.telegram && me.telegram.linked);
+    return loadMe().then(function () {
+      if (!me) return;
+      var ds1 = !!(me.discord && me.discord.linked);
+      var tg1 = !!(me.telegram && me.telegram.linked);
+      if (ds1) dsPass = null;
+      if (tg1) tgLink = null;
+      if (ds1 !== ds0 || tg1 !== tg0) paint();
+    }, function () { });
+  }
+
+  function watchLinks() {
+    if (linkT || !knowsLinks()) return;
+    linkT = setInterval(function () {
+      var open = (dsPass && dsPass.code) || (tgLink && tgLink.url);
+      var end = Math.max((dsPass && dsPass.until) || 0, (tgLink && tgLink.until) || 0);
+      if (!me || !open || Date.now() > end + 2 * 60000) {
+        clearInterval(linkT); linkT = 0; return;
+      }
+      if (view !== 'me' || showPass || document.visibilityState !== 'visible') return;
+      refreshLinks();
+    }, 30000);
+  }
+
+  function getTgLink(btn) {
+    if (btn) { btn.disabled = true; btn.textContent = 'Получаем…'; }
+    A.call('/cab/tg-link', { body: {} }).then(function (d) {
+      var u = String(d.url || '');
+      tgLink = /^https:\/\/t\.me\//.test(u)
+        ? { url: u, until: Number(d.until) || Date.now() + 15 * 60000 }
+        : { err: 'Служба не дала ссылку. Попробуй ещё раз через минуту.' };
+      paint();
+      watchLinks();
+    }, function (e) {
+      tgLink = { err: A.textOf(e) };
+      paint();
+    });
+  }
+
+  function getDsPass(btn) {
+    if (btn) { btn.disabled = true; btn.textContent = 'Получаем…'; }
+    A.call('/cab/discord-pass', { body: {} }).then(function (d) {
+      dsPass = { code: String(d.code || ''), country: d.country || '',
+        until: Number(d.until) || Date.now() + 15 * 60000 };
+      try { localStorage.setItem('aegis-ds-code', '1'); } catch (x) { }
+      paint();
+      watchLinks();
+    }, function (e) {
+      dsPass = { err: A.textOf(e) };
+      paint();
+    });
+  }
+
+  function copyDs(btn) {
+    var t = dsPass && dsPass.code;
+    if (!t) return;
+    function pick() {
+      var c = el('dsCode');
+      if (c && window.getSelection) {
+        var r = document.createRange();
+        r.selectNodeContents(c);
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+      }
+      btn.textContent = 'Выделено — нажми Ctrl+C';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(function () { btn.textContent = 'Скопировано'; }, pick);
+    } else pick();
   }
 
   function doPass() {
@@ -594,7 +886,7 @@
       '<div class="form-go">' +
       '<button class="btn btn-dark" data-act="exsave">Сохранить</button>' +
       '<button class="btn btn-primary" data-act="exsend">Отправить на проверку</button>' +
-      '<span class="fg-note" id="exSay"></span></div></div>';
+      '<span class="fg-note" role="status" id="exSay"></span></div></div>';
   }
 
   /* Собираем ответы со страницы в тот вид, что ждёт служба. */
@@ -672,106 +964,107 @@
       if (d > 0) got += d; else spent -= d;
     });
 
-    /* paid — сколько из баланса куплено за рубли. Такие червонцы тратятся
-       последними, и человек имеет право видеть, сколько их у него осталось. */
-    var paid = coins && coins.paid != null ? Number(coins.paid) || 0 : 0;
-
     return '<div class="cab-tiles">' +
       tile('На счету', money(bal),
-        (paid > 0 ? money(paid) + ' куплено за рубли' :
-          plural(bal, ['червонец', 'червонца', 'червонцев'])) +
-        ' · <a href="donate.html">пополнить</a>') +
+        plural(bal, ['червонец', 'червонца', 'червонцев']) +
+        ' · <a href="donate.html#free">как заработать</a>') +
       tile('Пришло', money(got), 'за последние ' + rows.length + ' ' +
         plural(rows.length, ['движение', 'движения', 'движений'])) +
-      tile('Потрачено', money(spent), 'покупки в лавке и списания') +
+      tile('Потрачено', money(spent), 'земля, налоги и торговля') +
       '</div>' +
       '<div class="cab-block"><h2>История</h2>' +
-      '<p class="cab-hint">Червонцы <b>переживают вайп</b>: счёт остаётся с ' +
-      'тобой и в новом сезоне. Вещи, постройки и земля — нет, их выдаёт мир, ' +
-      'а мир начинается заново.' +
-      (paid > 0 ? ' Купленные за рубли червонцы списываются последними — ' +
-        'сначала уходит заработанное в игре.' : '') + '</p>' + list + '</div>';
+      '<p class="cab-hint">Червонец — валюта самого сервера: его <b>дают за игру</b>, ' +
+      'и тратят его в игре. Докупить червонцы можно в ' +
+      '<a href="donate.html#coins">лавке</a>, обратно на деньги они не меняются. ' +
+      'Счёт <b>переживает вайп</b> и остаётся с тобой в новом сезоне; вещи, ' +
+      'постройки и земля — нет, их выдаёт мир, а мир начинается заново.</p>' +
+      list + '</div>';
   }
 
+  /* Как называется положение налога в стране игрока (ЭКОНОМИКА.md 4.4).
+     Само число червонцев считает игра, сайт его только показывает. */
+  var TAX_LEVELS = ['малый', 'средний', 'большой'];
+
   function landRow(r) {
-    var debt = Number(r.debt) || 0;
     var sub = [];
     if (r.country) sub.push(esc(r.country));
     if (r.chunks) {
       sub.push(money(r.chunks) + ' ' + plural(r.chunks, ['чанк', 'чанка', 'чанков']));
     }
     if (r.boughtAt) sub.push('куплена ' + esc(day(r.boughtAt)));
-    /* Пока есть долг, дата конфискации важнее даты следующего налога:
-       она и решает, останется земля за человеком или нет. */
-    if (debt && r.cutAt) {
-      sub.push('заберут ' + esc(day(r.cutAt)) + ', ' + leftDays(r.cutAt));
+    if (r.capital) {
+      sub.push('столица — платит казна державы');
     } else if (r.nextAt) {
-      sub.push('налог спишется ' + esc(day(r.nextAt)) + ', ' + leftDays(r.nextAt));
+      sub.push('спишется ' + esc(day(r.nextAt)) + ', ' + leftDays(r.nextAt));
     }
 
     return '<div class="row r2"><div>' +
       '<div class="rw-t">' + esc(r.name || 'Провинция') +
-      (debt ? ' <span class="pill red">недоимка ' + money(debt) + ' Ч</span>' : '') +
+      (r.capital ? ' <span class="pill">столица</span>' : '') +
       '</div><div class="rw-s">' + sub.join(' · ') + '</div></div>' +
       '<div class="rw-r ln-r"><b>' + money(r.price) + ' Ч</b>' +
-      '<span>налог ' + money(r.tax) + ' Ч в неделю</span></div></div>';
+      '<span>налог ' + money(r.tax) + ' Ч в сутки</span></div></div>';
   }
 
   /* «Провинции». Земля — единственное в кабинете, что можно потерять,
-     ничего не нарушив: просто не хватило червонцев на налог. Поэтому здесь
-     на виду две вещи — сколько списывать и сколько осталось до изъятия. */
+     ничего не нарушив: просто не хватило червонцев на налог. С 17.09.2026
+     это ещё и происходит в ту же ночь, без рассрочки, поэтому главное здесь —
+     не «сколько долга», а «хватит ли сегодня». */
   function viewLands() {
     var d = lands || {};
     var rows = d.rows || [];
     var max = Number(d.max) || 3;
-    var pct = Number(d.taxPct) || 3;
+    var lvl = Number(d.taxLevel) || 2;
 
     if (!rows.length) {
       return empty('Своей земли пока нет',
         'Провинции покупаются на сервере у государства: свободная стоит от ' +
-        '100 червонцев, а новичку при первом заходе выдают 150 подъёмных — ' +
-        'на первую землю хватает сразу. Что где стоит, видно в списке ' +
+        '12 червонцев. Что где стоит, видно в списке ' +
         '<a href="lands.html">земель и налогов</a>.');
     }
 
-    var tax = 0, debt = 0, next = 0;
+    /* Столицу за налог не отбирают: за неё платит казна державы (4.4).
+       Поэтому в «хватит ли сегодня» её списание не считаем. */
+    var tax = 0, own = 0, next = 0;
     rows.forEach(function (r) {
-      tax += Number(r.tax) || 0;
-      debt += Number(r.debt) || 0;
+      var t = Number(r.tax) || 0;
+      tax += t;
+      if (!r.capital) own += t;
       var n = Number(r.nextAt) || 0;
       if (n && (!next || n < next)) next = n;
     });
-    if (d.debt != null) debt = Number(d.debt) || 0;
     if (d.nextAt) next = Number(d.nextAt) || next;
 
-    var weeks = tax > 0 ? Math.floor((Number(me.coins) || 0) / tax) : 0;
+    var coins = Number(me.coins) || 0;
+    var days = own > 0 ? Math.floor(coins / own) : 0;
+    var short = own > 0 && coins < own;
 
     var tiles =
       tile('Провинций', rows.length + ' из ' + max,
-        max > 3 ? 'больше даёт звание' : 'звание Офицера даёт +1, Маршала +2') +
-      tile('Налог в неделю', money(tax) + ' Ч',
-        pct + '% от цены каждой земли') +
+        max > 3 ? 'больше даёт звание' : 'звание Командора даёт +1, Маршала +2') +
+      tile('Налог в сутки', money(tax) + ' Ч',
+        (TAX_LEVELS[lvl - 1] || 'средний') + ' налог державы, списывается в 00:00') +
       /* Крупно — «через сколько», мелко — дата: человеку сначала важно,
          успевает он или нет, и только потом — какое это число. */
       tile('Ближайшее списание', next ? leftDays(next) : '—',
         next ? esc(day(next)) : 'сроки придут с сервера') +
-      (debt
-        ? tile('Недоимка', money(debt) + ' Ч',
-          'погаси, иначе землю заберут · <a href="donate.html">пополнить</a>')
-        : tile('Хватит червонцев', weeks
-          ? 'на ' + weeks + ' ' + plural(weeks, ['неделю', 'недели', 'недель'])
-          : 'меньше недели',
-          weeks ? 'при нынешнем налоге' : 'налог спишется не полностью'));
+      (short
+        ? tile('Не хватит сегодня', money(own - coins) + ' Ч',
+          'в 00:00 провинция уйдёт в продажу · <a href="donate.html#free">где взять</a>')
+        : tile('Хватит червонцев', days
+          ? 'на ' + days + ' ' + plural(days, ['сутки', 'суток', 'суток'])
+          : 'меньше суток',
+          days ? 'при нынешнем налоге' : 'налог спишется не полностью'));
 
-    var hint = debt
-      ? '<p class="cab-hint">Недоимка растёт, пока на счету не хватает на налог. ' +
-        'Через 14 дней земля возвращается государству: за неё вернут 75% цены, ' +
-        'а постройки достанутся новому хозяину. Гасится она сама, как только ' +
-        'червонцы появятся на счету.</p>'
-      : '<p class="cab-hint">Налог списывается со счёта сам, раз в неделю. ' +
-        'Не хватило — копится недоимка, и через 14 дней землю забирают. ' +
-        'Все правила: цена, продажа, переезд — на странице ' +
-        '<a href="lands.html">Земли и налоги</a>.</p>';
+    var hint = short
+      ? '<p class="cab-hint">На ближайшее списание не хватает. Рассрочки нет: ' +
+        'в 00:00 ты перестанешь быть мэром и останешься обычным жителем своей же ' +
+        'провинции — дом, участок и сундуки при тебе, а земля уйдёт в продажу ' +
+        'со скидкой 25%. Выкупить её обратно можно, если хватит денег.</p>'
+      : '<p class="cab-hint">Налог списывается со счёта сам, каждые сутки в 00:00. ' +
+        'Не хватило — в ту же полночь земля уходит в продажу, и мэром становится ' +
+        'тот, кто её выкупит. Все правила: цена, ставка державы, продажа, переезд — ' +
+        'на странице <a href="lands.html">Земли и налоги</a>.</p>';
 
     return '<div class="cab-tiles">' + tiles + '</div>' +
       '<div class="cab-block"><h2>Мои провинции</h2>' + hint +
@@ -798,7 +1091,7 @@
     var all = me.punish || [];
     if (!all.length) {
       return empty('Наказаний нет',
-        'За тобой ничего не числится. Правила лежат в <a href="wiki.html#/rules">вики</a> — ' +
+        'За тобой ничего не числится. Правила лежат в <a href="wiki.html#/rules-game">вики</a> — ' +
         'загляни, чтобы так и осталось.');
     }
     var act = all.filter(function (p) { return p.active; });
@@ -855,7 +1148,7 @@
       'stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input id="admQ" type="search" placeholder="Имя игрока" ' +
       'value="' + esc((players && players.q) || '') + '">' +
-      '<button type="button" class="s-clear" data-act="qclear" aria-label="Очистить">×</button>' +
+      '<button type="button" class="s-clear" data-act="qclear" aria-label="Очистить">✕</button>' +
       '</label>' +
       '<button class="btn btn-dark btn-sm" data-act="find">Найти</button>' +
       '</div>';
@@ -930,7 +1223,7 @@
       '<div class="field"><label for="pnWhy">Причина <span class="req">*</span></label>' +
       '<textarea id="pnWhy" placeholder="Например: гриф чужой базы, скриншоты в тикете #124"></textarea></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="punish">Применить</button>' +
-      '<span class="fg-note" id="pnSay"></span></div></div></div>';
+      '<span class="fg-note" role="status" id="pnSay"></span></div></div></div>';
   }
 
   function giveForm(nick) {
@@ -943,9 +1236,9 @@
       '<div class="field"><label for="gvSum">Сколько <em>минус — списать</em></label>' +
       '<input id="gvSum" type="number" step="1" placeholder="500"></div>' +
       '<div class="field"><label for="gvWhy">За что <span class="req">*</span></label>' +
-      '<input id="gvWhy" type="text" placeholder="Победа в розыгрыше от 12 сентября"></div>' +
+      '<input id="gvWhy" type="text" placeholder="Победа в розыгрыше в Discord"></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="give">Выдать</button>' +
-      '<span class="fg-note" id="gvSay"></span></div></div></div>';
+      '<span class="fg-note" role="status" id="gvSay"></span></div></div></div>';
   }
 
   function doPunish() {
@@ -1034,7 +1327,7 @@
       '<svg class="s-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
       'stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input id="chatQ" type="search" placeholder="Имя или слово" value="' + esc(chat.q) + '">' +
-      '<button type="button" class="s-clear" data-act="chclear" aria-label="Очистить">×</button>' +
+      '<button type="button" class="s-clear" data-act="chclear" aria-label="Очистить">✕</button>' +
       '</label>' +
       '<button class="btn btn-dark btn-sm" data-act="chfind">Искать</button>' +
       '</div>';
@@ -1079,12 +1372,34 @@
 
     body.innerHTML = '<div class="cab">' + side() +
       '<div>' + flash() + main() + '</div></div>';
+    if (window.AegisTk) window.AegisTk.heads(body);
+    skinFig();
 
     if (view === 'chat') {
       var lg = el('chLog');
       if (lg) lg.scrollTop = lg.scrollHeight;
       startPoll();
     }
+  }
+
+  /* Фигура строится один раз на человека, дальше переезжает из старой
+     разметки в новую: иначе каждое нажатие в профиле заново грузило бы скин
+     и сбрасывало поворот, который человек себе выставил. */
+  var fig = null;
+  function skinFig() {
+    var slot = el('cabSkin');
+    if (!slot || !window.AegisSkin3d) return;
+    var key = me.nick + '|' + (me.skin && me.skin.has ? me.skin.model || 'classic' : '-');
+    if (fig && fig.key === key) {
+      slot.parentNode.replaceChild(fig.node, slot);
+      return;
+    }
+    window.AegisSkin3d.mount(slot, {
+      nick: me.nick,
+      has: !!(me.skin && me.skin.has),
+      slim: !!(me.skin && me.skin.model === 'slim')
+    });
+    fig = { key: key, node: slot };
   }
 
   /* Чат сам подтягивается, но только пока вкладку смотрят. */
@@ -1121,6 +1436,9 @@
     else if (act === 'out') { e.preventDefault(); logout(); }
     else if (act === 'pw') { e.preventDefault(); showPass = true; paint(); }
     else if (act === 'pwoff') { e.preventDefault(); showPass = false; paint(); }
+    else if (act === 'dspass') { e.preventDefault(); getDsPass(n); }
+    else if (act === 'dscopy') { e.preventDefault(); copyDs(n); }
+    else if (act === 'tglink') { e.preventDefault(); getTgLink(n); }
     else if (act === 'pwgo') { e.preventDefault(); doPass(); }
     else if (act === 'prize') {
       e.preventDefault();
@@ -1177,7 +1495,8 @@
   function logout() {
     var was = A.token();
     A.setSession(null);
-    me = null; coins = null; players = null; bans = null; pcard = null;
+    me = null; coins = null; players = null; bans = null; pcard = null; dsPass = null;
+    tgLink = null;
     chat = { rows: [], at: 0, q: '' };
     note('ok', 'Вышли. Ключ вкладки стёрт.');
     paint();
@@ -1218,6 +1537,11 @@
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible' && view === 'chat' && me) {
       loadChat(false).then(function (n) { if (n) paint(); }, function () { });
+    }
+    /* вернулись из Discord или Telegram — привязка могла уже пройти */
+    if (document.visibilityState === 'visible' && view === 'me' && !showPass &&
+      knowsLinks() && ((dsPass && dsPass.code) || (tgLink && tgLink.url))) {
+      refreshLinks();
     }
   });
 

@@ -78,10 +78,14 @@
       if (n) out.push([p, PLAT[p]]);
     });
 
-    return '<div class="live-tabs">' + out.map(function (t) {
-      return '<button type="button" data-tab="' + t[0] + '"' +
-        (tab === t[0] ? ' class="on"' : '') + '>' + A.esc(t[1]) + '</button>';
-    }).join('') + '</div>';
+    /* Открытая вкладка отличается только заливкой. Это не нажатая кнопка, а
+       «сейчас показано вот это», для такого есть aria-current. */
+    return '<div class="live-tabs" role="group" aria-label="Отбор каналов">' +
+      out.map(function (t) {
+        var on = tab === t[0];
+        return '<button type="button" data-tab="' + t[0] + '"' +
+          (on ? ' class="on" aria-current="true"' : '') + '>' + A.esc(t[1]) + '</button>';
+      }).join('') + '</div>';
   }
 
   function when() {
@@ -89,9 +93,15 @@
       return 'Каналы ещё ни разу не обходили — состояние ниже не проверено.';
     }
     var live = liveCount();
+    /* Обещание «обновляется сам каждые десять минут» рядом со словами
+       «проверено 5 дн назад» читается как враньё — и это первая строка, за
+       которую цепляется глаз. Пока обход идёт, обещание верное; если
+       последняя проверка старше часа, обход стоит — так и говорим. */
+    var fresh = (Date.now() - at) < 36e5;
     return 'Проверено ' + A.ago(at) + ' · ' +
       (live ? 'в эфире ' + live : 'сейчас никто не стримит') +
-      ' · список обновляется сам каждые десять минут';
+      (fresh ? ' · список обновляется сам каждые десять минут'
+             : ' · обход каналов сейчас не идёт, список может отставать');
   }
 
   /* Сколько идёт эфир: «в эфире 2 ч». Время площадка отдаёт по Гринвичу,
@@ -108,7 +118,7 @@
     return 'в эфире ' + Math.floor(h / 24) + ' дн';
   }
 
-  function card(r) {
+  function card(r, slim) {
     var href = r.watch || r.url || '';
     var thumb = r.live ? (r.thumb || '') : '';
     var letter = A.esc((r.name || '?').trim().charAt(0).toUpperCase());
@@ -151,14 +161,52 @@
       (right ? '<span class="lw-off">' + A.esc(right) + '</span>' : '') +
       '</div></div>';
 
-    var cls = 'live-card' + (r.live ? '' : ' off');
-    if (!href) return '<div class="' + cls + '">' + head + meta + '</div>';
+    /* Строкой порядок обратный: сверху имя канала, под ним — чем он занят.
+       Широкая карточка начинается с превью и повторяет площадки: крупно —
+       название трансляции, мельче — чей канал. Когда эфира нет, превью нет и
+       карточка стала строкой, крупным кеглем оказывается описание, и человек,
+       который ищет глазами знакомое имя, читает «канал проекта: трейлеры,
+       девлоги…». Имя при этом внизу и серым. Поэтому в строке меняем местами. */
+    if (slim && !r.live) {
+      var sub = r.note || r.title || (r.official ? 'канал проекта' : '');
+      meta =
+        '<div class="live-meta">' +
+        '<h3>' + A.esc(r.name || 'Канал') + '</h3>' +
+        (sub
+          ? '<div class="live-who">' +
+            (r.avatar ? '<img src="' + A.esc(r.avatar) + '" alt="" loading="lazy">' : '') +
+            '<span class="lw-n">' + A.esc(sub) + '</span></div>'
+          : '') +
+        '</div>';
+    }
+
+    /* Компактный вид. Превью площадка отдаёт только у идущего эфира, а у
+       остальных на его месте оставалась пустая полоса 16:9 с одной буквой —
+       половина экрана пустоты ради строчки текста. Если превью нет ни у кого
+       в ряду, показываем каналы строкой: значок, чем канал занят, площадка и
+       состояние справа. Ничего не пропадает, просто занимает своё место. */
+    var body_;
+    if (slim) {
+      body_ =
+        '<div class="lv-mark">' + letter + '</div>' + meta +
+        '<div class="lv-side"><span class="l-plat">' +
+        A.esc(PLAT[r.platform] || r.platform) + '</span>' + top + '</div>';
+    } else {
+      body_ = head + meta;
+    }
+
+    var cls = 'live-card' + (r.live ? '' : ' off') + (slim ? ' slim' : '');
+    if (!href) return '<div class="' + cls + '">' + body_ + '</div>';
     return '<a class="' + cls + '" href="' + A.esc(href) +
-      '" target="_blank" rel="noopener">' + head + meta + '</a>';
+      '" target="_blank" rel="noopener">' + body_ + '</a>';
   }
 
   function grid(list) {
-    return '<div class="live-grid">' + list.map(card).join('') + '</div>';
+    /* Ряд идёт компактным, только если превью нет НИ У ОДНОЙ карточки: рядом
+       с живым эфиром строка смотрелась бы обрубком. */
+    var slim = list.every(function (r) { return !(r.live && r.thumb); });
+    return '<div class="live-grid' + (slim ? ' slim' : '') + '">' +
+      list.map(function (r) { return card(r, slim); }).join('') + '</div>';
   }
 
   function cta() {

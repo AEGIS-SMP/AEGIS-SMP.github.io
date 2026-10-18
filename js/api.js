@@ -57,18 +57,38 @@
 
   /* ------------------------------------------------------------- сессия */
 
+  /* Вход живёт в localStorage до срока, который выдала служба (until, мс).
+     Раньше лежал в sessionStorage — и каждая новая вкладка (ссылка из ЛС бота
+     на обращение, «открыть в новой вкладке») снова просила пароль. Овнер
+     25.09.2026: «чтобы у админов постоянно не слетала верификация». Старую
+     запись из sessionStorage один раз переносим, чтобы уже вошедших не выкинуло. */
   function session() {
+    var s = null;
     try {
-      var raw = sessionStorage.getItem(KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
+      var raw = localStorage.getItem(KEY);
+      if (!raw) {
+        raw = sessionStorage.getItem(KEY);
+        if (raw) { localStorage.setItem(KEY, raw); sessionStorage.removeItem(KEY); }
+      }
+      s = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      try { var r2 = sessionStorage.getItem(KEY); s = r2 ? JSON.parse(r2) : null; } catch (e2) { s = null; }
+    }
+    if (s && s.until && Number(s.until) < Date.now()) { setSession(null); return null; }
+    return s;
   }
 
   function setSession(obj) {
     try {
-      if (obj) sessionStorage.setItem(KEY, JSON.stringify(obj));
-      else sessionStorage.removeItem(KEY);
-    } catch (e) { /* приватный режим — просто живём без памяти */ }
+      if (obj) localStorage.setItem(KEY, JSON.stringify(obj));
+      else { localStorage.removeItem(KEY); sessionStorage.removeItem(KEY); }
+    } catch (e) {
+      /* localStorage закрыт (строгий приватный режим) — держим вход хотя бы во вкладке */
+      try {
+        if (obj) sessionStorage.setItem(KEY, JSON.stringify(obj));
+        else sessionStorage.removeItem(KEY);
+      } catch (e2) { /* живём без памяти */ }
+    }
   }
 
   function token() {
@@ -118,7 +138,12 @@
       if (e && e.name === 'AbortError') {
         throw err('timeout', 'Служба не ответила вовремя. Попробуйте ещё раз.');
       }
-      throw err('net', 'Не получилось связаться со службой сервера.');
+      /* Текст называет причину и говорит, что делать. «Не получилось связаться
+         со службой сервера» верно по сути, но человеку под кнопкой «Войти»
+         читается как поломка сайта, и дальше он идёт писать обращение. А беда
+         почти всегда одна: сервер выключен или перезапускается. */
+      throw err('net', 'Сервер не отвечает — похоже, он сейчас выключен. ' +
+        'Попробуйте позже.');
     }).then(function (text) {
       var data;
       try { data = JSON.parse(text); } catch (e2) {
@@ -141,7 +166,8 @@
 
   function offline() {
     return err('offline',
-      'Этот раздел включится вместе с сервером — сезон ещё готовится.');
+      'Сервер на перерыве между вайпами: этот раздел заработает вместе с ним. ' +
+      'Вопросы — в тикет в Discord.');
   }
 
   /* Человеческий текст любой беды: страницы печатают его как есть. */
@@ -176,16 +202,40 @@
       .replace(/"/g, '&quot;');
   }
 
-  /* «3 минуты назад», «вчера» — время показываем словами, так понятнее. */
+  /* Согласование слова с числом. Такой же помощник уже есть в cabinet.js,
+     lands.js и admin.js — там он нужен своим спискам; здесь он нужен ago(),
+     который живёт ниже всех и не может тянуть их к себе. */
+  function plural(n, f) {
+    var a = Math.abs(Math.floor(n)) % 100, b = a % 10;
+    if (a > 10 && a < 20) return f[2];
+    if (b > 1 && b < 5) return f[1];
+    if (b === 1) return f[0];
+    return f[2];
+  }
+
+  /* «3 минуты назад», «вчера» — время показываем словами, так понятнее.
+
+     Раньше тут стояли сокращения и последней строкой выходило «6 дн назад».
+     «мин» и «ч» — законные сокращения, а «дн» ни в одном словаре нет: рядом
+     с остальным сайтом, который везде пишет «6 дней» и «2 недели», это
+     читалось как недоделанный перевод. Пишем словом целиком. */
   function ago(ts) {
     if (!ts) return '';
     var d = (Date.now() - Number(ts)) / 1000;
     if (d < 0) d = 0;
     if (d < 60) return 'только что';
-    if (d < 3600) return Math.floor(d / 60) + ' мин назад';
-    if (d < 86400) return Math.floor(d / 3600) + ' ч назад';
+    var n;
+    if (d < 3600) {
+      n = Math.floor(d / 60);
+      return n + ' ' + plural(n, ['минуту', 'минуты', 'минут']) + ' назад';
+    }
+    if (d < 86400) {
+      n = Math.floor(d / 3600);
+      return n + ' ' + plural(n, ['час', 'часа', 'часов']) + ' назад';
+    }
     if (d < 172800) return 'вчера';
-    return Math.floor(d / 86400) + ' дн назад';
+    n = Math.floor(d / 86400);
+    return n + ' ' + plural(n, ['день', 'дня', 'дней']) + ' назад';
   }
 
   /* 1200 → «1,2 тыс» */

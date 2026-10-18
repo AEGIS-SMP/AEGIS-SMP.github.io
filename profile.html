@@ -6,41 +6,44 @@
 <title>Профиль и скин — AEGIS SMP</title>
 <meta name="description" content="Профиль игрока AEGIS SMP: поставь свой скин через сайт — и клиент из лаунчера сразу покажет его в игре. Лицензия Minecraft для этого не нужна.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="canonical" href="https://aegis-smp.github.io/profile.html">
+<link rel="canonical" href="https://www.aegis-smp.com/profile.html">
 <meta name="theme-color" content="#0E0E10">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AEGIS SMP">
 <meta property="og:locale" content="ru_RU">
-<meta property="og:url" content="https://aegis-smp.github.io/profile.html">
+<meta property="og:url" content="https://www.aegis-smp.com/profile.html">
 <meta property="og:title" content="Профиль и скин — AEGIS SMP">
 <meta property="og:description" content="Поставь свой скин через сайт — клиент из лаунчера покажет его в игре. Лицензия Minecraft для этого не нужна.">
-<meta property="og:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta property="og:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Профиль и скин — AEGIS SMP">
 <meta name="twitter:description" content="Поставь свой скин через сайт — клиент из лаунчера покажет его в игре. Лицензия Minecraft для этого не нужна.">
-<meta name="twitter:image" content="https://aegis-smp.github.io/assets/img/hero.jpg">
+<meta name="twitter:image" content="https://www.aegis-smp.com/assets/img/hero.jpg">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
      кириллические гарнитуры — остальные алфавиты браузер возьмёт сам,
      только если они реально понадобятся. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=0925p">
 </head>
 <body>
+<a class="skip-link" href="#content">К содержанию</a>
 
 <header class="topbar">
   <div class="container topbar-in">
     <a class="brand" href="index.html"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
-    <button class="burger" aria-label="Меню"><span></span></button>
-    <nav class="topnav" id="topnav">
+    <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
+    <nav class="topnav" id="topnav" aria-label="Основное меню">
       <a href="index.html#season">Сезон 1936</a>
       <a href="index.html#arsenal">Арсенал</a>
       <a href="index.html#join">Как зайти</a>
       <a href="lands.html">Земли</a>
+      <a href="players.html">Игроки</a>
+      <a href="feed.html">Лента</a>
       <a href="wiki.html">Вики</a>
       <a href="tickets.html">Обращения</a>
       <a href="live.html">Эфиры</a>
@@ -49,6 +52,8 @@
     </nav>
   </div>
 </header>
+
+<main id="content" tabindex="-1">
 
 <div class="page-hero">
   <div class="container">
@@ -65,7 +70,9 @@
 
     <!-- ------------------------------- форма ------------------------------- -->
     <div class="reg-card">
-      <form class="reg-form" id="pfForm" autocomplete="off">
+      <!-- Как на регистрации: общий «off» снят, поля сами говорят о себе — тогда
+           менеджер паролей подставляет имя и пароль, а не молчит. -->
+      <form class="reg-form" id="pfForm">
         <label for="pNick">Имя в игре</label>
         <input id="pNick" type="text" maxlength="16" placeholder="VineZerro" spellcheck="false"
                autocomplete="username">
@@ -77,19 +84,25 @@
         <div class="reg-hint">Нужен, чтобы скин тебе поставил ты, а не любой прохожий.
           Это пароль проекта, а не Microsoft.</div>
 
-        <label>Картинка скина</label>
-        <div class="pf-drop" id="pDrop">
+        <!-- Обе подписи ниже относятся к блоку, а не к одному полю, поэтому у них
+             нет «for» — связываем через aria-labelledby, как на регистрации. Имя
+             области перетаскивания собирается из трёх кусков в том же порядке, в
+             каком их читает глазами зрячий: подпись, строка с файлом (она меняется
+             на имя выбранного) и пояснение про размер. -->
+        <label id="pDropLbl">Картинка скина</label>
+        <div class="pf-drop" id="pDrop" role="button" tabindex="0"
+             aria-labelledby="pDropLbl pDropName pDropHow">
           <input id="pFile" type="file" accept="image/png" hidden>
           <b id="pDropName">Перетащи png сюда</b>
-          <span>или нажми и выбери файл — 64×64, старые 64×32 тоже подойдут</span>
+          <span id="pDropHow">или нажми и выбери файл — 64×64, старые 64×32 тоже подойдут</span>
         </div>
 
-        <label>Руки</label>
-        <div class="reg-pick" id="pModel">
-          <button type="button" data-m="classic" class="on">
+        <label id="pModelLbl">Руки</label>
+        <div class="reg-pick" id="pModel" role="group" aria-labelledby="pModelLbl">
+          <button type="button" data-m="classic" class="on" aria-pressed="true">
             <b>Классические</b><span>как у Стива, 4 пикселя</span>
           </button>
-          <button type="button" data-m="slim">
+          <button type="button" data-m="slim" aria-pressed="false">
             <b>Тонкие</b><span>как у Алекс, 3 пикселя</span>
           </button>
         </div>
@@ -97,7 +110,10 @@
 
         <button class="btn btn-primary reg-go" type="submit" id="pGo">Поставить скин</button>
         <button class="pf-drop-off" type="button" id="pOff">Снять скин и вернуть обычный вид</button>
-        <div class="reg-say" id="pSay">Введи имя и пароль, выбери картинку.</div>
+        <!-- Как на регистрации: строка отвечает на нажатие «Поставить скин», и
+             role="status" заставляет браузер прочитать новый текст вслух — иначе
+             читалка молчит, а человек ждёт неизвестно чего. -->
+        <div class="reg-say" id="pSay" role="status">Введи имя и пароль, выбери картинку.</div>
       </form>
     </div>
 
@@ -107,7 +123,7 @@
         <div class="pf-view-in">
           <canvas id="pCanvas" width="128" height="256" aria-label="Как будет выглядеть скин"></canvas>
           <div class="pf-view-say">
-            <h3 id="pViewTitle">Пока смотреть нечего</h3>
+            <h2 id="pViewTitle">Пока смотреть нечего</h2>
             <p id="pViewText">Выбери картинку — покажу, как она сядет на игрока.
               Здесь же видно, какой скин стоит на сервере сейчас.</p>
           </div>
@@ -115,7 +131,7 @@
       </div>
 
       <div class="reg-why">
-        <h3>Как скин попадёт в игру</h3>
+        <h2>Как скин попадёт в игру</h2>
         <p>Картинка ложится на сервер AEGIS рядом с твоим именем. Клиент из лаунчера
           спрашивает её сам при заходе на сервер и ставит на игрока — ничего скачивать
           и подкладывать в папки руками не надо.</p>
@@ -127,7 +143,7 @@
       </div>
 
       <div class="reg-why">
-        <h3>Какая картинка нужна</h3>
+        <h2>Какая картинка нужна</h2>
         <ul>
           <li>png, <b>64×64</b> — обычный современный скин;</li>
           <li>png, <b>64×32</b> — старый скин, вторые рука и нога достроятся сами;</li>
@@ -140,7 +156,7 @@
       </div>
 
       <div class="reg-why">
-        <h3>Где взять скин</h3>
+        <h2>Где взять скин</h2>
         <p>Подойдёт любой скин из редакторов и галерей для Minecraft — они отдают ровно
           такой же png 64×64. Можно нарисовать самому: сетка 64×64 в любом редакторе,
           где нет размытия при масштабе.</p>
@@ -152,6 +168,8 @@
   </div>
 </section>
 
+</main>
+
 <footer>
   <div class="container">
     <div class="foot-in">
@@ -160,20 +178,24 @@
         <a href="index.html#season">Сезон 1936</a>
         <a href="index.html#join">Как зайти</a>
         <a href="lands.html">Земли</a>
+        <a href="players.html">Игроки</a>
+        <a href="feed.html">Лента</a>
         <a href="wiki.html">Вики</a>
         <a href="tickets.html">Обращения</a>
         <a href="live.html">Эфиры</a>
         <a href="donate.html">Донат</a>
         <a href="index.html#news">Новости</a>
+        <a href="offer.html">Оферта</a>
       </div>
     </div>
     <p class="foot-note">AEGIS SMP © 2026. Неофициальный проект: не связан с Mojang Studios
       и Microsoft и не одобрен ими. Minecraft — товарный знак Mojang Studios.</p>
+    <p class="foot-legal">Продавец: самозанятый, владелец проекта AEGIS. Связь — через <a href="tickets.html">обращения</a> на сайте. <a href="offer.html">Оферта</a>.</p>
   </div>
 </footer>
 
 <script src="js/config.js"></script>
-<script src="js/api.js"></script>
+<script src="js/api.js?v=20260925"></script>
 <script src="js/main.js"></script>
 <script src="js/profile.js"></script>
 </body>
