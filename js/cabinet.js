@@ -321,7 +321,7 @@
   /* ------------------------------------------------------------ нет службы */
 
   function paintOffline() {
-    var reg = 'reg.html', dis = A.link('discord');
+    var reg = 'reg', dis = A.link('discord');
     body.innerHTML =
       '<div class="cab-login"><h2>Кабинет включится вместе с сервером</h2>' +
       '<p class="cl-lead">Личный кабинет работает от службы игрового сервера. ' +
@@ -355,9 +355,9 @@
       '<div class="form-go"><button class="btn btn-primary" data-act="in">Войти</button>' +
       '<span class="fg-note" role="status" id="cbSay"></span></div></div>' +
       '<div class="cab-why"><h3>Если не заходит</h3><ul>' +
-      '<li>аккаунта ещё нет — <a href="reg.html">заведи его</a>, это пара минут;</li>' +
-      '<li>забыл пароль — <a href="reg.html#recover">сбрось его сам</a>: ссылку на новый пароль ' +
-      'пришлёт то, чем подтверждал регистрацию; не выходит — напиши <a href="tickets.html#/help">обращение</a>;</li>' +
+      '<li>аккаунта ещё нет — <a href="reg">заведи его</a>, это пара минут;</li>' +
+      '<li>забыл пароль — <a href="reg#recover">сбрось его сам</a>: ссылку на новый пароль ' +
+      'пришлёт то, чем подтверждал регистрацию; не выходит — напиши <a href="tickets#/help">обращение</a>;</li>' +
       '<li>пароль не подходит после бана — кабинет всё равно откроется, ' +
       'наказание там видно.</li></ul></div>';
     var n = el('cbNick');
@@ -423,7 +423,7 @@
       ANAV.forEach(function (t) { n += btn(t[0], t[1], ''); });
       /* Управление сайтом живёт отдельной страницей: сюда её не тащим, но
          искать по закладкам тоже не заставляем. */
-      n += '<a class="cn-go" href="admin.html"><svg viewBox="0 0 20 20" aria-hidden="true">' +
+      n += '<a class="cn-go" href="admin"><svg viewBox="0 0 20 20" aria-hidden="true">' +
         '<path d="M10 2.5l6 2.3v5c0 3.5-2.6 5.7-6 6.7-3.4-1-6-3.2-6-6.7v-5z"/></svg>' +
         '<span><b>Пульт обращений</b><small>тикеты игроков по вашим темам</small></span></a>';
     }
@@ -508,7 +508,7 @@
       fact('Играет с', me.firstAt ? esc(day(me.firstAt)) : '—') +
       fact('Город', me.town ? esc(me.town) : 'нет') +
       '</dl>' +
-      '<div class="ch-go"><a class="btn btn-dark btn-sm" href="profile.html">Поменять скин</a>' +
+      '<div class="ch-go"><a class="btn btn-dark btn-sm" href="profile">Поменять скин</a>' +
       '<span>' + sk + '</span></div>' +
       '</div></section>';
   }
@@ -517,11 +517,11 @@
     var act = actives(me.punish);
     var tiles =
       tile('Червонцы', money(me.coins),
-        'Заработок игрой · <a href="donate.html#free">откуда берутся</a>') +
+        'Заработок игрой · <a href="donate#free">откуда берутся</a>') +
       tile('Привилегия', me.priv && me.priv.title ? me.priv.title : 'нет',
         me.priv && me.priv.title
           ? (me.priv.until ? 'до ' + esc(day(me.priv.until)) : 'бессрочно')
-          : '<a href="donate.html">что она даёт</a>') +
+          : '<a href="donate">что она даёт</a>') +
       tile('Страна', me.countryName || me.country || 'нет',
         me.countryName ? 'приват по историческим границам' : 'выбирается на сервере') +
       tile('Наказания', act.length ? String(act.length) : 'нет',
@@ -967,7 +967,7 @@
     return '<div class="cab-tiles">' +
       tile('На счету', money(bal),
         plural(bal, ['червонец', 'червонца', 'червонцев']) +
-        ' · <a href="donate.html#free">как заработать</a>') +
+        ' · <a href="donate#free">как заработать</a>') +
       tile('Пришло', money(got), 'за последние ' + rows.length + ' ' +
         plural(rows.length, ['движение', 'движения', 'движений'])) +
       tile('Потрачено', money(spent), 'земля, налоги и торговля') +
@@ -975,7 +975,7 @@
       '<div class="cab-block"><h2>История</h2>' +
       '<p class="cab-hint">Червонец — валюта самого сервера: его <b>дают за игру</b>, ' +
       'и тратят его в игре. Докупить червонцы можно в ' +
-      '<a href="donate.html#coins">лавке</a>, обратно на деньги они не меняются. ' +
+      '<a href="donate#coins">лавке</a>, обратно на деньги они не меняются. ' +
       'Счёт <b>переживает вайп</b> и остаётся с тобой в новом сезоне; вещи, ' +
       'постройки и земля — нет, их выдаёт мир, а мир начинается заново.</p>' +
       list + '</div>';
@@ -1020,7 +1020,7 @@
       return empty('Своей земли пока нет',
         'Провинции покупаются на сервере у государства: свободная стоит от ' +
         '12 червонцев. Что где стоит, видно в списке ' +
-        '<a href="lands.html">земель и налогов</a>.');
+        '<a href="lands">земель и налогов</a>.');
     }
 
     /* Столицу за налог не отбирают: за неё платит казна державы (4.4).
@@ -1050,7 +1050,7 @@
         next ? esc(day(next)) : 'сроки придут с сервера') +
       (short
         ? tile('Не хватит сегодня', money(own - coins) + ' Ч',
-          'в 00:00 провинция уйдёт в продажу · <a href="donate.html#free">где взять</a>')
+          'в 00:00 провинция уйдёт в продажу · <a href="donate#free">где взять</a>')
         : tile('Хватит червонцев', days
           ? 'на ' + days + ' ' + plural(days, ['сутки', 'суток', 'суток'])
           : 'меньше суток',
@@ -1064,7 +1064,7 @@
       : '<p class="cab-hint">Налог списывается со счёта сам, каждые сутки в 00:00. ' +
         'Не хватило — в ту же полночь земля уходит в продажу, и мэром становится ' +
         'тот, кто её выкупит. Все правила: цена, ставка державы, продажа, переезд — ' +
-        'на странице <a href="lands.html">Земли и налоги</a>.</p>';
+        'на странице <a href="lands">Земли и налоги</a>.</p>';
 
     return '<div class="cab-tiles">' + tiles + '</div>' +
       '<div class="cab-block"><h2>Мои провинции</h2>' + hint +
@@ -1091,7 +1091,7 @@
     var all = me.punish || [];
     if (!all.length) {
       return empty('Наказаний нет',
-        'За тобой ничего не числится. Правила лежат в <a href="wiki.html#/rules-game">вики</a> — ' +
+        'За тобой ничего не числится. Правила лежат в <a href="wiki#/rules-game">вики</a> — ' +
         'загляни, чтобы так и осталось.');
     }
     var act = all.filter(function (p) { return p.active; });
@@ -1100,7 +1100,7 @@
     if (act.length) {
       h += '<div class="cab-block"><h2>Действуют сейчас</h2>' +
         '<p class="cab-hint">Считаешь, что наказание несправедливо — не спорь в чате, ' +
-        'а напиши <a href="tickets.html#/appeal">обжалование</a>. Разберут по логам.</p>' +
+        'а напиши <a href="tickets#/appeal">обжалование</a>. Разберут по логам.</p>' +
         '<div class="row-list">' + act.map(function (p) { return punishRow(p, '', false); }).join('') +
         '</div></div>';
     }

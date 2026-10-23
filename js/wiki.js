@@ -88,13 +88,16 @@
      начнут править не мы. */
   function href(u) {
     u = String(u || '').trim();
-    /* Свои абсолютные ссылки — в относительные: с 18.10.2026 сайт живет на
-       GitHub Pages, а домен смотрит на выключенный сервер. Текст вики не трогаем. */
+    /* Свои абсолютные ссылки — в относительные: так они ведут на ту же
+       страницу и на aegis-smp.com, и на локальном просмотре. Текст вики не трогаем. */
     var own = /^https?:\/\/(www\.)?aegis-smp\.com\/?/i;
     if (own.test(u)) {
       u = u.replace(own, '');
-      if (!u || u.charAt(0) === '#') u = 'index.html' + u;
+      if (!u || u.charAt(0) === '#') u = '/' + u;
     }
+    /* Адреса страниц без .html (24.10.2026): в текстах вики остались
+       «wiki.html#/…» и «index.html#join» — показываем короткий вид. */
+    u = u.replace(/^\/?index\.html(?=$|[#?])/i, '/').replace(/^(\/?[\w-]+)\.html(?=$|[#?])/i, '$1');
     if (/^https:\/\//i.test(u)) return u;
     if (/^[\w./#?=&%-]+$/.test(u)) return u;
     return '';
@@ -948,7 +951,7 @@
   W.ready.catch(function (e) {
     elBody.innerHTML = '<div class="empty"><h4>Вики не загрузилась</h4><p>' +
       esc(A.textOf(e)) + ' Обновите страницу — если не поможет, напишите нам ' +
-      'через <a href="tickets.html">обращение</a>.</p></div>';
+      'через <a href="tickets">обращение</a>.</p></div>';
   });
 
   /* аккордеон вопросов */

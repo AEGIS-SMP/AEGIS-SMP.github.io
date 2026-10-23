@@ -119,10 +119,10 @@
       if (/[0-9A-Za-zА-Яа-яЁё_#@]/.test(prev)) continue;
       out += esc(s.slice(at, m.index));
       if (m[1] === '@' && NICK.test(m[2])) {
-        out += '<a class="m" href="players.html#/p/' + encodeURIComponent(m[2]) + '">' + esc(m[0]) + '</a>';
+        out += '<a class="m" href="players#/p/' + encodeURIComponent(m[2]) + '">' + esc(m[0]) + '</a>';
       } else if (m[1] === '#') {
         // нажал — все посты с этим тегом; ссылка настоящая, чтобы открывалась и в новой вкладке
-        out += '<a class="t" href="feed.html?t=' + encodeURIComponent(m[2]) + '" data-tag="' + esc(m[2]) + '">' +
+        out += '<a class="t" href="feed?t=' + encodeURIComponent(m[2]) + '" data-tag="' + esc(m[2]) + '">' +
           esc(m[0]) + '</a>';
       } else {
         out += esc(m[0]);
@@ -133,7 +133,7 @@
   }
 
   function who(nick) {
-    return NICK.test(nick || '') ? 'players.html#/p/' + encodeURIComponent(nick) : 'players.html';
+    return NICK.test(nick || '') ? 'players#/p/' + encodeURIComponent(nick) : 'players';
   }
 
   function topSay(it) {
@@ -782,7 +782,7 @@
   }
 
   function link(it) {
-    return location.origin + location.pathname.replace(/[^/]*$/, '') + 'feed.html?p=' + it.id;
+    return location.origin + location.pathname.replace(/[^/]*$/, '') + 'feed?p=' + it.id;
   }
 
   function copy(text) {

@@ -291,7 +291,7 @@
       '<div class="cab-login"><h2>Прав нет</h2>' +
       '<p class="cl-lead">Аккаунт <b>' + esc(me.nick || '') + '</b> вошёл, но управлять сайтом ' +
       'ему не разрешено. Если это ошибка — скажи тому, кто выдаёт права.</p>' +
-      '<div class="form-go"><a class="btn btn-dark" href="cabinet.html">В кабинет</a>' +
+      '<div class="form-go"><a class="btn btn-dark" href="cabinet">В кабинет</a>' +
       '<button class="btn btn-dark" data-act="out">Выйти</button></div></div>';
   }
 
@@ -325,7 +325,7 @@
       /* Точка-разделитель в своём теге: на телефоне «Выйти» становится отдельной
          кнопкой под строкой, и точка повисала в хвосте «Кабинет ·». Голый текст
          стилями не убрать, поэтому он завёрнут. */
-      '<div class="cab-out"><a href="cabinet.html">Кабинет</a><span class="cab-sep"> · </span>' +
+      '<div class="cab-out"><a href="cabinet">Кабинет</a><span class="cab-sep"> · </span>' +
       '<button type="button" data-act="out">Выйти</button></div></aside>';
   }
 
@@ -391,11 +391,11 @@
 
     var quick = '<div class="row-list">' +
       row('Наказания, чат сервера и игроки', 'Это в кабинете — там же, где команда работает каждый день',
-        '<a class="btn btn-dark btn-sm" href="cabinet.html#/players">В кабинет</a>') +
+        '<a class="btn btn-dark btn-sm" href="cabinet#/players">В кабинет</a>') +
       row('Обращения глазами игрока', 'Полезно открыть после правки тем',
-        '<a class="btn btn-dark btn-sm" href="tickets.html" target="_blank" rel="noopener">Открыть</a>') +
+        '<a class="btn btn-dark btn-sm" href="tickets" target="_blank" rel="noopener">Открыть</a>') +
       row('Вики', 'Проверить, как легли правки',
-        '<a class="btn btn-dark btn-sm" href="wiki.html" target="_blank" rel="noopener">Открыть</a>') +
+        '<a class="btn btn-dark btn-sm" href="wiki" target="_blank" rel="noopener">Открыть</a>') +
       '</div>';
 
     return '<div class="cab-tiles">' + tiles + '</div>' +

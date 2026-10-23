@@ -5,7 +5,7 @@
 (function () {
   var box = document.querySelector('.event-share');
   if (!box) return;
-  var url = location.origin + '/event.html';
+  var url = location.origin + '/event';
   var text = 'Ивент «Микроволновка» на AEGIS SMP: 57 игроков против пяти великанов — смотри ролик';
   var tg = box.querySelector('[data-share-tg]');
   var vk = box.querySelector('[data-share-vk]');

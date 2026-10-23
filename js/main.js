@@ -1,5 +1,13 @@
 /* AEGIS SMP — общий скрипт сайта */
 
+/* Адрес без .html (24.10.2026). Файлы прежние, GitHub Pages отдает /wiki как
+   wiki.html, поэтому старые ссылки из бота, Discord и закладок работают — а в
+   строке адреса после загрузки остается короткий вид. Якорь и запрос не трогаем. */
+if (/\.html$/.test(location.pathname) && history.replaceState) {
+  const p = location.pathname.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
+  try { history.replaceState(history.state, '', p + location.search + location.hash); } catch (e) {}
+}
+
 /* Страница приёма переводов. Сам адрес лежит в js/config.js вместе со всеми
    остальными адресами проекта: переезд на арендный хостинг должен быть
    правкой одного файла, а не поиском ссылок по сайту. */

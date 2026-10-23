@@ -228,7 +228,7 @@
   /* ------------------------------------------------------------ витрина тем */
 
   function drawList() {
-    crumbs.innerHTML = '<a href="index.html">Главная</a><span>/</span>Обращения';
+    crumbs.innerHTML = '<a href="/">Главная</a><span>/</span>Обращения';
     var h = '';
 
     var off = CATS.filter(function (c) { return closed(c.key); }).length;
@@ -306,7 +306,7 @@
   }
 
   function drawForm(cat) {
-    crumbs.innerHTML = '<a href="index.html">Главная</a><span>/</span>' +
+    crumbs.innerHTML = '<a href="/">Главная</a><span>/</span>' +
       '<a href="#/">Обращения</a><span>/</span>' + esc(cleanName(cat.name));
 
     var pk = PICKS[cat.key];
@@ -457,7 +457,7 @@
           title: 'Войдите, чтобы написать',
           lead: 'Ник и пароль те же, что в лаунчере. Ответ команды придёт сюда же, в ' +
             '«Мои обращения» — Discord и почта не нужны. Аккаунта нет? ' +
-            '<a href="reg.html">Заведите его</a>, это пара минут.',
+            '<a href="reg">Заведите его</a>, это пара минут.',
           focus: false,
           done: function () {
             drawAuth();
@@ -698,7 +698,7 @@
      в ответ на вопрос) не должна молча выкидывать на витрину: человек пришёл по
      делу и должен получить ответ «когда», а не гадать, куда делась страница. */
   function drawClosed(cat) {
-    crumbs.innerHTML = '<a href="index.html">Главная</a><span>/</span>' +
+    crumbs.innerHTML = '<a href="/">Главная</a><span>/</span>' +
       '<a href="#/">Обращения</a><span>/</span>' + esc(cleanName(cat.name));
     var dc = A.link('discord');
     body.innerHTML = '<div class="tk-form">' +
@@ -758,7 +758,7 @@
   }
 
   function crumbsTo(last, mid) {
-    crumbs.innerHTML = '<a href="index.html">Главная</a><span>/</span>' +
+    crumbs.innerHTML = '<a href="/">Главная</a><span>/</span>' +
       '<a href="#/">Обращения</a><span>/</span>' +
       (mid ? '<a href="#/mine">Мои обращения</a><span>/</span>' : '') + esc(last);
   }
@@ -777,7 +777,7 @@
     T.login(document.getElementById('tkGate'), {
       title: title,
       lead: 'Ник и пароль те же, что в лаунчере. Аккаунта нет? ' +
-        '<a href="reg.html">Заведите его</a>, это пара минут.',
+        '<a href="reg">Заведите его</a>, это пара минут.',
       done: then
     });
   }
@@ -1093,7 +1093,7 @@
       o.innerHTML = '<span class="n-ic">!</span><div><b>Лаунчер у вас старый</b> (собран ' +
         esc(stampDate(st.old)) + '). Закройте его и откройте снова — он обновится сам, а новый ' +
         'частые ошибки узнает и сразу подскажет, что делать. Не обновляется — ' +
-        '<a href="index.html#join">скачайте его заново</a>.</div>';
+        '<a href="/#join">скачайте его заново</a>.</div>';
       form.insertBefore(o, at);
     }
     if (!st.h) return;

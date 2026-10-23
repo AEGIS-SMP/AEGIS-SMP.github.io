@@ -531,7 +531,7 @@
     if (!s) return 'Латиница, цифры и дефис, 2–40 знаков. Подставится из заголовка.';
     if (!SLUG.test(s)) return '<span class="we-err">Только латиница, цифры и дефис, 2–40 знаков, в начале — буква или цифра.</span>';
     if (W.exists(s)) return '<span class="we-err">Такой адрес уже есть — придумайте другой.</span>';
-    return 'Ссылка будет: <b>wiki.html#/' + esc(s) + '</b>';
+    return 'Ссылка будет: <b>wiki#/' + esc(s) + '</b>';
   }
 
   function headFields() {
@@ -724,7 +724,7 @@
       '</span></div>';
     W.body.innerHTML = '<div class="we-ed">' + top +
       '<div class="dh we-dh"><h1>' + title + '</h1>' +
-        (ed.isNew ? '' : '<p>' + esc(ed.orig.title || ed.slug) + ' · <a href="wiki.html#/' + attr(ed.slug) + '">wiki.html#/' + esc(ed.slug) + '</a></p>') +
+        (ed.isNew ? '' : '<p>' + esc(ed.orig.title || ed.slug) + ' · <a href="wiki#/' + attr(ed.slug) + '">wiki#/' + esc(ed.slug) + '</a></p>') +
       '</div>' +
       '<div class="we-msg">' + msgBox() + '</div>' + main + foot + '</div>';
     if (ed.tab === 'prev') armPreview();
