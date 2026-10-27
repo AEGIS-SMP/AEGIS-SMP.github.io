@@ -71,11 +71,11 @@ window.AEGIS = {
   launcher: 'https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-win.zip',
   manifest: '',
 
-  /* Discord — бессрочное приглашение. Стоит и в лаунчере, и в игре.
-     Не discord.gg/aegis-smp: своего адреса у гильдии нет (нужен 3-й уровень
-     бустов), и тот код отвечает Discord «Unknown Invite» — 19.09.2026 ссылка
-     на сайте оказалась мёртвой. */
-  discord: 'https://discord.gg/sAY7WR8mXJ',
+  /* Discord — собственный адрес гильдии (3-й уровень бустов, с 27.10.2026).
+     Стоит и в лаунчере, и в игре. Не discord.gg/aegis — это чужой сервер,
+     и не discord.gg/aegis-smp — такого кода нет. Старое приглашение
+     discord.gg/sAY7WR8mXJ тоже живое, но везде заменено на этот адрес. */
+  discord: 'https://discord.gg/aegissmp',
 
   /* Адрес игрового сервера. Заходят ТОЛЬКО через лаунчер — он знает адрес
      сам, а вход руками по адресу сервер не пускает. Поэтому здесь пусто и
