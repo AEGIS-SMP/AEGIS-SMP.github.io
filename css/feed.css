@@ -36,7 +36,7 @@
 .fd-sub .live-tabs { margin-bottom: 0; }
 .fd-sub .live-tabs button { height: 32px; padding: 0 13px; font-size: 13px; }
 
-/* нажатый #тег: заголовок, счёт, ролики/снимки и выход в ленту */
+/* нажатый #тег: заголовок, счет, ролики/снимки и выход в ленту */
 .fd-tag {
   display: flex;
   flex-wrap: wrap;

@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
+<meta property="og:image:alt" content="AEGIS SMP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Обращения — AEGIS SMP">
 <meta name="twitter:description" content="Вопрос, баг, жалоба, апелляция, спор держав, заявка на ивент. Разбирает та же команда, что и в Discord.">
@@ -26,11 +26,13 @@
      игроков СНГ fonts.googleapis.com не открывается. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=0925p">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="css/style.css?v=1019r">
 <link rel="stylesheet" href="css/pages.css?v=1014i">
 <link rel="stylesheet" href="css/tk.css?v=1015a">
 <noscript><style>/* Скрипт выключен — точки загрузки крутились бы вечно. */
   .loading { display: none; }</style></noscript>
+<link rel="stylesheet" href="css/sector.css?v=1020a">
 </head>
 <body>
 <a class="skip-link" href="#content">К содержанию</a>
@@ -40,7 +42,7 @@
     <a class="brand" href="/"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
     <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
     <nav class="topnav" id="topnav" aria-label="Основное меню">
-      <a href="/#season">Сезон 1936</a>
+      <a href="/#season">Сезон</a>
       <a href="/#arsenal">Арсенал</a>
       <a href="/#join">Как зайти</a>
       <a href="lands">Земли</a>
@@ -57,12 +59,12 @@
 
 <main id="content" tabindex="-1">
 
-<div class="page-hero">
+<div class="page-hero" data-focus="21.0,52.2">
   <div class="container">
     <div class="kicker">Связь с командой</div>
     <h1>Обращения</h1>
     <p class="lead">Вопрос, баг, жалоба, апелляция, спор двух держав, заявка на ивент или
-      в команду — всё сюда. Темы и вопросы в них те же самые, что и в Discord, и разбирает
+      в команду — все сюда. Темы и вопросы в них те же самые, что и в Discord, и разбирает
       их та же команда. Discord для этого <b>не нужен</b>: с сайта пишут те, кому он
       не подходит.</p>
     <a class="tk-staff-go" id="tkStaffGo" href="admin" hidden>
@@ -94,7 +96,7 @@
     <div class="foot-in">
       <img src="assets/img/logo.png" alt="AEGIS SMP">
       <div class="foot-links">
-        <a href="/#season">Сезон 1936</a>
+        <a href="/#season">Сезон</a>
         <a href="/#join">Как зайти</a>
         <a href="lands">Земли</a>
         <a href="players">Игроки</a>
@@ -115,7 +117,8 @@
 
 <script src="js/config.js"></script>
 <script src="js/api.js?v=20260925"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=1020a"></script>
+<script src="js/chunkmap.js?v=1020a"></script>
 <script src="js/tk-common.js?v=1003M"></script>
 <script src="js/tickets.js?v=1018p"></script>
 </body>

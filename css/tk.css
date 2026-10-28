@@ -1,8 +1,8 @@
 /* AEGIS — обращения: «Мои обращения», переписка, файлы (tickets.html) и пульт
    команды (admin.html). Отдельный файл, чтобы не трогать общие style.css и
-   pages.css. Токены цветов и шрифтов — оттуда же. Вёрстка от ширины телефона. */
+   pages.css. Токены цветов и шрифтов — оттуда же. Верстка от ширины телефона. */
 
-/* ---------------------------------------------------------- кто вошёл */
+/* ---------------------------------------------------------- кто вошел */
 .tk-me {
   display: flex;
   align-items: center;
@@ -946,7 +946,7 @@ html.tk-lb-lock { overflow: hidden; }
 .gv-st.wait { color: var(--gold); background: rgba(250, 212, 107, .12); }
 .gv-st.given { color: #6fd18a; background: rgba(88, 194, 113, .14); }
 .gv-st.revoked { color: #ff8a8a; background: rgba(255, 64, 64, .12); }
-/* учёт техники Sable (03.10.2026): карточка над списком, не липкая */
+/* учет техники Sable (03.10.2026): карточка над списком, не липкая */
 .sb-card { position: static; margin: 0 0 20px; }
 .sb-card .gv-lh { margin: 0; }
 .sb-card .gv-lh .btn { width: auto; }
@@ -995,7 +995,7 @@ html.tk-lb-lock { overflow: hidden; }
   .gv-row .rw-r { grid-column: 2; justify-content: flex-start; }
 }
 
-/* ------------------------------------------------------------ отчёт недели (28.09.2026) */
+/* ------------------------------------------------------------ отчет недели (28.09.2026) */
 .wk-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 18px; }
 .wk-head b { font: 700 18px var(--f-disp); color: var(--ink); }
 .wk-now { font-size: 12.5px; color: var(--gold); }
@@ -1014,7 +1014,7 @@ html.tk-lb-lock { overflow: hidden; }
 .wk-t tbody tr + tr td { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045); }
 .wk-t small { color: var(--steel); }
 .wk-foot { margin-top: 14px; }
-/* Учёт работы штаба: строка раскрывается в раскладку по дням. */
+/* Учет работы штаба: строка раскрывается в раскладку по дням. */
 .wk-t.wk-wide { min-width: 880px; }
 .wk-row { cursor: pointer; }
 .wk-row:hover td, .wk-row.is-open td { background: var(--panel-2); }

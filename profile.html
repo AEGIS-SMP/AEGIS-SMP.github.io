@@ -17,18 +17,20 @@
 <meta property="og:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
+<meta property="og:image:alt" content="AEGIS SMP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Профиль и скин — AEGIS SMP">
 <meta name="twitter:description" content="Поставь свой скин через сайт — клиент из лаунчера покажет его в игре. Лицензия Minecraft для этого не нужна.">
 <meta name="twitter:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
-     кириллические гарнитуры — остальные алфавиты браузер возьмёт сам,
+     кириллические гарнитуры — остальные алфавиты браузер возьмет сам,
      только если они реально понадобятся. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=0925p">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="css/style.css?v=1019r">
+<link rel="stylesheet" href="css/sector.css?v=1020a">
 </head>
 <body>
 <a class="skip-link" href="#content">К содержанию</a>
@@ -38,7 +40,7 @@
     <a class="brand" href="/"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
     <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
     <nav class="topnav" id="topnav" aria-label="Основное меню">
-      <a href="/#season">Сезон 1936</a>
+      <a href="/#season">Сезон</a>
       <a href="/#arsenal">Арсенал</a>
       <a href="/#join">Как зайти</a>
       <a href="lands">Земли</a>
@@ -55,13 +57,13 @@
 
 <main id="content" tabindex="-1">
 
-<div class="page-hero">
+<div class="page-hero" data-focus="19.0,47.5">
   <div class="container">
     <div class="kicker">Профиль игрока</div>
     <h1>Свой скин — <span class="grad-text">в игре</span></h1>
-    <p class="lead">Поставь картинку здесь, и клиент из лаунчера покажет её в игре: тебе,
+    <p class="lead">Поставь картинку здесь, и клиент из лаунчера покажет ее в игре: тебе,
       другим игрокам, в списке на TAB и на головах. Лицензия Minecraft для этого не нужна —
-      скин живёт на сервере AEGIS, а не у Mojang.</p>
+      скин живет на сервере AEGIS, а не у Mojang.</p>
   </div>
 </div>
 
@@ -86,7 +88,7 @@
 
         <!-- Обе подписи ниже относятся к блоку, а не к одному полю, поэтому у них
              нет «for» — связываем через aria-labelledby, как на регистрации. Имя
-             области перетаскивания собирается из трёх кусков в том же порядке, в
+             области перетаскивания собирается из трех кусков в том же порядке, в
              каком их читает глазами зрячий: подпись, строка с файлом (она меняется
              на имя выбранного) и пояснение про размер. -->
         <label id="pDropLbl">Картинка скина</label>
@@ -112,7 +114,7 @@
         <button class="pf-drop-off" type="button" id="pOff">Снять скин и вернуть обычный вид</button>
         <!-- Как на регистрации: строка отвечает на нажатие «Поставить скин», и
              role="status" заставляет браузер прочитать новый текст вслух — иначе
-             читалка молчит, а человек ждёт неизвестно чего. -->
+             читалка молчит, а человек ждет неизвестно чего. -->
         <div class="reg-say" id="pSay" role="status">Введи имя и пароль, выбери картинку.</div>
       </form>
     </div>
@@ -131,12 +133,12 @@
       </div>
 
       <div class="reg-why">
-        <h2>Как скин попадёт в игру</h2>
+        <h2>Как скин попадет в игру</h2>
         <p>Картинка ложится на сервер AEGIS рядом с твоим именем. Клиент из лаунчера
-          спрашивает её сам при заходе на сервер и ставит на игрока — ничего скачивать
+          спрашивает ее сам при заходе на сервер и ставит на игрока — ничего скачивать
           и подкладывать в папки руками не надо.</p>
         <p><b>Новый скин виден со следующего входа.</b> Поменял картинку, пока играешь —
-          выйди из мира и зайди снова, тогда её увидят все.</p>
+          выйди из мира и зайди снова, тогда ее увидят все.</p>
         <p class="reg-note">На других серверах и в одиночке скин не появится: он наш,
           а не мировой. Обычный лицензионный скин от Mojang, если он у тебя есть,
           от этого никуда не денется — просто на AEGIS поверх него встанет этот.</p>
@@ -149,19 +151,19 @@
           <li>png, <b>64×32</b> — старый скин, вторые рука и нога достроятся сами;</li>
           <li>второй слой (шапка, куртка, рукава, штанины) работает как в игре;</li>
           <li>прозрачность на втором слое сохраняется, на самом теле — нет: там она
-            всё равно превратится в дырки, поэтому убираем её сразу.</li>
+            все равно превратится в дырки, поэтому убираем ее сразу.</li>
         </ul>
         <p>Сервер перезаписывает картинку своими руками и всегда в 64×64: так на игроков
-          не попадёт ни анимация, ни файл с чужой начинкой, ни огромный холст.</p>
+          не попадет ни анимация, ни файл с чужой начинкой, ни огромный холст.</p>
       </div>
 
       <div class="reg-why">
         <h2>Где взять скин</h2>
-        <p>Подойдёт любой скин из редакторов и галерей для Minecraft — они отдают ровно
+        <p>Подойдет любой скин из редакторов и галерей для Minecraft — они отдают ровно
           такой же png 64×64. Можно нарисовать самому: сетка 64×64 в любом редакторе,
           где нет размытия при масштабе.</p>
-        <p class="reg-note">Одежда сезона «1936» — дело вкуса, но военная форма и шинели
-          на AEGIS выглядят уместнее скинов из аниме. Знаки и символику запрещённых
+        <p class="reg-note">Одежда — дело вкуса, но военная форма и шинели
+          на AEGIS выглядят уместнее скинов из аниме. Знаки и символику запрещенных
           организаций на скинах не носим: за это снимают скин и выдают наказание.</p>
       </div>
     </div>
@@ -175,7 +177,7 @@
     <div class="foot-in">
       <img src="assets/img/logo.png" alt="AEGIS SMP">
       <div class="foot-links">
-        <a href="/#season">Сезон 1936</a>
+        <a href="/#season">Сезон</a>
         <a href="/#join">Как зайти</a>
         <a href="lands">Земли</a>
         <a href="players">Игроки</a>
@@ -196,7 +198,8 @@
 
 <script src="js/config.js"></script>
 <script src="js/api.js?v=20260925"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=1020a"></script>
+<script src="js/chunkmap.js?v=1020a"></script>
 <script src="js/profile.js"></script>
 </body>
 </html>

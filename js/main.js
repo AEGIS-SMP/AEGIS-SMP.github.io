@@ -8,33 +8,34 @@ if (/\.html$/.test(location.pathname) && history.replaceState) {
   try { history.replaceState(history.state, '', p + location.search + location.hash); } catch (e) {}
 }
 
-/* Страница приёма переводов. Сам адрес лежит в js/config.js вместе со всеми
+/* Страница приема переводов. Сам адрес лежит в js/config.js вместе со всеми
    остальными адресами проекта: переезд на арендный хостинг должен быть
    правкой одного файла, а не поиском ссылок по сайту. */
 const DONATE_URL = (window.AEGIS && window.AEGIS.donate) || '';
 
-/* Сайт выложен публично РАНЬШЕ, чем открыт приём платежей, поэтому кнопку
+/* Сайт выложен публично РАНЬШЕ, чем открыт прием платежей, поэтому кнопку
    «Перейти к оплате» нельзя пускать на недописанный адрес: живая страница
-   с ведущей в никуда кнопкой оплаты хуже честной строки «ещё не открыто».
+   с ведущей в никуда кнопкой оплаты хуже честной строки «еще не открыто».
    Появится настоящий адрес — кнопка включится сама.
-   Признак недописанного — кириллица внутри ссылки: у настоящей её не бывает. */
+   Признак недописанного — кириллица внутри ссылки: у настоящей ее не бывает. */
 const DONATE_READY = /^https:\/\/[\w.-]+\//.test(DONATE_URL) && !/[А-Яа-яЁё]/.test(DONATE_URL);
 
 /* Дата открытия сезона — ЕДИНСТВЕННОЕ место на сайте, где она записана числом.
    17.09.2026 овнер закрыл вилку «12 или 19»: сезон открывается 19 сентября
-   2026 года в 15:00 МСК. Всё остальное на сайте — отсчёт на главной, подписи,
-   ответы вики — считается от этой строки или повторяет её словами.
-   Часовой пояс задан явно (+03:00), иначе у игрока из другого пояса отсчёт
-   показывал бы своё время открытия, а открытие одно на всех.
+   2026 года в 15:00 МСК. Все остальное на сайте — отсчет на главной, подписи,
+   ответы вики — считается от этой строки или повторяет ее словами.
+   Часовой пояс задан явно (+03:00), иначе у игрока из другого пояса отсчет
+   показывал бы свое время открытия, а открытие одно на всех.
 
    18.10.2026: первый вайп сезона «1936» закончился 17 октября, игровой
-   сервер выключен, дата следующего вайпа пока неизвестна. null — значит
-   вместо отсчета на главной стоит плашка «дата пока неизвестна», а темы
-   обращений не ждут никакого числа. Назовут дату — вписать ее сюда так:
-   new Date('ГГГГ-ММ-ДДTЧЧ:ММ:00+03:00'), — и отсчет вернется сам. */
+   сервер выключен. 19.10.2026: новый сезон — карта Европы, ориентировочно
+   30 октября — 18 декабря (SEASON_START ниже), точного часа пока нет.
+   null — значит вместо табло на главной стоит панель «примерно N дней»,
+   а темы обращений не ждут никакого числа. Назовут час — вписать его сюда
+   так: new Date('ГГГГ-ММ-ДДTЧЧ:ММ:00+03:00'), — и табло вернется само. */
 const OPEN_DATE = null;
 
-/* режим съёмки макета (?shot=1) — только для рендера превью */
+/* режим съемки макета (?shot=1) — только для рендера превью */
 if (new URLSearchParams(location.search).has('shot')) {
   document.documentElement.classList.add('shotmode');
 }
@@ -44,12 +45,16 @@ if (new URLSearchParams(location.search).has('shot')) {
    нет, — ни читалке (нет aria-expanded), ни тому, кто промахнулся мимо пункта
    (меню оставалось висеть). Держим состояние в одном месте: класс, словесная
    пометка, Esc и щелчок мимо. Esc возвращает фокус на кнопку — иначе он
-   остаётся на исчезнувшем пункте и следующий Tab начинает страницу сначала. */
+   остается на исчезнувшем пункте и следующий Tab начинает страницу сначала. */
 const burger = document.querySelector('.burger');
 const topnav = document.getElementById('topnav');
 if (burger && topnav) {
+  const bar = document.querySelector('.topbar');
   const setNav = open => {
     topnav.classList.toggle('open', open);
+    /* Прозрачная шапка над первым экраном главной залита, пока меню открыто
+       (для браузеров без :has — css/style.css). */
+    if (bar) bar.classList.toggle('nav-open', open);
     burger.setAttribute('aria-expanded', open ? 'true' : 'false');
   };
   burger.addEventListener('click', () => setNav(!topnav.classList.contains('open')));
@@ -61,8 +66,8 @@ if (burger && topnav) {
     setNav(false);
     burger.focus();
   });
-  /* Щелчок мимо меню закрывает его — но только если он пришёлся вне шапки:
-     иначе нажатие на саму кнопку сначала закроет меню здесь, а потом её
+  /* Щелчок мимо меню закрывает его — но только если он пришелся вне шапки:
+     иначе нажатие на саму кнопку сначала закроет меню здесь, а потом ее
      собственный обработчик откроет обратно. */
   document.addEventListener('click', e => {
     if (!topnav.classList.contains('open')) return;
@@ -71,41 +76,58 @@ if (burger && topnav) {
   });
 }
 
-/* --- обратный отсчёт на главной ---
+/* --- обратный отсчет на главной ---
 
    Раньше до открытия оставалась одна строчка в плашке («12 дней 4 ч»), и
    обновлялась она раз в полминуты. Овнер попросил крупные цифры с днями,
    часами, минутами и секундами — и чтобы они красиво шли.
 
-   Как это устроено. Разметка в index.html пустая: всё, что ниже, строит
+   Как это устроено. Разметка в index.html пустая: все, что ниже, строит
    ячейки само. Причина не в красоте кода — число в разметке рано или поздно
    разошлось бы с настоящей датой, а так его там просто нет.
 
-   Каждая цифра живёт в своей клетке с двумя слоями: текущий и следующий.
+   Каждая цифра живет в своей клетке с двумя слоями: текущий и следующий.
    Когда цифра меняется, текущий уезжает вверх, следующий приходит снизу —
    отсюда ощущение табло, а не прыгающего текста. Меняется при этом одна
-   клетка, а не всё число: 59 → 00 крутит обе, 58 → 59 только правую.
+   клетка, а не все число: 59 → 00 крутит обе, 58 → 59 только правую.
 
    Секунда считается не «плюс один тик», а от самой даты: вкладка в фоне
-   тормозит таймеры, и счётчик, который складывает секунды сам, за ночь
-   отстаёт на минуты. Здесь же каждый тик — это разность с OPEN_DATE, а
-   возвращение на вкладку сразу пересчитывает её заново. */
+   тормозит таймеры, и счетчик, который складывает секунды сам, за ночь
+   отстает на минуты. Здесь же каждый тик — это разность с OPEN_DATE, а
+   возвращение на вкладку сразу пересчитывает ее заново. */
 const cdEl = document.getElementById('cdown');
 
-/* Даты нет — отсчитывать нечего. Нули на табло читались бы как поломка,
-   поэтому вместо табло одна плашка словами и куда смотреть за новостями. */
+/* Сроки нового сезона (овнер, 19.10.2026): ориентировочно 30 октября —
+   18 декабря. Это не дата открытия: точного часа нет, табло по ним не
+   строится. По ним живут панель ниже и таймлайн сезона на главной. */
+const SEASON_START = new Date('2026-10-30T00:00:00+03:00');
+const SEASON_END = new Date('2026-12-18T00:00:00+03:00');
+
+/* Точного часа нет — отсчитывать по секундам нечего: нули на табло читались
+   бы как поломка. Вместо табло одна панель: сколько примерно дней осталось,
+   сроки сезона и куда смотреть за точным часом. */
 if (cdEl && !OPEN_DATE) {
   const tg = 'https://t.me/aegis_smp';
   const ds = (window.AEGIS && window.AEGIS.discord) || '';
+  const days = Math.ceil((SEASON_START - Date.now()) / 864e5);
+  const word = n => {
+    const a = n % 100, b = n % 10;
+    return a > 10 && a < 20 ? 'дней' : b === 1 ? 'день' : b > 1 && b < 5 ? 'дня' : 'дней';
+  };
   cdEl.removeAttribute('role');
   cdEl.innerHTML =
-    '<div class="cd-pause">' +
-      '<div class="cd-pause-h">Следующий вайп — дата пока неизвестна</div>' +
-      '<p>Первый вайп сезона «1936» завершился 17 октября 2026 года. Сервер на перерыве: ' +
-        'дату следующего вайпа объявим в ' +
-        (ds ? '<a href="' + ds + '" target="_blank" rel="noopener">Discord</a>' : 'Discord') +
-        ' и <a href="' + tg + '" target="_blank" rel="noopener">Telegram</a>. ' +
-        'А пока в лаунчере можно поиграть со сборкой в одиночном мире.</p>' +
+    '<div class="ss">' +
+      '<div class="ss-big">' + (days > 0
+        ? '<b>~' + days + '</b><span>' + word(days) + ' до старта<br><i>ориентировочно</i></span>'
+        : '<b>Скоро</b><span>старт нового сезона<br><i>точный час объявим</i></span>') +
+      '</div>' +
+      '<div class="ss-meta">' +
+        '<div class="ss-dates">Новый сезон: <b>~30 октября — 18 декабря</b></div>' +
+        '<p>Точный час старта объявим в ' +
+          (ds ? '<a href="' + ds + '" target="_blank" rel="noopener">Discord</a>' : 'Discord') +
+          ' и <a href="' + tg + '" target="_blank" rel="noopener">Telegram</a>. ' +
+          'Пока сервера нет, лаунчер запускает сборку в одиночном мире.</p>' +
+      '</div>' +
     '</div>';
 }
 
@@ -118,7 +140,7 @@ if (cdEl && OPEN_DATE) {
     return many;
   };
 
-  /* Бережём тех, кому от движения плохо: системная настройка «меньше
+  /* Бережем тех, кому от движения плохо: системная настройка «меньше
      анимации» выключает и прокрутку цифр, и появление ячеек. */
   const CALM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -130,7 +152,7 @@ if (cdEl && OPEN_DATE) {
   ];
 
   /* Табло целиком спрятано от читалок: диктовать «5 8 3 2» посекундно нельзя.
-     Вместо него читалка получает одну живую строку словами (.cd-say) — её
+     Вместо него читалка получает одну живую строку словами (.cd-say) — ее
      обновляем раз в минуту, а не каждую секунду. */
   const row = document.createElement('div');
   row.className = 'cd-row';
@@ -242,7 +264,7 @@ if (cdEl && OPEN_DATE) {
    Нарезку мира меняли уже трижды (1076 -> 1053 -> 495 провинций), и каждый
    раз числа на сайте оставались старыми, потому что лежали прямо в тексте.
    Теперь они живут в data/world.json (его собирает site\tools\world_build.py
-   из данных карты), а в разметке остаётся последнее известное значение —
+   из данных карты), а в разметке остается последнее известное значение —
    оно и показывается, если файл не догрузился.
 
    data-world="countries"                       — подставить число
@@ -262,7 +284,7 @@ if (cdEl && OPEN_DATE) {
     ? String(n)
     : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-  /* Плавный счёт от нуля. Число дорисовывается ровно до целевого — на
+  /* Плавный счет от нуля. Число дорисовывается ровно до целевого — на
      последнем кадре присваиваем его напрямую, чтобы округление не оставило
      «494» вместо «495». */
   const runUp = (el, to) => {
@@ -285,7 +307,7 @@ if (cdEl && OPEN_DATE) {
       if (typeof v !== 'number') return;
       if (!el.hasAttribute('data-count') || still) { el.textContent = spaced(v); return; }
       /* Считаем только когда полосу видно: иначе анимация проходит впустую,
-         пока человек ещё листает шапку. */
+         пока человек еще листает шапку. */
       el.textContent = '0';
       const once = new IntersectionObserver(es => {
         for (const e of es) {
@@ -308,11 +330,149 @@ if (cdEl && OPEN_DATE) {
   }
 }
 
+/* «Меньше движения» и режим съемки: без автосмены вкладок и без набегания. */
+const STILL = matchMedia('(prefers-reduced-motion: reduce)').matches ||
+  document.documentElement.classList.contains('shotmode');
+
+/* --- арсенал на главной: вкладки ---
+   В разметке шесть обычных карточек (без JS — сетка). Здесь из них же
+   строим список слева (иконка + заголовок) и показываем по одной карточке.
+   Пока человек ничего не выбрал, вкладки сменяются сами: полоса под
+   активной вкладкой — это и есть таймер, по ее концу (animationend)
+   включается следующая. Мышь над блоком или фокус внутри — пауза; блок
+   ушел с экрана — тоже пауза. Выбрал сам — автосмена выключается насовсем.
+   Клавиатура — как у обычных вкладок: стрелки, Home, End. */
+{
+  const ars = document.querySelector('[data-ars]');
+  const box = ars && ars.querySelector('.ars-panels');
+  const cards = box ? [...box.children].filter(c => c.classList.contains('card')) : [];
+  if (cards.length > 1) {
+    const two = n => String(n).padStart(2, '0');
+    const list = document.createElement('div');
+    list.className = 'ars-list';
+    list.setAttribute('role', 'tablist');
+    list.setAttribute('aria-label', 'Механики мода AegisLive');
+    const tabs = cards.map((card, i) => {
+      const id = 'ars-tab-' + (i + 1);
+      const h = card.querySelector('h3');
+      const icon = card.querySelector('.icon-plate img');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ars-tab';
+      b.id = id;
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-controls', id + '-p');
+      if (icon) {
+        const im = icon.cloneNode(false);
+        im.alt = '';
+        b.appendChild(im);
+      }
+      const t = document.createElement('span');
+      t.textContent = h ? h.textContent : 'Механика ' + (i + 1);
+      b.appendChild(t);
+      const barEl = document.createElement('i');
+      barEl.className = 'ars-bar';
+      barEl.setAttribute('aria-hidden', 'true');
+      b.appendChild(barEl);
+      list.appendChild(b);
+
+      card.id = id + '-p';
+      card.setAttribute('role', 'tabpanel');
+      card.setAttribute('aria-labelledby', id);
+      /* Появляется весь блок разом, а не каждая карточка: скрытые
+         карточки лежат стопкой в одной клетке сетки. */
+      card.classList.remove('reveal');
+      const n = document.createElement('div');
+      n.className = 'ars-n';
+      n.setAttribute('aria-hidden', 'true');
+      n.innerHTML = '<b>' + two(i + 1) + '</b> / ' + two(cards.length);
+      card.appendChild(n);
+      return b;
+    });
+
+    let cur = 0;
+    const select = (i, focus) => {
+      cur = (i + tabs.length) % tabs.length;
+      tabs.forEach((b, k) => {
+        const on = k === cur;
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+        b.tabIndex = on ? 0 : -1;
+        cards[k].classList.toggle('is-on', on);
+      });
+      if (focus) tabs[cur].focus();
+    };
+    const stopAuto = () => ars.classList.remove('is-auto');
+
+    list.addEventListener('click', e => {
+      const b = e.target.closest('.ars-tab');
+      if (!b) return;
+      stopAuto();
+      select(tabs.indexOf(b));
+    });
+    list.addEventListener('keydown', e => {
+      const k = e.key;
+      // от вкладки под фокусом, а не от выбранной: автосмена могла уйти вперед
+      const at = tabs.indexOf(e.target.closest('.ars-tab'));
+      const from = at < 0 ? cur : at;
+      let to = null;
+      if (k === 'ArrowDown' || k === 'ArrowRight') to = from + 1;
+      else if (k === 'ArrowUp' || k === 'ArrowLeft') to = from - 1;
+      else if (k === 'Home') to = 0;
+      else if (k === 'End') to = tabs.length - 1;
+      if (to === null) return;
+      e.preventDefault();
+      stopAuto();
+      select(to, true);
+    });
+    list.addEventListener('animationend', e => {
+      if (e.animationName !== 'ars-bar' || !ars.classList.contains('is-auto')) return;
+      select(cur + 1);
+    });
+    ars.addEventListener('focusin', () => ars.classList.add('is-paused'));
+    ars.addEventListener('focusout', e => {
+      if (!ars.contains(e.relatedTarget)) ars.classList.remove('is-paused');
+    });
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(es => {
+        for (const e of es) ars.classList.toggle('is-off', !e.isIntersecting);
+      }).observe(ars);
+    }
+
+    ars.insertBefore(list, box);
+    ars.classList.add('js-tabs', 'reveal');
+    select(0);
+    if (!STILL) ars.classList.add('is-auto');
+  }
+}
+
+/* --- оферта: какой раздел сейчас читают --- */
+/* Ссылка оглавления текущего раздела подсвечивается. Текущий — последний,
+   чей верх уже ушел выше линии чуть ниже шапки; у самого низа — последний. */
+{
+  const toc = document.querySelectorAll('.offer-toc a[href^="#"]');
+  const secs = [...toc].map(a => document.getElementById(a.getAttribute('href').slice(1)));
+  if (toc.length && secs.every(Boolean)) {
+    let on = -1, raf = 0;
+    const spy = () => {
+      raf = 0;
+      let i = 0;
+      secs.forEach((s, k) => { if (s.getBoundingClientRect().top < 140) i = k; });
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) i = secs.length - 1;
+      if (i === on) return;
+      if (on >= 0) toc[on].classList.remove('on');
+      toc[i].classList.add('on');
+      on = i;
+    };
+    addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(spy); }, { passive: true });
+    spy();
+  }
+}
+
 /* --- появление блоков при скролле --- */
 /* Блок с классом reveal прозрачен, пока к нему не добавят «in». Если
    наблюдателя в браузере нет, конструктор бросает ошибку — и на ней умирал бы
    весь main.js: вместе с анимацией отвалились бы меню-бутерброд и остальное, а
-   страница осталась бы пустой. Поэтому запасной путь — показать всё сразу. */
+   страница осталась бы пустой. Поэтому запасной путь — показать все сразу. */
 let io;
 try {
   io = new IntersectionObserver(entries => {
@@ -327,13 +487,137 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 /* Карточки, нарисованные скриптом (киты в лавке), появляются уже после этого
    обхода — наблюдатель о них не знает и они остались бы прозрачными навсегда.
-   shop.js зовёт этот хук на каждый новый блок. */
+   shop.js зовет этот хук на каждый новый блок. */
 window.aegisReveal = el => io.observe(el);
+
+/* --- таймлайн сезона на главной: что пройдено, что идет сейчас ---
+   В разметке состояние на день сборки (перерыв). Пункт «Перерыв» кончается
+   стартом; старт — OPEN_DATE, если час уже назван, иначе ориентировочная
+   SEASON_START. После финала пройдены все пункты. */
+{
+  const items = [...document.querySelectorAll('.tl li')];
+  if (items.length === 4) {
+    const now = Date.now();
+    const start = OPEN_DATE || SEASON_START;
+    const stage = now < start ? 1 : now < SEASON_END ? 2 : 4;
+    items.forEach((li, i) => {
+      li.classList.toggle('is-done', i < stage);
+      li.classList.toggle('is-now', i === stage);
+    });
+    if (stage > 1) items[1].querySelector('.tl-d').textContent = 'Октябрь';
+    if (OPEN_DATE) {
+      const p = n => String(n).padStart(2, '0');
+      /* Дата и час — по Москве, как объявляем, а не по часам игрока. */
+      const msk = new Date(OPEN_DATE.getTime() + 3 * 3600e3);
+      items[2].querySelector('.tl-d').textContent = p(msk.getUTCDate()) + '.' + p(msk.getUTCMonth() + 1);
+      items[2].querySelector('.tl-t').textContent =
+        'В ' + p(msk.getUTCHours()) + ':' + p(msk.getUTCMinutes()) + ' по Москве.';
+    }
+  }
+}
+
+/* --- прокрутка: шапка, рельс разделов, шаги «Как зайти» ---
+   Все считается раз в кадр, а не на каждое событие прокрутки.
+   - Полоса прочитанного по кромке шапки (--sp, css/style.css) — на всех страницах.
+   - Главная: над первым экраном шапка прозрачная (.is-top), пункты меню и
+     точки рельса слева подсвечивают раздел, который сейчас на экране,
+     рельс появляется, когда первый экран ушел вверх.
+   - «Как зайти»: рельс шагов заполняется до середины экрана (--jp), точки
+     пройденных шагов загораются (.passed). */
+{
+  const bar = document.querySelector('.topbar');
+  const hero = document.querySelector('.hero-map');
+  const rail = document.querySelector('.rail');
+  const spyLinks = [...document.querySelectorAll('.topnav a[href^="#"], .rail a[href^="#"]')];
+  const spyIds = [...new Set(spyLinks.map(a => a.hash.slice(1)))];
+  /* В порядке страницы, а не ссылок: в шапке «Карта» (#archive) стоит раньше,
+     чем «Новости» в рельсе, и без сортировки на архиве горели бы новости. */
+  const spySecs = spyIds.map(id => document.getElementById(id)).filter(Boolean)
+    .sort((a, b) => a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
+  const jSteps = document.querySelector('.join-steps');
+  const jItems = jSteps ? [...jSteps.querySelectorAll('.step')] : [];
+  const root = document.documentElement;
+
+  let curId = null;
+  const update = () => {
+    const y = scrollY, vh = innerHeight;
+    const max = root.scrollHeight - vh;
+    if (bar) bar.style.setProperty('--sp', max > 0 ? Math.min(1, Math.max(0, y / max)).toFixed(4) : '0');
+    if (bar && hero) bar.classList.toggle('is-top', y < 8);
+    if (rail && hero) rail.classList.toggle('on', hero.getBoundingClientRect().bottom < vh * .4);
+
+    if (spySecs.length) {
+      let id = null;
+      for (const s of spySecs) if (s.getBoundingClientRect().top < vh * .35) id = s.id;
+      /* Долистали до самого низа — последний раздел, даже если его верх
+         не дошел до отметки. */
+      if (max > 0 && y >= max - 2 && spySecs[spySecs.length - 1].getBoundingClientRect().top < vh) {
+        id = spySecs[spySecs.length - 1].id;
+      }
+      if (id !== curId) {
+        curId = id;
+        spyLinks.forEach(a => {
+          const on = a.hash === '#' + id;
+          a.classList.toggle('active', on);
+          if (on) a.setAttribute('aria-current', 'location');
+          else a.removeAttribute('aria-current');
+        });
+      }
+    }
+
+    if (jSteps && jItems.length) {
+      const r = jSteps.getBoundingClientRect();
+      const line = vh * .55;
+      const len = r.height - 68;
+      const k = len > 0 ? Math.min(1, Math.max(0, (line - r.top - 34) / len)) : 0;
+      jSteps.style.setProperty('--jp', k.toFixed(4));
+      jItems.forEach(s => s.classList.toggle('passed', s.getBoundingClientRect().top + 42 <= line));
+    }
+  };
+
+  let raf = 0;
+  const onScroll = () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = 0; update(); });
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  /* Высота страницы растет после загрузки (новости, картинки) — полоса
+     прочитанного должна пересчитаться и без прокрутки. */
+  addEventListener('load', onScroll);
+  update();
+}
+
+/* --- фонарик на карточках ---
+   Под мышью по карточке идет мягкое теплое пятно (css/sector.css, класс
+   fl-on). С 20.10.2026 — на всех страницах. Карточку со своей картинкой
+   фоном (новость с обложкой, событие) пятно бы затерло, поэтому при первом
+   наведении смотрим ее фон: есть картинка — карточку не трогаем. Пишем
+   только координаты; на телефоне и с пером ничего не делаем. */
+if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  const FLASH = '.card, .tile, .live-card, .pl-card, .fd-card, .tk-card, .reg-why, .lv-cta';
+  const flashOk = new WeakMap();
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || !e.target.closest) return;
+    const c = e.target.closest(FLASH);
+    if (!c) return;
+    let ok = flashOk.get(c);
+    if (ok === undefined) {
+      ok = getComputedStyle(c).backgroundImage === 'none';
+      flashOk.set(c, ok);
+      if (ok) c.classList.add('fl-on');
+    }
+    if (!ok) return;
+    const r = c.getBoundingClientRect();
+    c.style.setProperty('--mx', Math.round(e.clientX - r.left) + 'px');
+    c.style.setProperty('--my', Math.round(e.clientY - r.top) + 'px');
+  }, { passive: true });
+}
 
 /* --- горизонтальные полосы: видно, что их можно листать ---
    Вкладки лавки и сетка боевого пропуска на узком экране обрезаются по краю,
    и человек не догадывается, что справа есть продолжение. Вешаем затухание у
-   того края, за которым ещё осталось содержимое: затухание пропало — доехали.
+   того края, за которым еще осталось содержимое: затухание пропало — доехали.
    Ширину пересчитываем наблюдателем, потому что сетку пропуска рисует shop.js
    уже после этого обхода. */
 {
@@ -348,7 +632,7 @@ window.aegisReveal = el => io.observe(el);
     addEventListener('resize', upd);
     if (window.ResizeObserver) new ResizeObserver(upd).observe(el);
     /* Содержимое полосы может появиться позже (сетку пропуска рисует shop.js,
-       причём заменяя узел целиком) — следим за самим деревом, а не за узлом. */
+       причем заменяя узел целиком) — следим за самим деревом, а не за узлом. */
     if (window.MutationObserver) {
       new MutationObserver(upd).observe(el, { childList: true, subtree: true });
     }
@@ -365,8 +649,8 @@ if (tabs.length) {
 
   /* Подсветка бесполезна, если сама вкладка уехала за край полосы: на узком
      экране видно «Цены… Пропуск», а подсвечена «Амнистия» где-то справа за
-     краем — полоса перестаёт отвечать на вопрос «где я сейчас». Подтягиваем
-     её к активной вкладке, когда та меняется.
+     краем — полоса перестает отвечать на вопрос «где я сейчас». Подтягиваем
+     ее к активной вкладке, когда та меняется.
      Двигаем именно полосу, а не страницу: scrollIntoView утащил бы заодно и
      вертикаль, то есть отобрал бы прокрутку у человека прямо под пальцем.
      Если полоса не листается (широкий экран, вкладки в две строки) — выходим
@@ -386,18 +670,18 @@ if (tabs.length) {
       if (s.getBoundingClientRect().top < 180) cur = s;
     }
     tabs.forEach(a => a.classList.toggle('active', a.hash === '#' + cur.id));
-    /* Только на смене раздела: иначе полоса дёргалась бы обратно каждый раз,
-       когда её отлистали рукой. */
+    /* Только на смене раздела: иначе полоса дергалась бы обратно каждый раз,
+       когда ее отлистали рукой. */
     if (cur !== was) {
       was = cur;
       keep([...tabs].find(a => a.hash === '#' + cur.id));
     }
   };
-  /* Считаем раз в кадр, а не на каждое событие прокрутки. Колесо шлёт событий
+  /* Считаем раз в кадр, а не на каждое событие прокрутки. Колесо шлет событий
      больше, чем браузер успевает рисовать кадров, а setActive читает положение
      всех пятнадцати разделов и тут же пишет прокрутку полосы — то есть посреди
-     прокрутки заставляет браузер пересчитать вёрстку заново. Полоса от этого
-     подрагивала. Кадр — ровно та частота, с которой её всё равно рисуют. */
+     прокрутки заставляет браузер пересчитать верстку заново. Полоса от этого
+     подрагивала. Кадр — ровно та частота, с которой ее все равно рисуют. */
   let tick = 0;
   const onScroll = () => {
     if (tick) return;
@@ -410,15 +694,15 @@ if (tabs.length) {
 /* --- новости с главной ---
    В index.html шесть карточек лежат прямо в разметке: они видны сразу, до
    всякого скрипта, и остаются, если ниже ничего не пришло. Если пришло —
-   заменяем их. Источник: служба сервера (её правят из админ-панели), а пока
+   заменяем их. Источник: служба сервера (ее правят из админ-панели), а пока
    службы нет — data/news.json. */
 {
   const grid = document.querySelector('.news-grid');
 
-  /* Метка «Свежее» на новости полуторамесячной давности — это враньё в глаза:
-     человек видит её первой и делает вывод, что проект стоит. Показываем метку
-     только две недели со дня новости, дальше остаётся просто дата.
-     Дата приходит строкой «ДД.ММ.ГГГГ» — new Date() её не понимает, разбираем
+  /* Метка «Свежее» на новости полуторамесячной давности — это вранье в глаза:
+     человек видит ее первой и делает вывод, что проект стоит. Показываем метку
+     только две недели со дня новости, дальше остается просто дата.
+     Дата приходит строкой «ДД.ММ.ГГГГ» — new Date() ее не понимает, разбираем
      сами; непонятную дату считаем несвежей, чтобы метка не висела вечно. */
   const FRESH_DAYS = 14;
   const isFresh = s => {
@@ -436,7 +720,7 @@ if (tabs.length) {
   });
 
   /* Картинка новости — та же, что ушла с постом в Discord и Telegram (поле
-     image, путь внутри сайта). Берём только свою картинку из assets/img/news:
+     image, путь внутри сайта). Берем только свою картинку из assets/img/news:
      список новостей может прийти со службы, и чужой адрес сюда не пролезет. */
   const newsImg = (n, A) => {
     const src = String(n.image || '');
@@ -477,7 +761,7 @@ if (tabs.length) {
 
 /* Модалка покупки, каталог китов и переключатели сроков переехали в js/shop.js:
    покупка одна (рубли за товар), но к ней цепляются заказ на сервере, опрос
-   его статуса и пересчёт валюты — держать это вместе с общим скриптом главной
+   его статуса и пересчет валюты — держать это вместе с общим скриптом главной
    было незачем. */
 
 /* Скачивание лаунчера (#download): кнопку своей системы делаем основной и

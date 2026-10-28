@@ -1,0 +1,410 @@
+/* AEGIS SMP — общий новый вид сайта («сектор», 20.10.2026).
+
+   Подключается на всех страницах ПОСЛЕДНИМ стилем (после style.css,
+   pages.css и стилей раздела), поэтому здесь можно поправить общее,
+   не переписывая старые файлы. Экзамен (exam.html) его не подключает.
+
+   Идея: у каждой внутренней страницы своя шапка-«сектор» — живая мозаика
+   Европы из настоящих чанков (js/chunkmap.js вставляет холст в .page-hero
+   и ставит свою точку страницы из data-focus), в углу бегут координаты
+   под фонарем, по нижнему краю идет шкала, и метка на ней следует за
+   фонарем. Тот же квадрат клетки повторяется в метке над заголовком,
+   в плитках, пустых состояниях и загрузке.
+
+   Правила сайта прежние: заливки без окантовок, без стекла и свечения,
+   Montserrat + Inter, фокус виден, «меньше движения» гасит анимацию,
+   ?shot=1 показывает все сразу. */
+
+/* ================= переход между страницами =================
+   Старая страница быстро гаснет, новая поднимается на 12 px. Шапка стоит
+   (view-transition-name в style.css). Только без «меньше движения». */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) { animation: sc-vt-out .18s ease both; }
+  ::view-transition-new(root) { animation: sc-vt-in .42s cubic-bezier(.22, .61, .36, 1) both; }
+}
+@keyframes sc-vt-out { to { opacity: 0; } }
+@keyframes sc-vt-in { from { opacity: 0; transform: translateY(12px); } }
+
+/* ================= метка над заголовком =================
+   Была капсом в разрядку — теперь обычной строкой с квадратом клетки. */
+.kicker {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  text-transform: none;
+}
+.kicker::before {
+  content: '';
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 11px;
+  border-radius: 2px;
+  background: var(--grad);
+  vertical-align: .04em;
+}
+
+/* ================= шапка внутренних страниц ================= */
+
+.page-hero {
+  overflow: hidden;
+  padding: 138px 0 86px;
+}
+.page-hero .hero-mosaic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  display: block;
+}
+/* С JS мозаику рисует холст; картинка-подложка из style.css нужна только
+   без JS и если europe.png не загрузилась (.mosaic-off) — иначе она бы
+   мелькнула до первого кадра. Теплое пятно остается под холстом. */
+.js .page-hero:not(.mosaic-off):not([data-mosaic-skip])::before {
+  background: radial-gradient(46% 78% at 74% 50%, rgba(245, 134, 32, .1), transparent 72%);
+}
+.page-hero.mosaic-off .hero-mosaic { display: none; }
+.page-hero::after {
+  background:
+    linear-gradient(to bottom, rgba(14, 14, 16, .7), rgba(14, 14, 16, 0) 130px),
+    linear-gradient(to top, var(--bg) 0%, rgba(14, 14, 16, 0) 42%),
+    linear-gradient(90deg, var(--bg) 10%, rgba(14, 14, 16, .78) 44%, rgba(14, 14, 16, .16) 78%, rgba(14, 14, 16, .06));
+}
+.page-hero .container { position: relative; }
+.page-hero h1 { letter-spacing: -.01em; line-height: 1.04; }
+
+/* Координаты места под фонарем — справа внизу, над шкалой. */
+.ph-hud {
+  position: absolute;
+  right: max(24px, calc((100% - 1200px) / 2 + 24px));
+  bottom: 26px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--f-text);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: #c9c5bd;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .6s ease .5s;
+}
+.ph-hud::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--grad);
+}
+.ph-hud span { min-width: 25ch; }
+.page-hero.mosaic-on .ph-hud { opacity: 1; }
+/* В лавке справа в шапке стоит персонаж — координаты ушли бы под него. */
+.page-hero:has(.mc-stage) .ph-hud { display: none; }
+
+/* Шкала по нижнему краю: мелкое деление — 12 px, крупное — каждые 60.
+   Метка (i) — короткий отрезок фирменного градиента, его сдвигает
+   chunkmap.js вслед за фонарем. */
+.ph-edge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 9px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(138, 136, 143, .34) 0 1px, transparent 1px 60px) 0 100% / 100% 9px no-repeat,
+    repeating-linear-gradient(90deg, rgba(138, 136, 143, .16) 0 1px, transparent 1px 12px) 0 100% / 100% 4px no-repeat;
+}
+.ph-edge i {
+  position: absolute;
+  left: -36px;
+  bottom: 0;
+  width: 72px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--grad-h);
+  opacity: 0;
+  transition: opacity .6s ease .4s;
+  will-change: transform;
+}
+.page-hero.mosaic-on .ph-edge i { opacity: 1; }
+
+/* Текст шапки входит по строкам — как на главной. */
+@keyframes sc-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+.js .page-hero .container > * { animation: sc-in .7s cubic-bezier(.22, .61, .36, 1) both; }
+.js .page-hero .container > :nth-child(2) { animation-delay: .07s; }
+.js .page-hero .container > :nth-child(3) { animation-delay: .14s; }
+.js .page-hero .container > :nth-child(4) { animation-delay: .21s; }
+
+/* Служебная шапка (управление, вики) — ниже, но с той же мозаикой. */
+.page-hero.short { padding: 116px 0 52px; }
+.page-hero.short::before { opacity: 1; }
+
+@media (max-width: 1100px) {
+  .ph-hud { display: none; }
+}
+@media (max-width: 760px) {
+  .page-hero { padding: 112px 0 58px; }
+  .page-hero.short { padding: 100px 0 42px; }
+  /* На телефоне заголовок во всю ширину — мозаика под ним приглушена. */
+  .page-hero::after {
+    background:
+      linear-gradient(to bottom, rgba(14, 14, 16, .7), rgba(14, 14, 16, 0) 110px),
+      linear-gradient(to top, var(--bg) 4%, rgba(14, 14, 16, .74) 55%, rgba(14, 14, 16, .5));
+  }
+  .js .page-hero:not(.mosaic-off):not([data-mosaic-skip])::before { opacity: 1; }
+}
+
+/* ================= фонарик на карточках =================
+   js/main.js ставит класс fl-on карточкам с ровной заливкой и пишет
+   координаты указателя; на телефоне класса не будет. */
+.fl-on:hover {
+  background-image: radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px), rgba(245, 134, 32, .085), transparent 60%);
+}
+
+/* ================= поля ввода =================
+   Вместо обводки при фокусе — линия фирменного градиента по нижнему краю,
+   она вытягивается слева направо. Фон поля чуть светлеет. Списки (select)
+   не трогаем: у них своя стрелка картинкой. */
+.search input,
+.field input:not([type=checkbox]):not([type=radio]),
+.field textarea,
+.reg-form input[type="text"],
+.reg-form input[type="password"],
+.pl-find input,
+.fd-form textarea,
+.gv-find input,
+.gv-f input,
+.gv-f textarea,
+.gv-cr input,
+.modal input {
+  background-image: linear-gradient(90deg, var(--or), var(--gold-hi));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 2px;
+  transition: background-size .4s cubic-bezier(.22, .61, .36, 1), background-color .18s ease, box-shadow .18s ease;
+}
+.search input:focus,
+.field input:not([type=checkbox]):not([type=radio]):focus,
+.field textarea:focus,
+.reg-form input[type="text"]:focus,
+.reg-form input[type="password"]:focus,
+.pl-find input:focus,
+.fd-form textarea:focus,
+.gv-find input:focus,
+.gv-f input:focus,
+.gv-f textarea:focus,
+.gv-cr input:focus,
+.modal input:focus {
+  background-color: #26252b;
+  background-image: linear-gradient(90deg, var(--or), var(--gold-hi));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  box-shadow: none;
+}
+.field select:focus { box-shadow: inset 0 -2px 0 var(--or); }
+/* У этих полей при фокусе золотела рамка — теперь вместо нее линия снизу,
+   рамка остается как в покое. Красная рамка ошибки суммы (.bad) не трогается. */
+.pl-find input:focus,
+.fd-form textarea:focus { border-color: transparent; }
+.gv-find input:focus,
+.gv-f input:focus,
+.gv-f textarea:focus,
+.gv-cr input:not(.bad):focus { border-color: rgba(255, 255, 255, .07); }
+/* Ошибка — та же линия, только красная и сразу во всю ширину. */
+.field.bad input:not([type=checkbox]):not([type=radio]),
+.field.bad textarea,
+.field.bad input:not([type=checkbox]):not([type=radio]):focus,
+.field.bad textarea:focus {
+  background-image: linear-gradient(90deg, #FF4040, #FF8A8A);
+  background-size: 100% 2px;
+  box-shadow: none;
+}
+
+/* ================= плитки чисел =================
+   В углу плитки — квадрат 3×3 клетки, как на карте; при наведении
+   разгорается. Подпись над числом — обычной строкой, без капса. */
+.tile { position: relative; }
+.tile::after {
+  content: '';
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: rgba(245, 134, 32, .55);
+  box-shadow:
+    7px 0 0 rgba(138, 136, 143, .26), 14px 0 0 rgba(250, 212, 107, .4),
+    0 7px 0 rgba(138, 136, 143, .26), 7px 7px 0 rgba(245, 134, 32, .32), 14px 7px 0 rgba(138, 136, 143, .26),
+    0 14px 0 rgba(138, 136, 143, .18), 7px 14px 0 rgba(138, 136, 143, .26), 14px 14px 0 rgba(245, 134, 32, .45);
+  opacity: .7;
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+.tile:hover::after { opacity: 1; }
+.tile .t-k {
+  font-size: 13px;
+  letter-spacing: .01em;
+  text-transform: none;
+  padding-right: 30px;
+}
+
+/* ================= подписи разделов =================
+   Мелкие подписи над списками (вики, обращения, кабинет) были капсом
+   в разрядку — теперь обычной строкой, как метка над заголовком. */
+.doc-nav .dn-t,
+.doc-toc .dn-t,
+.duty-cols h6,
+.tk-sc h3,
+.cab-nav .cn-t {
+  font-size: 13px;
+  letter-spacing: .01em;
+  text-transform: none;
+}
+.pill.live { letter-spacing: .02em; text-transform: none; font-size: 12px; }
+
+/* ================= загрузка и пустые состояния =================
+   Три точки загрузки — квадраты клетки в градиенте. Над пустым состоянием
+   стоит такой же квадрат 3×3, только гаснущий. */
+.loading i {
+  border-radius: 2px;
+  background: var(--grad);
+}
+.empty::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 0 auto 30px;
+  transform: translateX(-8px);
+  border-radius: 1px;
+  background: rgba(138, 136, 143, .4);
+  box-shadow:
+    8px 0 0 rgba(138, 136, 143, .22), 16px 0 0 rgba(138, 136, 143, .4),
+    0 8px 0 rgba(138, 136, 143, .22), 8px 8px 0 var(--or), 16px 8px 0 rgba(138, 136, 143, .22),
+    0 16px 0 rgba(138, 136, 143, .4), 8px 16px 0 rgba(138, 136, 143, .22), 16px 16px 0 rgba(138, 136, 143, .4);
+}
+
+/* ================= крошки ================= */
+.crumbs { font-weight: 600; }
+.crumbs span { opacity: 1; color: transparent; position: relative; width: 6px; }
+.crumbs span::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: -2px;
+  border-radius: 1px;
+  background: var(--or);
+  opacity: .7;
+}
+
+/* ================= вкладки-фильтры =================
+   Выбранная вкладка — градиент, как и была; при смене она «щелкает»
+   короткой пружиной, остальные при наведении чуть приподнимаются. */
+.live-tabs button { transition: background .15s ease, color .15s ease, transform .2s ease; }
+.live-tabs button:hover:not(.on) { transform: translateY(-1px); }
+.live-tabs button.on { animation: sc-tab .32s cubic-bezier(.3, 1.5, .5, 1); }
+@keyframes sc-tab { from { transform: scale(.94); } }
+
+/* ================= оферта: где я в документе ================= */
+.offer-toc a.on { color: var(--gold); }
+.offer-toc li:has(a.on)::marker { color: var(--gold); }
+
+/* ================= подвал =================
+   Справа в подвале — край той же мозаики Европы (картинкой, без холста),
+   он уходит в темноту к ссылкам. Сверху — шкала, как у шапки страницы.
+   Ссылки — ровной сеткой, а не строкой в разнобой. */
+footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 62px 0 42px;
+}
+footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url('../assets/img/mosaic.png') calc(100% + 560px) 38% / auto no-repeat;
+  opacity: .55;
+  -webkit-mask-image: linear-gradient(90deg, transparent 38%, #000 88%);
+  mask-image: linear-gradient(90deg, transparent 38%, #000 88%);
+}
+footer::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 9px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(138, 136, 143, .3) 0 1px, transparent 1px 60px) 0 0 / 100% 9px no-repeat,
+    repeating-linear-gradient(90deg, rgba(138, 136, 143, .14) 0 1px, transparent 1px 12px) 0 0 / 100% 4px no-repeat;
+}
+.foot-in { align-items: flex-start; }
+.foot-links {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 12px 44px;
+}
+.foot-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  transition: color .15s ease;
+}
+.foot-links a::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: var(--steel);
+  opacity: .5;
+  transition: background .15s ease, opacity .15s ease;
+}
+.foot-links a:hover::before { background: var(--or); opacity: 1; }
+@media (max-width: 760px) {
+  footer { padding: 50px 0 34px; }
+  footer::before { background-position: calc(100% + 760px) 30%; opacity: .4; }
+  .foot-links {
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 14px;
+  }
+}
+
+/* ================= съемка и «меньше движения» ================= */
+.shotmode .page-hero .container > *,
+.shotmode .ph-hud,
+.shotmode .ph-edge i { animation: none; transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .js .page-hero .container > * { animation: none; }
+  .ph-hud, .ph-edge i { transition: none; }
+  .live-tabs button, .live-tabs button.on { transition: none; animation: none; }
+  .live-tabs button:hover:not(.on) { transform: none; }
+  .search input,
+  .field input,
+  .field textarea,
+  .reg-form input,
+  .pl-find input,
+  .fd-form textarea,
+  .gv-find input,
+  .gv-f input,
+  .gv-f textarea,
+  .gv-cr input,
+  .modal input { transition: none; }
+  .tile::after { transition: none; }
+}

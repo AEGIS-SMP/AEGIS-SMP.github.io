@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Вики AEGIS SMP — правила, ответы, сборка модов</title>
-<meta name="description" content="Вики AEGIS SMP: правила игрового сервера и Discord с мерами за нарушения, ответы на частые вопросы, состав сборки модов и обязанности команды. Те же тексты, что выдаёт бот в Discord, с поиском по словам.">
+<meta name="description" content="Вики AEGIS SMP: правила игрового сервера и Discord с мерами за нарушения, ответы на частые вопросы, состав сборки модов и обязанности команды. Те же тексты, что выдает бот в Discord, с поиском по словам.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="canonical" href="https://aegis-smp.com/wiki">
 <meta name="theme-color" content="#0E0E10">
@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
+<meta property="og:image:alt" content="AEGIS SMP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Вики AEGIS SMP">
 <meta name="twitter:description" content="Правила, ответы на частые вопросы, сборка модов и состав команды — в одном месте, с поиском.">
@@ -26,12 +26,14 @@
      игроков СНГ fonts.googleapis.com не открывается. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=0925p">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="css/style.css?v=1019r">
 <link rel="stylesheet" href="css/pages.css?v=20260925">
 <link rel="stylesheet" href="css/wiki-media.css?v=0926">
 <link rel="stylesheet" href="css/wiki-edit.css?v=1003">
 <noscript><style>/* Скрипт выключен — точки загрузки крутились бы вечно. */
   .loading { display: none; }</style></noscript>
+<link rel="stylesheet" href="css/sector.css?v=1020a">
 </head>
 <body>
 <a class="skip-link" href="#content">К содержанию</a>
@@ -41,7 +43,7 @@
     <a class="brand" href="/"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
     <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
     <nav class="topnav" id="topnav" aria-label="Основное меню">
-      <a href="/#season">Сезон 1936</a>
+      <a href="/#season">Сезон</a>
       <a href="/#arsenal">Арсенал</a>
       <a href="/#join">Как зайти</a>
       <a href="lands">Земли</a>
@@ -57,6 +59,15 @@
 </header>
 
 <main id="content" tabindex="-1">
+
+<div class="page-hero short" data-focus="13.4,52.5">
+  <div class="container">
+    <div class="kicker">Справочник</div>
+    <h1>Вики <span class="grad-text">AEGIS</span></h1>
+    <p class="lead">Правила, экономика, державы, земли и сборка модов — все, что нужно знать
+      до первого входа, в одном месте.</p>
+  </div>
+</div>
 
 <div class="page-wrap">
   <div class="container">
@@ -109,7 +120,7 @@
     <div class="foot-in">
       <img src="assets/img/logo.png" alt="AEGIS SMP">
       <div class="foot-links">
-        <a href="/#season">Сезон 1936</a>
+        <a href="/#season">Сезон</a>
         <a href="/#join">Как зайти</a>
         <a href="lands">Земли</a>
         <a href="players">Игроки</a>
@@ -130,7 +141,8 @@
 
 <script src="js/config.js"></script>
 <script src="js/api.js?v=20260925"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=1020a"></script>
+<script src="js/chunkmap.js?v=1020a"></script>
 <script src="js/wiki.js?v=1018q"></script>
 <script src="js/wiki-edit.js?v=1003"></script>
 </body>

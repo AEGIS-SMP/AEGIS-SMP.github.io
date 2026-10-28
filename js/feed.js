@@ -5,10 +5,10 @@
    тем же ником и паролем, что в лаунчере: ключ сессии сайта уходит Bearer.
    Скачивается копия со знаком автора; оригинал без знака — только владельцу.
 
-   Подписи и комментарии — данные: всё через esc(), #теги и @упоминания
+   Подписи и комментарии — данные: все через esc(), #теги и @упоминания
    красятся уже после разбора, HTML не пропускаем.
 
-   Запрос свой, не AegisApi.call: тот на любой 401/403 стирает вход на всём
+   Запрос свой, не AegisApi.call: тот на любой 401/403 стирает вход на всем
    сайте, а здесь 403 — обычное «нельзя» (чужой пост, закрытый файл), и
    выкидывать игрока из кабинета из-за него нельзя. */
 (function (w, d) {
@@ -94,7 +94,7 @@
         throw fail(j.code, j.text || 'Лента не ответила.', r.status);
       });
     }, function () {
-      throw fail('offline', 'Нет связи с лентой. Проверьте интернет и попробуйте ещё раз.');
+      throw fail('offline', 'Нет связи с лентой. Проверьте интернет и попробуйте еще раз.');
     });
   }
 
@@ -203,11 +203,11 @@
     });
     var h = {
       video: 'Ролики снимают камерой прямо в игре (клавиша F6). Листайте вниз: когда новые ' +
-        'кончатся, лента пойдёт по кругу, а чаще будет попадаться то, что понравилось людям.',
+        'кончатся, лента пойдет по кругу, а чаще будет попадаться то, что понравилось людям.',
       photo: 'Снимки из игры — той же камерой (F6), режим «снимок». Лента бесконечная: листайте вниз.',
       top: 'Самое популярное за ' + PERIOD_FOR[st.period] + ': лайки и комментарии игроков, свежие весят ' +
         'больше. Накрутка не засчитывается.',
-      mine: 'Всё, что вы сняли и опубликовали. Убрать пост из ленты — кнопка «Ещё».'
+      mine: 'Все, что вы сняли и опубликовали. Убрать пост из ленты — кнопка «Еще».'
     };
     hint.textContent = h[st.tab];
   }
@@ -306,7 +306,7 @@
     if (!st.tag && st.tab === 'mine' && !st.me.in) {
       st.end = true;
       tail.innerHTML = '<div class="empty"><h4>Здесь будут ваши ролики и снимки</h4>' +
-        '<p>Войдите тем же ником и паролем, что в лаунчере, — и тут появится всё, что вы сняли.</p>' +
+        '<p>Войдите тем же ником и паролем, что в лаунчере, — и тут появится все, что вы сняли.</p>' +
         '<div class="fd-more"><button type="button" class="btn btn-primary btn-sm" data-login>Войти</button></div></div>';
       return;
     }
@@ -353,7 +353,7 @@
       st.busy = false;
       st.failed = true;
       tail.innerHTML = '<div class="empty"><h4>' +
-        (e.code === 'closed' ? 'Лента ещё не открыта' : 'Лента не загрузилась') + '</h4><p>' + esc(e.text) + '</p>' +
+        (e.code === 'closed' ? 'Лента еще не открыта' : 'Лента не загрузилась') + '</h4><p>' + esc(e.text) + '</p>' +
         (e.code === 'closed' ? '' : '<div class="fd-more"><button type="button" class="btn btn-dark btn-sm" data-retry>Повторить</button></div>') +
         '</div>';
     });
@@ -367,7 +367,7 @@
         ? '<div class="fd-end">Это все ' + (vid ? 'ролики' : 'снимки') + ' с #' + esc(st.tag) + '.' +
           '<div class="fd-more"><button type="button" class="btn btn-dark btn-sm" data-untag>Вернуться в ленту</button></div></div>'
         : '<div class="empty"><h4>' + (vid ? 'Роликов' : 'Снимков') + ' с #' + esc(st.tag) + ' пока нет</h4>' +
-          '<p>Снимите своё в игре (F6) и впишите #' + esc(st.tag) + ' в подпись — публикация появится здесь.</p>' +
+          '<p>Снимите свое в игре (F6) и впишите #' + esc(st.tag) + ' в подпись — публикация появится здесь.</p>' +
           '<div class="fd-more"><button type="button" class="btn btn-dark btn-sm" data-untag>Вернуться в ленту</button></div></div>';
       return;
     }
@@ -381,9 +381,9 @@
       video: ['Роликов пока нет', 'Будьте первым: в игре нажмите F6, выберите «ролик», снимите до 30 секунд, ' +
         'подпишите и опубликуйте — ролик появится здесь.'],
       photo: ['Снимков пока нет', 'В игре нажмите F6, выберите «снимок», подпишите и опубликуйте.'],
-      top: ['За ' + PERIOD_FOR[st.period] + ' в топе пусто', 'Лайков и комментариев за этот срок ещё не ' +
+      top: ['За ' + PERIOD_FOR[st.period] + ' в топе пусто', 'Лайков и комментариев за этот срок еще не ' +
         'набралось. Загляните в «Ролики» и «Снимки» — и поддержите тех, кто снимает.'],
-      mine: ['Вы ещё ничего не сняли', 'В игре нажмите F6 — камера снимет ролик или снимок, а тут появится всё опубликованное.']
+      mine: ['Вы еще ничего не сняли', 'В игре нажмите F6 — камера снимет ролик или снимок, а тут появится все опубликованное.']
     }[st.tab];
     tail.innerHTML = '<div class="empty"><h4>' + esc(e[0]) + '</h4><p>' + esc(e[1]) + '</p></div>';
   }
@@ -418,13 +418,13 @@
     if (!ready) {
       media = '<div class="fd-wait">' + (it.status === 'failed'
         ? 'Файл не обработался. Снимите заново — этот пост никто не видит.'
-        : '<div class="loading" aria-hidden="true"><i></i><i></i><i></i></div>Ещё обрабатывается — появится через минуту.') +
+        : '<div class="loading" aria-hidden="true"><i></i><i></i><i></i></div>Еще обрабатывается — появится через минуту.') +
         '</div>';
     } else if (it.kind === 'video') {
       media = '<video playsinline loop muted preload="none" disablepictureinpicture' +
         ' poster="' + esc(url(it.site.poster)) + '" aria-label="Ролик ' + esc(it.author) + '"></video>' +
         '<span class="fd-big">' + I.play + '</span>' +
-        // кнопка звука — только у роликов со звуковой дорожкой (ролики до 02.10 сняты без неё)
+        // кнопка звука — только у роликов со звуковой дорожкой (ролики до 02.10 сняты без нее)
         (it.audio === false ? '' : '<button type="button" class="fd-snd" data-a="snd" aria-label="' +
           (muted ? 'Включить звук' : 'Выключить звук') + '">' + (muted ? I.mute : I.snd) + '</button>') +
         '<div class="fd-prog"><i></i></div>';
@@ -457,7 +457,7 @@
       '</span><b>' + A.num(it.comments) + '</b></button>' +
       '<button type="button" class="fd-act" data-a="dl" aria-label="Скачать со знаком автора"' +
       (ready ? '' : ' disabled') + '><span>' + I.dl + '</span><b>Скачать</b></button>' +
-      '<button type="button" class="fd-act" data-a="more" aria-label="Ещё"><span>' + I.more + '</span><b>Ещё</b></button>' +
+      '<button type="button" class="fd-act" data-a="more" aria-label="Еще"><span>' + I.more + '</span><b>Еще</b></button>' +
       '</div>';
   }
 
@@ -517,7 +517,7 @@
             c.v.src = url(c.it.site.video);
           }
         } else if (c !== active && c.v.getAttribute('src')) {
-          // далеко ушёл — отпускаем файл, обложка остаётся
+          // далеко ушел — отпускаем файл, обложка остается
           c.v.pause();
           c.v.removeAttribute('src');
           c.v.load();
@@ -626,7 +626,7 @@
 
   var clickT = null;
 
-  // #тег в подписи или комментарии; с Ctrl/Shift/колёсиком — пусть браузер откроет новую вкладку
+  // #тег в подписи или комментарии; с Ctrl/Shift/колесиком — пусть браузер откроет новую вкладку
   function tagClick(e, kind) {
     var a = e.target.closest('[data-tag]');
     if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button > 0) return !!a;
@@ -756,7 +756,7 @@
     }).then(function (r) {
       if (!r.ok) {
         return r.json().catch(function () { return null; }).then(function (j) {
-          throw fail(j && j.code || 'error', j && j.text || 'Не скачалось — попробуйте ещё раз.', r.status);
+          throw fail(j && j.code || 'error', j && j.text || 'Не скачалось — попробуйте еще раз.', r.status);
         });
       }
       return r.blob();
@@ -852,8 +852,8 @@
   }
 
   function confirmRemove(it) {
-    modal('<h3>Убрать из ленты?</h3><p>Пост пропадёт из ленты и топа. Совсем он не стирается: если ' +
-      'передумаете, команда вернёт его по обращению.</p><div class="fd-row">' +
+    modal('<h3>Убрать из ленты?</h3><p>Пост пропадет из ленты и топа. Совсем он не стирается: если ' +
+      'передумаете, команда вернет его по обращению.</p><div class="fd-row">' +
       '<button type="button" class="btn btn-dark btn-sm" data-no>Отмена</button>' +
       '<button type="button" class="btn btn-primary btn-sm" data-yes>Убрать</button></div>', function (box) {
       box.querySelector('[data-no]').addEventListener('click', closeModal);
@@ -1161,7 +1161,7 @@
   function relogin() {
     st.me = { in: false };
     paintMe();
-    login('Вход устарел — войдите ещё раз.');
+    login('Вход устарел — войдите еще раз.');
   }
 
   var toastEl = null, toastT = 0;
@@ -1227,7 +1227,7 @@
         var c = add(it, true);
         list.insertBefore(c.el, list.firstChild);
       }, function (e) {
-        if (e.code !== 'closed' && e.code !== 'offline') toast('Этой публикации нет или её убрали.');
+        if (e.code !== 'closed' && e.code !== 'offline') toast('Этой публикации нет или ее убрали.');
         reset();
       });
     });

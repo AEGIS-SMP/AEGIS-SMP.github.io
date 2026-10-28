@@ -4,13 +4,13 @@
    ЛЮБУЮ информацию на вики, удобный редактор на сайте, кто и когда правил,
    откат. Права — по роли, как панель по человеку.
 
-   У игрока этот файл не делает ничего: служба выдаёт право «wiki» только
+   У игрока этот файл не делает ничего: служба выдает право «wiki» только
    Координатору и выше (и овнеру) и проверяет его на КАЖДЫЙ запрос правки —
    здесь только интерфейс, обойти его в браузере нечего.
 
    Как устроено:
    • Тексты из файлов сайта — основа. Правка ложится поверх по адресу страницы
-     и живёт в службе (выкладка сайта файлы подменяет и стёрла бы её).
+     и живет в службе (выкладка сайта файлы подменяет и стерла бы ее).
    • Сохраняется страница целиком, вместе с номером версии, от которой
      правили. Успел кто-то сохранить раньше — служба откажет «конфликтом», и
      редактор предложит сравнить или сохранить поверх. Молча чужую правку
@@ -40,7 +40,7 @@
     ['modpack', 'Список модов']
   ];
 
-  /* Те же пределы, что проверяет служба (WikiEdits.clean). Поле не даёт
+  /* Те же пределы, что проверяет служба (WikiEdits.clean). Поле не дает
      набрать больше, а не отказывает потом. */
   var L = {
     title: 120, intro: 3000, group: 40, body: 150000, note: 200,
@@ -67,7 +67,7 @@
     try {
       if (v == null) localStorage.removeItem(k);
       else localStorage.setItem(k, JSON.stringify(v));
-    } catch (e) { /* память браузера закрыта — живём без черновиков */ }
+    } catch (e) { /* память браузера закрыта — живем без черновиков */ }
   }
 
   function when(sec) {
@@ -150,7 +150,7 @@
     } else if (st.versions && st.lastAct === 'revert') {
       line = 'Сейчас — текст сайта · вернул <b>' + esc(st.lastBy) + '</b>, ' + esc(whenAgo(st.lastAt));
     } else {
-      line = file ? 'Текст сайта — на сайте ещё не правили' : '';
+      line = file ? 'Текст сайта — на сайте еще не правили' : '';
     }
     var d = lsGet(DRAFT + p.slug);
     var bar = document.createElement('div');
@@ -159,7 +159,7 @@
       '<div class="we-st">' +
         (p.hidden ? '<span class="we-tag">Черновик — игроки не видят</span>' : '') +
         '<span>' + line + '</span>' +
-        (d && d.work ? '<span class="we-has">есть несохранённый текст · ' + esc(A.ago(d.at)) + '</span>' : '') +
+        (d && d.work ? '<span class="we-has">есть несохраненный текст · ' + esc(A.ago(d.at)) + '</span>' : '') +
       '</div>' +
       '<div class="we-acts">' +
         '<button class="we-b we-b-main" type="button" data-we="edit">' +
@@ -191,7 +191,7 @@
 
   /* ------------------------------------------------------- рабочая модель */
 
-  /* Форма правит не саму страницу, а её «рабочий» вид: списки обязанностей —
+  /* Форма правит не саму страницу, а ее «рабочий» вид: списки обязанностей —
      одной строкой на пункт, моды — «Название | версия», слова для поиска —
      через запятую. Обратно в страницу собирает finalize(). */
   function toWork(p, slug) {
@@ -259,7 +259,7 @@
     return String(s || '').split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
   }
 
-  /* Рабочий вид → страница, ровно в том виде, как её примет служба. Пустые
+  /* Рабочий вид → страница, ровно в том виде, как ее примет служба. Пустые
      карточки молча выпадают; карточка, где что-то начато, но не хватает
      обязательного, — ошибка с указанием поля (k — путь к нему в форме). */
   function finalize(w) {
@@ -371,7 +371,7 @@
       if (p.groups.length > L.groups) bad('Групп больше ' + L.groups + '.', 'title');
       p.total = total;
     }
-    if (!err && JSON.stringify(p).length > L.page) bad('Страница слишком большая — разбейте её на две.', 'title');
+    if (!err && JSON.stringify(p).length > L.page) bad('Страница слишком большая — разбейте ее на две.', 'title');
     return { page: p, err: err };
   }
 
@@ -402,7 +402,7 @@
       start({ slug: slug, isNew: false, base: r.v || 0, page: page });
     }).catch(function (e) {
       if (btn) { btn.disabled = false; btn.textContent = 'Править'; }
-      setBarNote(e && e.code === 'auth' ? 'Вход истёк — войдите в кабинет заново.' : A.textOf(e));
+      setBarNote(e && e.code === 'auth' ? 'Вход истек — войдите в кабинет заново.' : A.textOf(e));
     });
   }
 
@@ -600,7 +600,7 @@
           ops('sections.' + i + '.rules', j, s.rules.length, 'пункт') + '</div>' +
           '<textarea data-k="' + p + '.text" maxlength="' + L.rule + '" rows="2" aria-label="Текст пункта ' + (i + 1) + '.' + (j + 1) +
             '" placeholder="Текст правила">' + esc(r.text) + '</textarea>' +
-          /* Мера — одна строка, но длинная: в поле ввода на телефоне её не
+          /* Мера — одна строка, но длинная: в поле ввода на телефоне ее не
              видно целиком, поэтому растущее поле, где Enter не ставит перенос. */
           '<span class="we-pl" aria-hidden="true">Мера</span>' +
           '<textarea class="we-one" data-k="' + p + '.penalty" maxlength="' + L.pen + '" rows="1"' +
@@ -687,7 +687,7 @@
   function msgBox() {
     var h = '';
     if (ed.restored) {
-      h += '<div class="nbox"><div>Восстановлен несохранённый текст (набран ' + esc(A.ago(ed.restored.at)) + ').' +
+      h += '<div class="nbox"><div>Восстановлен несохраненный текст (набран ' + esc(A.ago(ed.restored.at)) + ').' +
         (ed.restored.stale ? ' Страницу с тех пор меняли — при сохранении предложу сравнить версии.' : '') +
         ' <button class="we-link" type="button" data-we="fresh">Начать заново</button></div></div>';
     }
@@ -744,7 +744,7 @@
 
   /* Поля растут под текст: правка длинного пункта в окошке на две строки —
      мучение. Сначала всем «auto», потом читаем высоты, потом пишем: так
-     браузер пересчитывает вёрстку один раз, а не на каждом поле. */
+     браузер пересчитывает верстку один раз, а не на каждом поле. */
   function growAll() {
     var t = W.body.querySelectorAll('.we-ed textarea');
     var i, h = [];
@@ -882,7 +882,7 @@
       ed.work.type = t.value;
       blankContent(ed.work);
       paint();
-      status('Вид сменён — содержимое начато заново.');
+      status('Вид сменен — содержимое начато заново.');
       touched();
     }
   });
@@ -983,7 +983,7 @@
       compareTheirs();
     } else if (we === 'cancel') {
       var changed = ed.isNew ? !!(ed.work.title.trim() || ed.dirty) : canon(finalize(ed.work).page) !== ed.origCanon;
-      if (changed && !window.confirm('Выйти без сохранения? Набранный текст пропадёт.')) return;
+      if (changed && !window.confirm('Выйти без сохранения? Набранный текст пропадет.')) return;
       lsSet(draftKey(), null);
       closeEditor();
     } else if (we === 'undo') {
@@ -1018,7 +1018,7 @@
     }
     paint();
     touched();
-    if (op === 'del') status('Удалено. «Отменить» вверху вернёт.');
+    if (op === 'del') status('Удалено. «Отменить» вверху вернет.');
     if (op === 'add') {
       var all = W.body.querySelectorAll('[data-k^="' + path + '.' + (arr.length - 1) + '."]');
       if (all.length) { all[0].focus(); all[0].scrollIntoView({ block: 'center' }); }
@@ -1109,7 +1109,7 @@
       if (e && e.code === 'conflict') {
         loadState().catch(function () {}).then(function () {
           if (!ed) return;
-          /* Текст службы зовёт «открыть заново», а здесь есть путь короче:
+          /* Текст службы зовет «открыть заново», а здесь есть путь короче:
              сравнить и решить на месте, не теряя набранного. */
           var st = state[ed.slug] || {};
           var who = st.v ? 'Пока вы правили, страницу сохранил <b>' + esc(st.by || 'кто-то') + '</b>' +
@@ -1126,15 +1126,15 @@
         status('Страницу успели изменить — выберите, что делать.', true);
       } else if (e && e.code === 'auth') {
         keepDraft();
-        status('Вход истёк — войдите в кабинет заново. Текст сохранён в этом браузере.', true);
+        status('Вход истек — войдите в кабинет заново. Текст сохранен в этом браузере.', true);
       } else {
         status(A.textOf(e), true);
       }
     }).then(function () { saving = false; }, function () { saving = false; });
   }
 
-  /* После правки или отката берём из службы то, что она на самом деле
-     сохранила (она чистит страницу по своим правилам), и кладём в вики. */
+  /* После правки или отката берем из службы то, что она на самом деле
+     сохранила (она чистит страницу по своим правилам), и кладем в вики. */
   function afterChange(slug, v) {
     var p = v ? pageReq(slug).then(function (r) {
       var h = histAt(r, r.v);
@@ -1149,7 +1149,7 @@
       var h = histAt(r, r.v);
       var theirs = r.v ? h && h.page : W.fileRaw(ed.slug);
       openPop('Их версия → ваш текст',
-        '<p class="we-pop-note">Красным — то, чего в вашем тексте нет (это есть у них), зелёным — что добавили вы. ' +
+        '<p class="we-pop-note">Красным — то, чего в вашем тексте нет (это есть у них), зеленым — что добавили вы. ' +
         'Если сохранить поверх, останется ваш вариант; их версия останется в истории.</p>' +
         diffHtml(pageLines(theirs), pageLines(mine)));
     }).catch(function (e) { status(A.textOf(e), true); });
@@ -1244,13 +1244,13 @@
     rows += '<li class="we-h we-h-file' + (cur0 && file ? ' now' : '') + '">' +
       '<div class="we-h-t"><b>' + (file ? 'Текст сайта' : 'До создания страницы') + '</b>' +
         (cur0 && file ? '<span class="we-tag">сейчас на сайте</span>' : '') + '</div>' +
-      '<div class="we-h-m">' + (file ? 'то, что лежит в файлах сайта, — основа страницы' : 'страницы нет в файлах сайта, её создали здесь') + '</div>' +
+      '<div class="we-h-m">' + (file ? 'то, что лежит в файлах сайта, — основа страницы' : 'страницы нет в файлах сайта, ее создали здесь') + '</div>' +
       '<div class="we-row">' +
         (file ? '<button class="we-b" type="button" data-pop="view" data-i="-1">Посмотреть</button>' : '') +
         (!cur0 ? '<button class="we-b" type="button" data-pop="back" data-i="-1">' +
           (file ? 'Вернуть текст сайта' : 'Убрать страницу') + '</button>' : '') +
       '</div></li>';
-    var note = list.length >= 30 ? '<p class="we-pop-note">Хранятся последние 30 правок — более ранние уже стёрты.</p>' : '';
+    var note = list.length >= 30 ? '<p class="we-pop-note">Хранятся последние 30 правок — более ранние уже стерты.</p>' : '';
     pop.el.querySelector('.we-pop-b').innerHTML = note + '<ol class="we-hist">' + rows + '</ol>';
     pop.el.querySelector('h3').textContent = 'История: ' + ((W.page(slug) || {}).title || slug);
   }
@@ -1289,7 +1289,7 @@
       var before = prevOf(i), after = list[i].page || W.fileRaw(hist.slug);
       body.innerHTML = backBtn +
         '<p class="we-pop-note">' + (i <= 0 ? 'По сравнению с текстом сайта. ' : 'По сравнению с предыдущей правкой. ') +
-        'Красным — убрано, зелёным — добавлено.</p>' + diffHtml(pageLines(before), pageLines(after));
+        'Красным — убрано, зеленым — добавлено.</p>' + diffHtml(pageLines(before), pageLines(after));
       body.scrollTop = 0;
     } else if (a === 'back') {
       revert(i, b);
@@ -1299,9 +1299,9 @@
   function revert(i, btn) {
     var r = hist.r, slug = hist.slug, file = W.fileRaw(slug);
     var h = i >= 0 ? r.hist[i] : null;
-    var q = h ? 'Вернуть страницу к версии от ' + when(h.at) + '? Нынешняя останется в истории, её можно будет вернуть.'
+    var q = h ? 'Вернуть страницу к версии от ' + when(h.at) + '? Нынешняя останется в истории, ее можно будет вернуть.'
       : file ? 'Вернуть страницу к тексту сайта? Все правки останутся в истории.'
-        : 'Убрать страницу из вики? Её текст останется в истории, вернуть можно отсюда же.';
+        : 'Убрать страницу из вики? Ее текст останется в истории, вернуть можно отсюда же.';
     if (!window.confirm(q)) return;
     btn.disabled = true;
     A.call('/adm/wiki/revert', {
@@ -1336,7 +1336,7 @@
   /* --------------------------------------------------------------- отличия */
 
   /* Страница → строки для сравнения. Номера пунктов не пишем: вставка одного
-     правила сдвинула бы номера у всех следующих, и «изменилось» было бы всё. */
+     правила сдвинула бы номера у всех следующих, и «изменилось» было бы все. */
   function pageLines(p) {
     if (!p) return [];
     var out = ['Заголовок: ' + (p.title || '')];

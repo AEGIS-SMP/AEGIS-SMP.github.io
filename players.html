@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Игроки — AEGIS SMP</title>
-<meta name="description" content="Все игроки AEGIS SMP: кто сейчас в игре, какой державе служит, в каком городе живёт и сколько наиграл. Поиск по нику, державе и городу.">
+<meta name="description" content="Все игроки AEGIS SMP: кто сейчас в игре, какой державе служит, в каком городе живет и сколько наиграл. Поиск по нику, державе и городу.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="canonical" href="https://aegis-smp.com/players">
 <meta name="theme-color" content="#0E0E10">
@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
+<meta property="og:image:alt" content="AEGIS SMP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Игроки — AEGIS SMP">
 <meta name="twitter:description" content="Кто играет на AEGIS: державы, города, наигранное время и кто сейчас в игре.">
@@ -26,11 +26,13 @@
      игроков СНГ fonts.googleapis.com не открывается. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=0925p">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="css/style.css?v=1019r">
 <link rel="stylesheet" href="css/pages.css?v=20260925">
 <link rel="stylesheet" href="css/players.css?v=0925b">
 <noscript><style>/* Скрипт выключен — точки загрузки крутились бы вечно. */
   .loading { display: none; }</style></noscript>
+<link rel="stylesheet" href="css/sector.css?v=1020a">
 </head>
 <body>
 <a class="skip-link" href="#content">К содержанию</a>
@@ -40,7 +42,7 @@
     <a class="brand" href="/"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
     <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
     <nav class="topnav" id="topnav" aria-label="Основное меню">
-      <a href="/#season">Сезон 1936</a>
+      <a href="/#season">Сезон</a>
       <a href="/#arsenal">Арсенал</a>
       <a href="/#join">Как зайти</a>
       <a href="lands">Земли</a>
@@ -57,11 +59,11 @@
 
 <main id="content" tabindex="-1">
 
-<div class="page-hero">
+<div class="page-hero" data-focus="37.6,55.8">
   <div class="container">
-    <div class="kicker">Кто живёт на AEGIS</div>
+    <div class="kicker">Кто живет на AEGIS</div>
     <h1>Игроки</h1>
-    <p class="lead">Все, кто заходил на сервер: какой державе служит, в каком городе живёт,
+    <p class="lead">Все, кто заходил на сервер: какой державе служит, в каком городе живет,
       сколько наиграл и кто сейчас в игре. Найдите друга или соседа по нику, державе
       или городу и откройте его карточку.</p>
   </div>
@@ -88,7 +90,7 @@
     <div class="foot-in">
       <img src="assets/img/logo.png" alt="AEGIS SMP">
       <div class="foot-links">
-        <a href="/#season">Сезон 1936</a>
+        <a href="/#season">Сезон</a>
         <a href="/#join">Как зайти</a>
         <a href="lands">Земли</a>
         <a href="players">Игроки</a>
@@ -109,7 +111,8 @@
 
 <script src="js/config.js"></script>
 <script src="js/api.js?v=20260925"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=1020a"></script>
+<script src="js/chunkmap.js?v=1020a"></script>
 <script src="js/tk-common.js?v=1003M"></script>
 <script src="js/players.js?v=0925b"></script>
 </body>

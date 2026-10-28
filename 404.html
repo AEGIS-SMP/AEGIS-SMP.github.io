@@ -7,18 +7,20 @@
 <meta name="description" content="Такой страницы на сайте AEGIS SMP нет. Вернись на главную или загляни в лавку.">
 <meta name="robots" content="noindex">
 <!-- GitHub Pages подставляет эту страницу на любой несуществующий адрес,
-     в том числе на вложенный вроде /что-то/ещё. Поэтому все ссылки
+     в том числе на вложенный вроде /что-то/еще. Поэтому все ссылки
      на стили и картинки тут от корня, а не относительные: иначе на
      вложенном адресе страница приедет без оформления. -->
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
 <meta name="theme-color" content="#0E0E10">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
-     кириллические гарнитуры — остальные алфавиты браузер возьмёт сам,
+     кириллические гарнитуры — остальные алфавиты браузер возьмет сам,
      только если они реально понадобятся. -->
 <link rel="preload" href="/assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/style.css?v=0925p">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="/css/style.css?v=1019r">
+<link rel="stylesheet" href="/css/sector.css?v=1020a">
 </head>
 <body>
 <a class="skip-link" href="#content">К содержанию</a>
@@ -28,7 +30,7 @@
     <a class="brand" href="/"><img src="/assets/img/logo.png" alt="AEGIS SMP"></a>
     <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
     <nav class="topnav" id="topnav" aria-label="Основное меню">
-      <a href="/#season">Сезон 1936</a>
+      <a href="/#season">Сезон</a>
       <a href="/#arsenal">Арсенал</a>
       <a href="/#join">Как зайти</a>
       <a href="/lands">Земли</a>
@@ -44,12 +46,12 @@
 
 <main id="content" tabindex="-1">
 
-<div class="page-hero">
+<div class="page-hero" data-focus="sea">
   <div class="container">
     <div class="kicker">Ошибка 404</div>
-    <h1>Такой страницы <span class="grad-text">нет</span></h1>
+    <h1>Чанк <span class="grad-text">не найден</span></h1>
     <p class="lead">Адрес набран с опечаткой или страницу перенесли. Ничего страшного —
-      всё, что есть на сайте, собрано на главной.</p>
+      все, что есть на сайте, собрано на главной.</p>
   </div>
 </div>
 
@@ -59,7 +61,7 @@
       <div class="reg-why">
         <h2>Куда идти</h2>
         <ul>
-          <li><a href="/">Главная</a> — про сезон «1936», арсенал и как зайти;</li>
+          <li><a href="/">Главная</a> — про новый сезон, арсенал и как зайти;</li>
           <li><a href="/lands">Земли</a> — кто какой державой играет и что свободно;</li>
           <li><a href="/wiki">Вики</a> — правила, механики и ответы на частые вопросы;</li>
           <li><a href="/donate">Лавка</a> — привилегии, киты, кейсы и наборы мода;</li>
@@ -76,11 +78,11 @@
         <h2>Если ссылку дали мы</h2>
         <!-- Раньше отсюда отправляли в Discord, хотя на сайте есть своя страница
              «Обращения», которая прямо говорит, что Discord для этого не нужен.
-             Сначала своё, Discord — как второй путь. -->
-        <p>Бывает, что страница ещё не выложена, а ссылка на неё уже разошлась.
+             Сначала свое, Discord — как второй путь. -->
+        <p>Бывает, что страница еще не выложена, а ссылка на нее уже разошлась.
           Напиши в <a href="/tickets">обращения</a> — поправим и подскажем,
           где искать. Discord для этого не нужен, но если тебе так привычнее —
-          в нём та же команда и те же темы.</p>
+          в нем та же команда и те же темы.</p>
       </div>
     </div>
   </div>
@@ -93,7 +95,7 @@
     <div class="foot-in">
       <img src="/assets/img/logo.png" alt="AEGIS SMP">
       <div class="foot-links">
-        <a href="/#season">Сезон 1936</a>
+        <a href="/#season">Сезон</a>
         <a href="/#join">Как зайти</a>
         <a href="/lands">Земли</a>
         <a href="/feed">Лента</a>
@@ -113,6 +115,7 @@
 
 <script src="/js/config.js"></script>
 <script src="/js/api.js"></script>
-<script src="/js/main.js"></script>
+<script src="/js/main.js?v=1020a"></script>
+<script src="/js/chunkmap.js?v=1020a"></script>
 </body>
 </html>

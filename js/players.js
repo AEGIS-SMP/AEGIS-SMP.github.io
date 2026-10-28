@@ -1,7 +1,7 @@
 /* Игроки AEGIS: список всех, кто заходил на сервер, поиск и карточка.
    Овнер 25.09.2026: «добавить на сайт список профилей игроков, чтобы можно было
    листать их и находить и смотреть».
-   Служба отдаёт только публичное: ник, должность, державу, город, привилегию,
+   Служба отдает только публичное: ник, должность, державу, город, привилегию,
    сколько наиграно и когда был. Координат, наказаний, почты, Discord и
    Telegram на этой странице нет и не будет. */
 (function () {
@@ -125,13 +125,13 @@
       S.busy = false;
       if (more) {
         var b = document.getElementById('plMore');
-        if (b) { b.disabled = false; b.textContent = 'Показать ещё'; }
+        if (b) { b.disabled = false; b.textContent = 'Показать еще'; }
         var s = document.getElementById('plSum');
         if (s) s.textContent = A.textOf(err);
         return;
       }
       list.innerHTML = '<div class="empty"><h4>Список не загрузился</h4><p>' + esc(A.textOf(err)) +
-        '</p><p style="margin-top:14px"><button type="button" class="btn btn-dark btn-sm" id="plRetry">Попробовать ещё раз</button></p></div>';
+        '</p><p style="margin-top:14px"><button type="button" class="btn btn-dark btn-sm" id="plRetry">Попробовать еще раз</button></p></div>';
       document.getElementById('plRetry').addEventListener('click', function () { load(false); });
     });
   }
@@ -194,7 +194,7 @@
       var box = document.createElement('div');
       box.className = 'pl-more';
       box.id = 'plMoreBox';
-      box.innerHTML = '<button type="button" class="btn btn-dark" id="plMore">Показать ещё (' + left + ')</button>';
+      box.innerHTML = '<button type="button" class="btn btn-dark" id="plMore">Показать еще (' + left + ')</button>';
       list.appendChild(box);
       document.getElementById('plMore').addEventListener('click', function () {
         if (S.busy) return;
@@ -248,7 +248,7 @@
       : 'без гражданства') + '</dd>';
     h += '<dt>Город</dt><dd>' + (p.town
       ? esc(p.town) + '<small>' + esc([p.townRank, p.province ? 'провинция ' + p.province : ''].filter(Boolean).join(' · ')) + '</small>'
-      : 'не живёт в городе') + '</dd>';
+      : 'не живет в городе') + '</dd>';
     h += '<dt>Наиграно</dt><dd>' + esc(p.playtimeText || hours(p.playtime)) + '</dd>';
     if (p.created) h += '<dt>С нами</dt><dd>с ' + esc(date(p.created)) + '</dd>';
     if (!p.online && p.seen) h += '<dt>Последний вход</dt><dd>' + esc(date(p.seen)) + '<small>' + esc(A.ago(p.seen)) + '</small></dd>';

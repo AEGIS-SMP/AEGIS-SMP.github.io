@@ -8,8 +8,8 @@
 
    Вход — по человеку: тот же ник и пароль, что в лаунчере. Что видно, решает
    сервер по должности в Discord (Модератор — помощь и жалобы, выше — больше
-   тем, Координатор и владелец — всё). Страница прав не проверяет и не хранит:
-   всё, что она показывает, прислал сервер под этот вход.
+   тем, Координатор и владелец — все). Страница прав не проверяет и не хранит:
+   все, что она показывает, прислал сервер под этот вход.
 
    Двери службы — /adm/* (Tickets.java). Старая служба их не знает (404) —
    тогда страница прямо говорит, что пульт появится после обновления сервера.
@@ -47,31 +47,31 @@
 
   /* Доска над списком. Овнер 24.09.2026: «чтобы было видно список какие обращения
      существуют сейчас и открыты, какие закрыты и решены», а не ходить по ссылкам
-     бота. Карточка — и счётчик, и фильтр: нажал — список только этой стадии,
-     нажал ещё раз — обратно к обзору. */
+     бота. Карточка — и счетчик, и фильтр: нажал — список только этой стадии,
+     нажал еще раз — обратно к обзору. */
   var BOARD = [
     ['waiting', 'Ждут ответа', 'игрок написал последним', 'red'],
     ['open', 'Новые', 'стадия «открыт»', 'gold'],
-    ['work', 'В работе', 'кто-то из команды ведёт', 'green'],
+    ['work', 'В работе', 'кто-то из команды ведет', 'green'],
     ['wait', 'Ждут игрока', 'ответили, слово за игроком', 'steel'],
     ['closed', 'Закрыты', 'решены и закрыты', 'off']
   ];
 
-  /* Отложено, и срок ещё не вышел (овнер 30.09.2026: «отложить для решения позже»). */
+  /* Отложено, и срок еще не вышел (овнер 30.09.2026: «отложить для решения позже»). */
   function held(t) { return !!t.later && !t.due; }
 
-  /* Разделы обзора: каждое открытое обращение попадает ровно в один. Закреплённые —
+  /* Разделы обзора: каждое открытое обращение попадает ровно в один. Закрепленные —
      первыми, отложенные до срока — последними (овнер 30.09.2026). */
   var SECS = [
-    ['Закреплённые', 'Высшая администрация держит их наверху, пока не открепит или не закроет.',
+    ['Закрепленные', 'Высшая администрация держит их наверху, пока не открепит или не закроет.',
       function (t) { return t.pin; }, function (a, b) { return (b.pinAt || 0) - (a.pinAt || 0); }],
     ['Ждут ответа команды', 'Игрок написал последним или вышел срок отложенного. Сверху те, что ждут дольше всех.',
       function (t) { return !t.pin && t.waiting; }, true],
-    ['Новые', 'Пришли и ещё не разобраны.',
+    ['Новые', 'Пришли и еще не разобраны.',
       function (t) { return !t.pin && !t.waiting && !held(t) && t.status === 'open'; }],
-    ['В работе', 'Ведёт кто-то из команды.',
+    ['В работе', 'Ведет кто-то из команды.',
       function (t) { return !t.pin && !t.waiting && !held(t) && t.status === 'work'; }],
-    ['Ждут игрока', 'Команда ответила, ждём, что скажет игрок.',
+    ['Ждут игрока', 'Команда ответила, ждем, что скажет игрок.',
       function (t) { return !t.pin && !t.waiting && !held(t) && t.status === 'wait'; }],
     ['Отложенные', 'Ответ дадут позже. До срока их не трогают SIGEA и напоминания; в срок бот напомнит, а обращение встанет в «Ждут ответа».',
       function (t) { return !t.pin && held(t); }, function (a, b) { return (a.later || 0) - (b.later || 0); }]
@@ -91,7 +91,7 @@
     root.innerHTML = '<div id="tkdL"></div><div class="cab-why">' +
       '<h3>Кто сюда входит</h3><p>Команда AEGIS: модераторы, администраторы, координатор. ' +
       'Какие темы обращений видны, сервер решает сам — по вашей должности в Discord. ' +
-      'Бот присылает в ЛС ссылку на каждое новое обращение; она ведёт прямо сюда.</p>' +
+      'Бот присылает в ЛС ссылку на каждое новое обращение; она ведет прямо сюда.</p>' +
       '<p>Игрок? Ваши обращения — на странице <a href="tickets#/mine">«Мои обращения»</a>.</p></div>';
     T.login(document.getElementById('tkdL'), {
       title: 'Обращения — вход для команды',
@@ -125,7 +125,7 @@
     if (err && err.code === 'auth') { drawLogin(); return; }
     if (err && err.code === 'http') {
       box('warn', '<b>Пульт обращений заработает после обновления сервера.</b> ' +
-        'Новые обращения бот всё равно присылает в ЛС.', true);
+        'Новые обращения бот все равно присылает в ЛС.', true);
       return;
     }
     if (err && err.code === 'forbidden') {
@@ -135,7 +135,7 @@
     stopTimer();
     root.innerHTML = '<div class="tkd"><div class="nbox warn"><span class="n-ic">!</span><div>' +
       esc(A.textOf(err)) + '</div></div><div class="form-go">' +
-      '<button type="button" class="btn btn-primary" id="tkdAgain">Попробовать ещё раз</button></div></div>';
+      '<button type="button" class="btn btn-primary" id="tkdAgain">Попробовать еще раз</button></div></div>';
     document.getElementById('tkdAgain').addEventListener('click', retry);
   }
 
@@ -168,11 +168,11 @@
       '</span></div><div class="tkd-me-r">';
     if (ME.owner) {
       h += '<button type="button" class="btn btn-sm ' + (ME.on ? 'btn-dark' : 'btn-primary') +
-        '" id="tkdSw">' + (ME.on ? 'Приём открыт — закрыть' : 'Приём закрыт — открыть') + '</button>';
+        '" id="tkdSw">' + (ME.on ? 'Прием открыт — закрыть' : 'Прием закрыт — открыть') + '</button>';
     }
     h += '<button type="button" class="btn btn-dark btn-sm" data-out>Выйти</button></div></div>';
     if (!ME.on) {
-      h += '<div class="nbox warn"><span class="n-ic">!</span><div><b>Приём обращений с сайта ' +
+      h += '<div class="nbox warn"><span class="n-ic">!</span><div><b>Прием обращений с сайта ' +
         'сейчас закрыт.</b> Игроки не могут отправить новое; уже открытые обращения ' +
         'разбираются как обычно.' + (ME.owner ? ' Открыть — кнопкой выше.' : '') + '</div></div>';
     }
@@ -184,8 +184,8 @@
     var sw = document.getElementById('tkdSw');
     if (sw) sw.addEventListener('click', function () {
       var next = !ME.on;
-      if (!confirm(next ? 'Открыть приём обращений с сайта?' :
-        'Закрыть приём? Игроки не смогут отправить новое обращение с сайта.')) return;
+      if (!confirm(next ? 'Открыть прием обращений с сайта?' :
+        'Закрыть прием? Игроки не смогут отправить новое обращение с сайта.')) return;
       sw.disabled = true;
       A.call('/adm/switch', { body: { on: next } }).then(function () {
         ME.on = next;
@@ -217,7 +217,7 @@
         (TAB === 'access' ? ' class="on"' : '') + '>Доступ к темам</button>';
     }
     h += '<button type="button" role="tab" data-tab="week" aria-selected="' + (TAB === 'week') + '"' +
-      (TAB === 'week' ? ' class="on"' : '') + '>Отчёт недели</button>';
+      (TAB === 'week' ? ' class="on"' : '') + '>Отчет недели</button>';
     if (ME.give) {
       h += '<button type="button" role="tab" data-tab="give" aria-selected="' + (TAB === 'give') + '"' +
         (TAB === 'give' ? ' class="on"' : '') + '>Выдача предметов</button>';
@@ -228,7 +228,7 @@
     }
     if (ME.sableView) {
       h += '<button type="button" role="tab" data-tab="sable" aria-selected="' + (TAB === 'sable') + '"' +
-        (TAB === 'sable' ? ' class="on"' : '') + '>Учёт техники</button>';
+        (TAB === 'sable' ? ' class="on"' : '') + '>Учет техники</button>';
     }
     if (ME.owner) {
       h += '<button type="button" role="tab" data-tab="team" aria-selected="' + (TAB === 'team') + '"' +
@@ -253,7 +253,7 @@
       '<button class="btn btn-dark btn-sm" type="submit">Найти</button></form>';
     h += '<div id="tkdList"><div class="loading" aria-label="Загрузка"><i></i><i></i><i></i></div></div>';
     h += '<div class="form-go tkd-more" id="tkdMoreW" hidden><button type="button" class="btn btn-dark" id="tkdMore">' +
-      'Показать ещё</button></div></div>' +
+      'Показать еще</button></div></div>' +
       '<aside class="tk-side"><div id="tkdCrew" class="tkd-crew"></div><div id="tkdDone" class="tkd-done"></div></aside></div></div>';
     root.innerHTML = h;
     bindHead(); bindTabs();
@@ -310,7 +310,7 @@
       var s = document.getElementById('tkdSum');
       if (s) s.innerHTML = 'Открыто сейчас: <b>' + act + '</b> · всего обращений: <b>' + (c.all || 0) +
         '</b> · новых за сутки: <b>' + (c.today || 0) + '</b> · без ведущего: <b>' + (c.free || 0) +
-        '</b> · ведёте вы: <b>' + (c.mine || 0) + '</b>';
+        '</b> · ведете вы: <b>' + (c.mine || 0) + '</b>';
       if (typeof r.on === 'boolean' && ME && r.on !== ME.on) { ME.on = r.on; }
       var cw = document.getElementById('tkdCrew');
       if (cw && r.crew) {
@@ -324,7 +324,7 @@
   }
 
   /* Кто сколько разобрал (овнер 28.09.2026): владельцу и высшей администрации — вся
-     команда, остальным — только своё. */
+     команда, остальным — только свое. */
   function doneOf(ls, all) {
     var h = '<div class="tkd-crew-h"><h3>' + (all ? 'Кто сколько разобрал' : 'Вы разобрали') + '</h3>' +
       '<span>закрытые обращения</span></div>';
@@ -338,8 +338,8 @@
         (d.auto ? '<small title="из них закрылось само: игрок молчал больше суток">само ' + esc(d.auto) + '</small>' : '') +
         '</td></tr>';
     });
-    return h + '</tbody></table><p class="tkd-done-n">В счёт тому, кто закрыл. Игрок молчит больше суток после ' +
-      'ответа — обращение закрывается само и идёт в счёт тому, кто его вёл.</p>';
+    return h + '</tbody></table><p class="tkd-done-n">В счет тому, кто закрыл. Игрок молчит больше суток после ' +
+      'ответа — обращение закрывается само и идет в счет тому, кто его вел.</p>';
   }
 
   function row(t) {
@@ -350,7 +350,7 @@
       '<div><div class="rw-t"><b>№' + esc(t.no) + '</b> · ' + esc(cat) +
       (t.pin && t.status !== 'closed' ? ' <span class="pill gold" title="Закрепил ' + esc(t.pinBy || '') + '">закреплено</span>' : '') +
       (due ? ' <span class="pill red" title="' + esc(laterTip(t)) + '">срок вышел</span>' :
-        waiting ? ' <span class="pill red">ждёт ответа</span>' : '') +
+        waiting ? ' <span class="pill red">ждет ответа</span>' : '') +
       (held(t) && t.status !== 'closed' ? ' <span class="pill" title="' + esc(laterTip(t)) + '">отложено до ' +
         esc(T.stamp(t.later)) + '</span>' + (t.lastBy === 'p' ? ' <span class="pill">игрок дописал</span>' : '') : '') +
       (t.sg === 'ans' ? ' <span class="pill" title="' + esc(t.sgWhy || '') + '">ответила SIGEA</span>' :
@@ -358,7 +358,7 @@
       '<div class="rw-s">от <b>' + esc(t.nick || 'игрок') + '</b>' +
       (t.acc && t.acc.toLowerCase() !== String(t.nick || '').toLowerCase() ? ' (аккаунт ' + esc(t.acc) + ')' : '') +
       ' · создано ' + esc(T.stamp(t.at)) +
-      ' · ведёт: ' + (t.by ? esc(t.by) : 'никто') +
+      ' · ведет: ' + (t.by ? esc(t.by) : 'никто') +
       (t.msgs ? ' · сообщений: ' + esc(t.msgs) : '') +
       (t.files ? ' · файлов: ' + esc(t.files) : '') + '</div></div>' +
       '<div class="rw-r">' + T.pill(t.status, false) + '<div class="tkd-ago">' + T.when(t.touched) + '</div></div></a>';
@@ -408,12 +408,12 @@
       });
       if (!act.length) {
         h += '<div class="empty tkd-calm"><h4>Открытых обращений нет</h4><p>Все разобраны. ' +
-          'Новые появятся здесь сами, а бот пришлёт ссылку в ЛС.</p></div>';
+          'Новые появятся здесь сами, а бот пришлет ссылку в ЛС.</p></div>';
       } else if ((rs[0].total || 0) > act.length) {
         h += '<p class="tkd-p">Показаны ' + act.length + ' из ' + rs[0].total +
           ' открытых. Остальные во вкладке «Все открытые».</p>';
       } else if (!act.some(function (t) { return t.waiting; })) {
-        h = '<div class="nbox tkd-ok"><span class="n-ic">✓</span><div>Ответа никто не ждёт: на всё, что писали игроки, ' +
+        h = '<div class="nbox tkd-ok"><span class="n-ic">✓</span><div>Ответа никто не ждет: на все, что писали игроки, ' +
           'команда уже ответила.</div></div>' + h;
       }
       if (shut.length) {
@@ -444,7 +444,7 @@
       if (!document.getElementById('tkdList')) return;
       var items = r.items || [];
       TOTAL = r.total || 0;
-      /* «Новые сверху»: закреплённые и ждущие ответа сервер уже ставит первыми; внутри
+      /* «Новые сверху»: закрепленные и ждущие ответа сервер уже ставит первыми; внутри
          этих кучек и в остальных — по времени создания, свежие выше. */
       items.sort(function (a, b) {
         var pa = a.pin && a.status !== 'closed' ? 1 : 0, pb = b.pin && b.status !== 'closed' ? 1 : 0;
@@ -464,7 +464,7 @@
         list.innerHTML = items.length ? '<div class="row-list">' + html + '</div>'
           : '<div class="empty"><h4>' + (Q || CAT ? 'Ничего не нашлось' : emptyText()) + '</h4>' +
             '<p>' + (Q || CAT ? 'Попробуйте другой номер, ник или тему.' :
-              'Новые обращения появятся здесь сами, а бот пришлёт ссылку в ЛС.') + '</p></div>';
+              'Новые обращения появятся здесь сами, а бот пришлет ссылку в ЛС.') + '</p></div>';
       }
       var mw = document.getElementById('tkdMoreW');
       if (mw) mw.hidden = SHOWN >= TOTAL;
@@ -477,7 +477,7 @@
 
   function emptyText() {
     return { waiting: 'Все ответили — ждущих нет', mine: 'У вас нет обращений в работе',
-      free: 'Все обращения кто-то ведёт', later: 'Отложенных нет', closed: 'Закрытых пока нет' }[TAB] || 'Обращений пока нет';
+      free: 'Все обращения кто-то ведет', later: 'Отложенных нет', closed: 'Закрытых пока нет' }[TAB] || 'Обращений пока нет';
   }
 
   /* ------------------------------------------------------------ обращение */
@@ -518,13 +518,13 @@
       '<span>от ' + T.av(t.acc || t.nick || '') + '<b>' + playerBtn(t.acc || t.nick, t.nick || 'игрок') + '</b>' +
       (t.acc && t.acc.toLowerCase() !== String(t.nick || '').toLowerCase() ? ' (аккаунт ' + esc(t.acc) + ')' : '') +
       '</span><span>создано ' + esc(T.stamp(t.at)) + '</span>' +
-      '<span>ведёт: ' + (t.by ? '<b>' + esc(t.by) + '</b>' : 'никто') + '</span>' +
+      '<span>ведет: ' + (t.by ? '<b>' + esc(t.by) + '</b>' : 'никто') + '</span>' +
       (t.pin && t.status !== 'closed' ? '<span class="pill gold" title="' + esc(T.stamp(t.pinAt)) + '">закрепил ' +
         esc(t.pinBy || '—') + '</span>' : '') +
       (t.site === false ? '<span>из Discord</span>' : '') + '</div>';
 
     /* Отложено (овнер 30.09.2026): до срока его не трогают SIGEA, само закрытие и
-       напоминания; в срок бот пишет отложившему и ведущему, обращение встаёт первым. */
+       напоминания; в срок бот пишет отложившему и ведущему, обращение встает первым. */
     if (t.later && t.status !== 'closed') {
       h += '<div class="nbox' + (t.due ? ' warn' : '') + ' tkd-lat">' + (t.due ? '<span class="n-ic">!</span>' : '') + '<div>' +
         (t.due ? '<b>Срок отложенного вышел ' + esc(T.stamp(t.later)) + '.</b> Пора дать ответ.'
@@ -538,7 +538,7 @@
     if (t.status !== 'closed') {
       if (!t.by) h += '<button type="button" class="btn btn-primary btn-sm" data-as="me">Взять себе</button>';
       else if (mineT) h += '<button type="button" class="btn btn-dark btn-sm" data-as="">Снять с себя</button>';
-      /* Овнер 28.09.2026: передать может любой из команды — ничьё или своё обращение;
+      /* Овнер 28.09.2026: передать может любой из команды — ничье или свое обращение;
          тому, кому передали, бот пишет в ЛС. Чужое переназначает владелец. */
       var own = (r.owners || []).map(function (n) { return String(n).toLowerCase(); });
       var to = (r.staff || []).filter(function (n) { return String(n).toLowerCase() !== String(me).toLowerCase(); });
@@ -551,7 +551,7 @@
       }
       if (r.owner && t.by && !mineT) h += '<button type="button" class="btn btn-dark btn-sm" data-as="">Снять ведущего</button>';
       if (t.status !== 'work') h += '<button type="button" class="btn btn-dark btn-sm" data-st="work">В работу</button>';
-      if (t.status !== 'wait') h += '<button type="button" class="btn btn-dark btn-sm" data-st="wait">Ждёт игрока</button>';
+      if (t.status !== 'wait') h += '<button type="button" class="btn btn-dark btn-sm" data-st="wait">Ждет игрока</button>';
       h += '<button type="button" class="btn btn-dark btn-sm" data-st="closed">Закрыть</button>';
       /* Закрепить и отложить — только высшая администрация (сервер проверяет сам). */
       if (r.top) {
@@ -585,7 +585,7 @@
   }
 
   /* «Отложить для решения позже» (овнер 30.09.2026): важное обращение, ответ на
-     которое будет позже, — например, про стажёров. Срок от 10 минут до 31 дня. */
+     которое будет позже, — например, про стажеров. Срок от 10 минут до 31 дня. */
   var LATER_MIN = 10 * 60 * 1000, LATER_MAX = 31 * 24 * 3600 * 1000;
   function localVal(ms) {
     var d = new Date(ms - new Date(ms).getTimezoneOffset() * 60000);
@@ -692,8 +692,8 @@
     h += '<div class="tk-cols"><div class="tk-main">';
     h += '<div class="tk-head"><h2>№' + esc(t.no) + ' · ' + esc(T.catName(t.cat, t.name)) + '</h2></div>';
     h += '<div id="tkdTop">' + topOf(t, r) + '</div>';
-    /* Форма срока живёт вне #tkdTop: живое обновление перерисовывает шапку и
-       стёрло бы набранное. */
+    /* Форма срока живет вне #tkdTop: живое обновление перерисовывает шапку и
+       стерло бы набранное. */
     if (r.top && t.status !== 'closed') h += laterForm(t);
 
     h += T.fields(t.fields);
@@ -706,12 +706,12 @@
     /* ответ */
     h += '<form id="tkdRe" class="tk-reply" novalidate>' +
       '<div class="field"><label for="tkdReT">Ответ</label>' +
-      '<textarea id="tkdReT" maxlength="4000" placeholder="Игрок увидит ответ на сайте, оповещение придёт ему в игру и в Discord"></textarea></div>' +
+      '<textarea id="tkdReT" maxlength="4000" placeholder="Игрок увидит ответ на сайте, оповещение придет ему в игру и в Discord"></textarea></div>' +
       '<div class="field"><div id="tkdUp"></div></div>' +
       '<div class="tkd-opts"><label class="tkd-chk"><input type="checkbox" id="tkdInt"> ' +
       'Заметка для команды — игрок не увидит</label>' +
       '<label class="tkd-then">После ответа: <select id="tkdThen">' +
-      '<option value="wait">ждёт игрока</option><option value="work">в работе</option>' +
+      '<option value="wait">ждет игрока</option><option value="work">в работе</option>' +
       '<option value="closed">закрыть</option></select></label></div>' +
       '<div class="form-go"><button class="btn btn-primary" type="submit" id="tkdGo">Отправить</button>' +
       '<div class="fg-note" role="status" id="tkdSay"></div></div></form>';
@@ -772,8 +772,8 @@
       rx: /discord\.gg\/[A-Za-z0-9-]{2,}|discord(?:app)?\.com\/invite\/[A-Za-z0-9-]{2,}/i,
       bad: 'Нужна ссылка-приглашение вида discord.gg/…', noName: 'Впишите, кого представляет сервер.' },
     video: { where: 'канал «видео игроков»', what: 'ролик', name: 'Канал автора',
-      link: 'Ссылка на ролик', ph: 'https://youtube.com/…', text: 'О чём ролик',
-      check: 'Посмотрите ролик: про AEGIS, без запрещённого, ссылка открывается.', tail: '',
+      link: 'Ссылка на ролик', ph: 'https://youtube.com/…', text: 'О чем ролик',
+      check: 'Посмотрите ролик: про AEGIS, без запрещенного, ссылка открывается.', tail: '',
       rx: /(youtube\.com\/(watch|shorts\/|live\/)|youtu\.be\/|tiktok\.com\/|vk\.com\/(video|clip)|vkvideo\.ru\/|rutube\.ru\/(video|shorts)\/|twitch\.tv\/)/i,
       bad: 'Нужна ссылка на ролик: YouTube, TikTok, VK Видео, Rutube или Twitch.', noName: 'Впишите название канала.' },
     /* Стример (овнер 28.09.2026): роль «Стример проекта» и канал в эфиры. Обычно одобряет
@@ -802,9 +802,9 @@
     }
     if (st === 'fail') {
       h += '<div class="nbox tkd-pub-bad"><span class="n-ic">!</span><div>' + (K.fail || 'Бот не смог выложить ' + K.what) +
-        (p.error ? ': ' + esc(p.error) : '') + '. Проверьте ссылку и нажмите «Одобрить» ещё раз.</div></div>';
+        (p.error ? ': ' + esc(p.error) : '') + '. Проверьте ссылку и нажмите «Одобрить» еще раз.</div></div>';
     }
-    h += '<p class="tkd-p">' + K.check + ' Всё в порядке — при необходимости поправьте поля и нажмите ' +
+    h += '<p class="tkd-p">' + K.check + ' Все в порядке — при необходимости поправьте поля и нажмите ' +
       '«Одобрить». Бот ' + (K.act || 'выложит ' + K.what + ' в ' + K.where) + K.tail + ', игрок получит ответ, обращение закроется.</p>' +
       '<form id="tkdPub" class="tkd-pubf" novalidate>' +
       '<div class="field"><label for="tkdPubT">' + K.name + '</label>' +
@@ -883,7 +883,7 @@
     });
     root.querySelectorAll('[data-crev]').forEach(function (b) {
       b.addEventListener('click', function () {
-        if (!confirm('Отозвать эту выдачу? Письмо пропадёт у игрока, если он его ещё не забрал.')) return;
+        if (!confirm('Отозвать эту выдачу? Письмо пропадет у игрока, если он его еще не забрал.')) return;
         act('/adm/ticket/comp', { id: t.id, revoke: b.getAttribute('data-crev') });
       });
     });
@@ -901,7 +901,7 @@
     });
     root.querySelectorAll('[data-later0]').forEach(function (b) {
       b.addEventListener('click', function () {
-        if (!confirm('Вернуть обращение №' + t.no + ' из отложенных? Оно снова попадёт в обычный порядок.')) return;
+        if (!confirm('Вернуть обращение №' + t.no + ' из отложенных? Оно снова попадет в обычный порядок.')) return;
         act('/adm/ticket/later', { id: t.id, until: 0 });
       });
     });
@@ -909,7 +909,7 @@
     if (lg) lg.addEventListener('click', function () {
       var box = document.getElementById('tkdLater');
       if (!box) {
-        /* обращение открыли заново, пока страница была открыта, — формы ещё нет */
+        /* обращение открыли заново, пока страница была открыта, — формы еще нет */
         r.ticket = t; showTicket(r);
         box = document.getElementById('tkdLater');
         if (!box) return;
@@ -935,7 +935,7 @@
     ta.addEventListener('input', function () { REPLY[t.id] = ta.value; });
     if (t.status === 'closed') then.value = 'closed';
     inn.addEventListener('change', function () {
-      ta.placeholder = inn.checked ? 'Видно только команде' : 'Игрок увидит ответ на сайте, оповещение придёт ему в игру и в Discord';
+      ta.placeholder = inn.checked ? 'Видно только команде' : 'Игрок увидит ответ на сайте, оповещение придет ему в игру и в Discord';
       go.textContent = inn.checked ? 'Сохранить заметку' : 'Отправить';
       then.value = inn.checked ? '' : (t.status === 'closed' ? 'closed' : 'wait');
       if (inn.checked && !then.querySelector('option[value=""]')) {
@@ -979,14 +979,14 @@
 
   function teamView(box, r) {
     if (!document.getElementById('tkdTeam')) return;
-    var h = '<p class="tkd-p">Доступ по должности выдаётся сам: сервер сверяет роли в Discord, ' +
+    var h = '<p class="tkd-p">Доступ по должности выдается сам: сервер сверяет роли в Discord, ' +
       'и с ролью доступ уходит. Вручную здесь добавляют тех, у кого нужной роли нет.</p>';
     h += '<h3 class="tk-h3">По должности</h3>';
     var auto = r.auto || [];
     h += auto.length ? '<div class="row-list">' + auto.map(function (x) {
       return '<div class="row r2"><div><div class="rw-t"><b>' + esc(x.nick) + '</b> · ' + esc(x.rank) + '</div>' +
         '<div class="rw-s">Темы: ' + esc((x.cats || []).map(function (k) { return T.catName(k, k); }).join(', ')) +
-        (x.account ? '' : ' · <b>нет игрового аккаунта</b> — войти не сможет, пока не зайдёт в лаунчер') + '</div></div>' +
+        (x.account ? '' : ' · <b>нет игрового аккаунта</b> — войти не сможет, пока не зайдет в лаунчер') + '</div></div>' +
         '<div class="rw-r">в работе: ' + esc(x.load || 0) + '<br>разобрал: ' + esc(x.doneWeek || 0) +
         ' за 7 дн. · ' + esc(x.done || 0) + ' всего</div></div>';
     }).join('') + '</div>' : '<p class="tkd-p">Никого.</p>';
@@ -1018,7 +1018,7 @@
     document.getElementById('tkdAdd').addEventListener('submit', function (e) {
       e.preventDefault();
       var n = document.getElementById('tkdAddN').value.trim();
-      if (!/^[A-Za-z0-9_]{3,16}$/.test(n)) { say.textContent = 'Ник: 3–16 знаков, латиница, цифры, подчёркивание.'; return; }
+      if (!/^[A-Za-z0-9_]{3,16}$/.test(n)) { say.textContent = 'Ник: 3–16 знаков, латиница, цифры, подчеркивание.'; return; }
       if (!confirm('Дать ' + n + ' доступ ко всем обращениям?')) return;
       set(n, true);
     });
@@ -1035,7 +1035,7 @@
   /* Овнер 25.09.2026: «для высшей администрации, чтобы они могли настраивать тикеты
      для админов ниже… кто может просматривать обращения той или иной категории».
      Таблица: строки — темы, столбцы — должности сверху вниз. Тему видит выбранная
-     должность и все старше неё. Кольцо — как было в тикетах Discord. Что можно
+     должность и все старше нее. Кольцо — как было в тикетах Discord. Что можно
      менять, решает сервер (edit у темы, pick у должности). */
   var SHORT = { founder: 'Осн.', head: 'Упр.', deputy_head: 'Пом. упр.', coordinator: 'Коорд.',
     chief_admin: 'Гл. адм.', special_admin: 'Адм. ОП', senior_admin: 'Ст. адм.', admin: 'Адм.',
@@ -1055,7 +1055,7 @@
       'старше. <span class="tkd-acc-ring" aria-hidden="true"></span> — как было в тикетах Discord. ' +
       (r.can ? 'Нажмите на клетку, чтобы тему видели с этой должности. Темы выше вашей должности настраивают старшие.'
         : 'Менять доступ могут Координатор и выше.') +
-      ' Бот шлёт уведомления о новых обращениях по этой же таблице.</p>';
+      ' Бот шлет уведомления о новых обращениях по этой же таблице.</p>';
     h += '<div class="tkd-acc-w"><table class="tkd-acc"><thead><tr><th scope="col">Тема</th>';
     ranks.forEach(function (x) {
       var c = T.color(x.color);
@@ -1080,9 +1080,9 @@
     });
     h += '</tbody></table></div>';
     h += '<div class="tkd-acc-f"><span class="fg-note" id="tkdAccSay" role="status">' +
-      (r.by ? 'Последняя правка: ' + esc(r.by) + ', ' + esc(T.stamp(r.at)) : 'Всё как было в Discord.') + '</span>' +
+      (r.by ? 'Последняя правка: ' + esc(r.by) + ', ' + esc(T.stamp(r.at)) : 'Все как было в Discord.') + '</span>' +
       (r.owner && (r.cats || []).some(function (c) { return c.need !== c.def; })
-        ? '<button type="button" class="btn btn-dark btn-sm" id="tkdAccReset">Вернуть всё как в Discord</button>' : '') + '</div>';
+        ? '<button type="button" class="btn btn-dark btn-sm" id="tkdAccReset">Вернуть все как в Discord</button>' : '') + '</div>';
     box.innerHTML = h;
     var say = document.getElementById('tkdAccSay');
     function send(b, what) {
@@ -1117,7 +1117,7 @@
 
   /* Овнер 25.09.2026: «чтобы команда администрации могла нажать на ник игрока и
      открыть профиль… в какой стране, координаты где он в последний раз находился,
-     какая привилегия» и «что у него по кейсам наказаний». Всё собирает сервер
+     какая привилегия» и «что у него по кейсам наказаний». Все собирает сервер
      (/adm/player); где стоит старший по должности, младшему не показывается. */
   function playerBtn(nick, label) {
     if (!nick || !/^[A-Za-z0-9_]{3,16}$/.test(nick)) return esc(label || nick || '');
@@ -1203,7 +1203,7 @@
     }
     if (p.accBanned) al += '<div class="tkp-al red"><b>Аккаунт заблокирован</b><span>В лаунчер войти не может.</span></div>';
     if (p.mutedUntil && p.mutedUntil > now) al += '<div class="tkp-al gold"><b>Мут до ' + esc(T.stamp(p.mutedUntil)) + '</b>' +
-      '<span>Ещё ' + esc(left(p.mutedUntil - now)) + '</span></div>';
+      '<span>Еще ' + esc(left(p.mutedUntil - now)) + '</span></div>';
     if (al) h += '<div class="tkp-als">' + al + '</div>';
 
     /* факты */
@@ -1240,7 +1240,7 @@
     } else if (p.posHidden) {
       h += '<p class="tkp-none">Скрыто: игрок старше вас по должности.</p>';
     } else {
-      h += '<p class="tkp-none">Нет данных — игрок ещё не заходил в мир.</p>';
+      h += '<p class="tkp-none">Нет данных — игрок еще не заходил в мир.</p>';
     }
 
     /* наказания */
@@ -1300,7 +1300,7 @@
 
   /* Овнер 28.09.2026: «панель на сайте для поиска и выдачи предметов, оформи хорошо»,
      «выдавать может только высшая администрация». Вещи уходят письмом /mail: игрок
-     забирает сам, пока не забрал — выдачу можно отозвать. Всё пишется в журнал. */
+     забирает сам, пока не забрал — выдачу можно отозвать. Все пишется в журнал. */
   var GIVE = { item: null, nick: '', no: '', why: '', q: '', cart: [], run: false };
   var ICONS = null;
   var GIVE_MAX = 2304;
@@ -1308,7 +1308,7 @@
   var GV_T = 0;
   /* Овнер 28.09.2026: «набрать пачку предметов и потом выдать, а не по одному виду». Служба
      принимает один предмет за вызов (одно письмо) и не больше 20 вызовов в минуту на человека —
-     пачка уходит по очереди; упёрлись в лимит — ждём минуту и продолжаем сами. */
+     пачка уходит по очереди; уперлись в лимит — ждем минуту и продолжаем сами. */
   var CART_MAX = 60;
 
   function iconsLoad() {
@@ -1346,15 +1346,15 @@
         GIVE_MAX + '" value="1"><div class="gv-q" id="gvQuick"></div></div>' +
         '<button type="button" class="btn btn-dark gv-add" id="gvAdd" disabled>+ В пачку</button>' +
         '<div class="gv-cart" id="gvCart"></div>' +
-        '<label class="gv-f"><span>Обращение №<small>если выдаёте по нему</small></span><input id="gvNo" ' +
+        '<label class="gv-f"><span>Обращение №<small>если выдаете по нему</small></span><input id="gvNo" ' +
         'inputmode="numeric" maxlength="7" autocomplete="off" placeholder="—" value="' + esc(GIVE.no) + '"></label>' +
-        '<label class="gv-f"><span>Причина<small>игрок увидит её в письме</small></span><textarea id="gvWhy" rows="2" ' +
+        '<label class="gv-f"><span>Причина<small>игрок увидит ее в письме</small></span><textarea id="gvWhy" rows="2" ' +
         'maxlength="200" placeholder="Например: вещи пропали после отката 27.09">' + esc(GIVE.why) + '</textarea></label>' +
         '<button class="btn btn-primary" type="submit" id="gvGo">Отправить письмом</button>' +
         '<p class="gv-say" id="gvSay" role="status"></p>' +
-        '<p class="gv-note">Игрок заберёт вещи в игре командой <b>/mail</b> — письмо ждёт, пока его не заберут. ' +
-        'Пока не забрано, выдачу можно отозвать. Каждая выдача попадает в журнал ниже и в недельный отчёт. ' +
-        'Пачка: выберите предмет и «+ В пачку» (или двойной щелчок по нему), потом отправьте всё разом — ' +
+        '<p class="gv-note">Игрок заберет вещи в игре командой <b>/mail</b> — письмо ждет, пока его не заберут. ' +
+        'Пока не забрано, выдачу можно отозвать. Каждая выдача попадает в журнал ниже и в недельный отчет. ' +
+        'Пачка: выберите предмет и «+ В пачку» (или двойной щелчок по нему), потом отправьте все разом — ' +
         'по письму на вид; больше 20 видов — остальное досылается через минуту само. ' +
         'Служебные и творческие предметы здесь не выдаются.</p></form></div>';
       h += '<div class="gv-lh"><h3 class="tk-h3">Журнал выдач</h3><button type="button" class="btn btn-dark btn-sm" ' +
@@ -1401,7 +1401,7 @@
     if (s) { s.className = 'gv-say' + (cls ? ' ' + cls : ''); s.textContent = text; }
   }
 
-  /* Пачка: строка = вид предмета = одно письмо. Пока пачка уходит, её не правят. */
+  /* Пачка: строка = вид предмета = одно письмо. Пока пачка уходит, ее не правят. */
   function cartView() {
     var box = document.getElementById('gvCart'), go = document.getElementById('gvGo');
     if (!box) return;
@@ -1427,7 +1427,7 @@
   function sendCart(nick, no, why, who) {
     var list = GIVE.cart.map(function (x) { return x.count + ' × ' + x.name; });
     if (!confirm('Отправить игроку ' + who + ' пачку — ' + list.length + ' ' + vid(list.length) + ':\n\n' +
-      list.join('\n') + '\n\nКаждый вид уйдёт отдельным письмом.')) return;
+      list.join('\n') + '\n\nКаждый вид уйдет отдельным письмом.')) return;
     var total = GIVE.cart.length, sent = 0, skip = 0, to = '';
     GIVE.run = true;
     GIVE.stop = false;
@@ -1519,7 +1519,7 @@
     A.call('/adm/give/log').then(function (r) {
       var rows = r.rows || [];
       if (!rows.length) { box.innerHTML = '<p class="gv-empty">Выдач пока не было.</p>'; return; }
-      var ST = { wait: ['ждёт игрока', 'wait'], given: ['забрано', 'given'], revoked: ['отозвано', 'revoked'] };
+      var ST = { wait: ['ждет игрока', 'wait'], given: ['забрано', 'given'], revoked: ['отозвано', 'revoked'] };
       box.innerHTML = '<div class="row-list">' + rows.map(function (x) {
         var s = x.revokedAt ? ST.revoked : ST[x.state] || ST.wait;
         return '<div class="row gv-row">' + ico(x.item, x.name) + '<div><div class="rw-t"><b>' + esc(x.count) + ' × ' +
@@ -1533,7 +1533,7 @@
       }).join('') + '</div>';
       box.querySelectorAll('[data-rev]').forEach(function (b) {
         b.addEventListener('click', function () {
-          if (!confirm('Отозвать выдачу ' + b.getAttribute('data-what') + '? Письмо пропадёт у игрока.')) return;
+          if (!confirm('Отозвать выдачу ' + b.getAttribute('data-what') + '? Письмо пропадет у игрока.')) return;
           b.disabled = true;
           A.call('/adm/give', { body: { revoke: b.getAttribute('data-rev') } }).then(giveLog, function (err) {
             b.disabled = false;
@@ -1578,7 +1578,7 @@
       if (!(n >= 1 && n <= GIVE_MAX)) { gvSay('bad', 'Сколько — от 1 до ' + GIVE_MAX + '.'); return; }
       var had = GIVE.cart.filter(function (x) { return x.id === it.id; })[0];
       if (!had && GIVE.cart.length >= CART_MAX) {
-        gvSay('bad', 'В пачке уже ' + CART_MAX + ' видов — отправьте её, потом наберите следующую.');
+        gvSay('bad', 'В пачке уже ' + CART_MAX + ' видов — отправьте ее, потом наберите следующую.');
         return;
       }
       if (had) { had.count = Math.min(GIVE_MAX, had.count + n); had.st = ''; had.msg = ''; }
@@ -1622,7 +1622,7 @@
         no && !/^\d{1,7}$/.test(no) ? 'Номер обращения — только цифры.' :
         pack && cart.querySelector('input.bad') ? 'В пачке неверное количество — от 1 до ' + GIVE_MAX + '.' :
         !pack && !(n >= 1 && n <= GIVE_MAX) ? 'Сколько — от 1 до ' + GIVE_MAX + '.' :
-        !no && why.length < 5 ? 'Напишите причину — она попадёт в письмо и в журнал.' : '';
+        !no && why.length < 5 ? 'Напишите причину — она попадет в письмо и в журнал.' : '';
       if (bad) { say.className = 'gv-say bad'; say.textContent = bad; return; }
       var who = nick || 'автору обращения №' + no;
       if (pack) { sendCart(nick, no, why, who); return; }
@@ -1633,7 +1633,7 @@
         go.disabled = false;
         var g = r.given || {};
         say.className = 'gv-say ok';
-        say.textContent = 'Отправлено: ' + n + ' × ' + GIVE.item.name + ' → ' + (g.nick || who) + '. Письмо ждёт игрока в /mail.';
+        say.textContent = 'Отправлено: ' + n + ' × ' + GIVE.item.name + ' → ' + (g.nick || who) + '. Письмо ждет игрока в /mail.';
         document.getElementById('gvCnt').value = 1;
         giveLog();
       }, function (err) {
@@ -1727,10 +1727,10 @@
     });
   }
 
-  /* ------------------------------------------------------------ учёт техники */
+  /* ------------------------------------------------------------ учет техники */
 
-  /* Овнер 02.10.2026: каждая физическая постройка Sable — в учёте; по тикету высшая администрация
-     возвращает её ресурсами (письмами) или целиком (достаёт посохом в игре). Прежняя копия
+  /* Овнер 02.10.2026: каждая физическая постройка Sable — в учете; по тикету высшая администрация
+     возвращает ее ресурсами (письмами) или целиком (достает посохом в игре). Прежняя копия
      постройки при этом убирается из мира, повторно по одной постройке не выдают. */
   var SBL = { q: '', id: 0 };
 
@@ -1769,11 +1769,11 @@
     if (!box) return;
     A.call('/adm/sable?limit=150&q=' + encodeURIComponent(SBL.q)).then(function (r) {
       var rows = r.list || [];
-      document.getElementById('sbSum').textContent = 'В учёте ' + sblN(r.all || 0, 'запись', 'записи', 'записей') +
+      document.getElementById('sbSum').textContent = 'В учете ' + sblN(r.all || 0, 'запись', 'записи', 'записей') +
         (SBL.q ? ', найдено ' + (r.total || 0) : '') + (r.waiting ? ', ждут выдачи посохом: ' + r.waiting : '') + '.';
       if (!rows.length) { box.innerHTML = '<p class="gv-empty">Ничего не нашлось.</p>'; return; }
       box.innerHTML = '<div class="row-list">' + rows.map(function (x) {
-        var tag = x.restoredAt ? ' · <b>выдана ' + esc(x.restoredMode) + '</b>' : x.waitFor ? ' · <b>ждёт посоха</b>' : '';
+        var tag = x.restoredAt ? ' · <b>выдана ' + esc(x.restoredMode) + '</b>' : x.waitFor ? ' · <b>ждет посоха</b>' : '';
         return '<div class="row gv-row" data-sb="' + esc(x.id) + '" role="button" tabindex="0"><div><div class="rw-t"><b>№' +
           esc(x.id) + '</b>' + (x.root !== x.id ? ' <small>часть №' + esc(x.root) + '</small>' : '') +
           (x.name ? ' «' + esc(x.name) + '»' : '') + ' — ' + esc(x.owner || 'хозяин неизвестен') + (x.guess ? '?' : '') +
@@ -1823,7 +1823,7 @@
           (x.restoredTicket ? ', <a href="#t=' + esc(x.restoredTicket) + '">обращение №' + esc(x.restoredTicket) + '</a>' : ''));
       }
       if (x.waitFor) {
-        li.push('<b>Ждёт выдачи целиком</b> с ' + esc(T.stamp(x.waitAt)) + ': достаёт ' + esc(x.waitFor) + ' посохом физики ' +
+        li.push('<b>Ждет выдачи целиком</b> с ' + esc(T.stamp(x.waitAt)) + ': достает ' + esc(x.waitFor) + ' посохом физики ' +
           '(Shift+ПКМ или дважды Shift), получатель ' + esc(x.waitNick) + (x.waitReason ? ' · ' + esc(x.waitReason) : ''));
       }
       h += '<div class="rw-s sb-li">' + li.map(function (s) { return '<p>' + s + '</p>'; }).join('') + '</div>';
@@ -1836,7 +1836,7 @@
           return '<div class="row gv-row"><div><div class="rw-t"><b>#' + esc(v.seq) + '</b> · ' + esc(T.stamp(v.at)) + ' · ' +
             esc(v.blocks) + ' бл.</div><div class="rw-s">' + top.slice(0, 8).map(function (k) {
               return esc(sblItem(k)) + ' ' + esc(v.items[k]);
-            }).join(', ') + (top.length > 8 ? ' и ещё ' + sblN(top.length - 8, 'вид', 'вида', 'видов') : '') + '</div></div></div>';
+            }).join(', ') + (top.length > 8 ? ' и еще ' + sblN(top.length - 8, 'вид', 'вида', 'видов') : '') + '</div></div></div>';
         }).join('') + '</div>';
       }
       if (ME.sable && !x.restoredAt && !x.waitFor && vs.length + (x.family || []).length > 0) {
@@ -1852,9 +1852,9 @@
           esc(x.owner || 'ник') + '"></label>' +
           '<label class="gv-f"><span>Причина<small>без номера обращения — обязательно</small></span><textarea id="sbWhy" rows="2" maxlength="200"></textarea></label>' +
           '<button class="btn btn-primary" type="submit" id="sbBtn">Вернуть</button><p class="gv-say" id="sbSay" role="status"></p>' +
-          '<p class="gv-note">Перед выдачей вся постройка (и все её обломки) убирается из мира — даже спрятанная или выгруженная; ' +
-          'если какая-то часть загрузится позже, её уберёт сервер. По одной постройке выдают один раз. ' +
-          'Разобранную сборщиком не выдают: её блоки уже у игрока. Груз сундуков и жидкости баков не возвращаются.</p></form>';
+          '<p class="gv-note">Перед выдачей вся постройка (и все ее обломки) убирается из мира — даже спрятанная или выгруженная; ' +
+          'если какая-то часть загрузится позже, ее уберет сервер. По одной постройке выдают один раз. ' +
+          'Разобранную сборщиком не выдают: ее блоки уже у игрока. Груз сундуков и жидкости баков не возвращаются.</p></form>';
       }
       h += '</div>';
       box.innerHTML = h;
@@ -1893,9 +1893,9 @@
     });
   }
 
-  /* ------------------------------------------------------------ отчёт недели */
+  /* ------------------------------------------------------------ отчет недели */
 
-  /* Предложение команды 28.09.2026: «автоматические еженедельные отчёты на сайте».
+  /* Предложение команды 28.09.2026: «автоматические еженедельные отчеты на сайте».
      Считается сервером из обращений и журнала выдач, неделя — с понедельника по МСК. */
   var WEEK = 1;
 
@@ -1923,15 +1923,15 @@
     var h = '<div class="wk-head"><button type="button" class="btn btn-dark btn-sm" data-wk="1" aria-label="Неделей раньше"' +
       (r.back >= 52 ? ' disabled' : '') + '>←</button><b>' + esc(d(r.from)) + ' — ' + esc(d(r.to - 1)) + '</b>' +
       '<button type="button" class="btn btn-dark btn-sm" data-wk="-1" aria-label="Неделей позже"' +
-      (r.back <= 0 ? ' disabled' : '') + '>→</button>' + (r.back === 0 ? '<span class="wk-now">неделя идёт — цифры растут</span>' : '') + '</div>';
+      (r.back <= 0 ? ' disabled' : '') + '>→</button>' + (r.back === 0 ? '<span class="wk-now">неделя идет — цифры растут</span>' : '') + '</div>';
     var tiles = [
       [r.made, 'новых обращений'], [r.closed, 'закрыто'], [r.bySigea, 'из них закрыла SIGEA'],
       [r.byPlayer, 'закрыли сами игроки'], [r.open, 'открыто на конец недели'],
       [dur(r.firstMed), 'первый ответ, медиана' + (r.firstN ? ' (' + r.firstN + ')' : '')],
       [r.comps, 'выдач предметов' + (r.compItems ? ' · ' + r.compItems + ' шт.' : '')]
     ];
-    /* Учёт работы штаба (03.10.2026): смена и ответы — отдельными числами и по дням.
-       Сервер до обновления поля work не шлёт — тогда остаётся прежняя таблица. */
+    /* Учет работы штаба (03.10.2026): смена и ответы — отдельными числами и по дням.
+       Сервер до обновления поля work не шлет — тогда остается прежняя таблица. */
     if (r.work) {
       tiles.unshift([hm(r.dutyAll), r.all ? 'на смене всей командой' : 'на смене'],
         [r.answersAll, 'ответов в обращениях']);
@@ -1964,7 +1964,7 @@
             (x.comps ? esc(x.comps) + ' <small>(' + esc(x.compItems) + ' шт.)</small>' : '—') + '</td></tr>';
         }).join('') + '</tbody></table></div>';
     }
-    if (!r.all) h += '<p class="tkd-p wk-foot">Всю команду в отчёте видят высшая администрация и владелец.</p>';
+    if (!r.all) h += '<p class="tkd-p wk-foot">Всю команду в отчете видят высшая администрация и владелец.</p>';
     box.innerHTML = h;
     box.querySelectorAll('[data-wk]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -1994,7 +1994,7 @@
   var WK_DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
   var WK_KIND = { warn: 'пред', mute: 'мут', ban: 'бан', kick: 'кик' };
 
-  /* Строка человека в недельном отчёте и скрытая под ней раскладка по дням. */
+  /* Строка человека в недельном отчете и скрытая под ней раскладка по дням. */
   function workRow(x, from) {
     var day = function (ms, o) {
       o.timeZone = 'Europe/Moscow';

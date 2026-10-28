@@ -1,7 +1,7 @@
 /* AEGIS — панель управления сайтом и командой (admin.html).
 
-   Вход один и тот же, что в кабинет: POST /cab/login кладёт сессию в
-   sessionStorage, кабинет и панель её делят. Панель просто требует прав
+   Вход один и тот же, что в кабинет: POST /cab/login кладет сессию в
+   sessionStorage, кабинет и панель ее делят. Панель просто требует прав
    больше: {ok:false} на любом /adm/* — это нормальный отказ, а не поломка.
 
    Права приходят в /cab/me полем rights[]: "tickets", "content", "staff",
@@ -26,7 +26,7 @@
    GET  /adm/content?key=news|streamers|topics|wiki -> {ok, key, at, by, data}
    POST /adm/content {key, data}                    -> {ok, text, at}
         data — ровно та структура, что лежит в site/data/<key>.json.
-        Служба хранит свою копию и отдаёт её страницам сайта
+        Служба хранит свою копию и отдает ее страницам сайта
         (GET /site/news, /site/streamers, /site/topics, /site/wiki).
         Пока службы нет, страницы читают файлы в репозитории — поэтому
         снимок надо уметь выгружать обратно в файлы (кнопка в хабе).
@@ -69,7 +69,7 @@
   var body = document.getElementById('adBody');
   if (!body || !A) return;
 
-  var me = null;          /* кто вошёл: /cab/me */
+  var me = null;          /* кто вошел: /cab/me */
   var view = 'home';
   var sub = 'news';       /* подраздел «Содержимое» */
   var msg = null;         /* одноразовая полоска сверху */
@@ -99,7 +99,7 @@
      Руководство (Основатель, Управляющий, Координатор, Discord-Куратор) экзаменом
      не берут — это назначение, а не отбор, и в списке его нет намеренно. */
   var ROLES = [
-    ['intern', 'Стажёр', 'Младший состав'],
+    ['intern', 'Стажер', 'Младший состав'],
     ['moder', 'Модератор', 'Младший состав'],
     ['smoder', 'Старший Модератор', 'Средний состав'],
     ['admin', 'Администратор', 'Средний состав'],
@@ -114,14 +114,14 @@
      на входе — правила и поведение, на повышении — обязанности новой должности,
      на переаттестации — разбор того, что человек уже наделал на посту. */
   var LEVELS = [
-    ['entry', 'Приём на стажировку', 'приём'],
+    ['entry', 'Прием на стажировку', 'прием'],
     ['up', 'Повышение на должность', 'повышение'],
     ['recert', 'Переаттестация на посту', 'переаттестация']
   ];
 
   var STATE = {
     issued: ['выдан', 'gold'],
-    done: ['ждёт проверки', 'green'],
+    done: ['ждет проверки', 'green'],
     graded: ['проверен', ''],
     dead: ['погашен', 'red']
   };
@@ -189,7 +189,7 @@
     if (e && e.code === 'auth') {
       A.setSession(null);
       me = null;
-      note('bad', 'Вход истёк — зайди заново.');
+      note('bad', 'Вход истек — зайди заново.');
       paint();
       return;
     }
@@ -289,8 +289,8 @@
   function paintNoRights() {
     body.innerHTML = flash() +
       '<div class="cab-login"><h2>Прав нет</h2>' +
-      '<p class="cl-lead">Аккаунт <b>' + esc(me.nick || '') + '</b> вошёл, но управлять сайтом ' +
-      'ему не разрешено. Если это ошибка — скажи тому, кто выдаёт права.</p>' +
+      '<p class="cl-lead">Аккаунт <b>' + esc(me.nick || '') + '</b> вошел, но управлять сайтом ' +
+      'ему не разрешено. Если это ошибка — скажи тому, кто выдает права.</p>' +
       '<div class="form-go"><a class="btn btn-dark" href="cabinet">В кабинет</a>' +
       '<button class="btn btn-dark" data-act="out">Выйти</button></div></div>';
   }
@@ -322,9 +322,9 @@
     return '<aside class="cab-side">' +
       '<div class="cab-me">' + av + '<div><div class="cm-n">' + esc(me.nick || '') +
       '</div><div class="cm-s">' + esc(me.role || 'команда') + '</div></div></div>' + n +
-      /* Точка-разделитель в своём теге: на телефоне «Выйти» становится отдельной
+      /* Точка-разделитель в своем теге: на телефоне «Выйти» становится отдельной
          кнопкой под строкой, и точка повисала в хвосте «Кабинет ·». Голый текст
-         стилями не убрать, поэтому он завёрнут. */
+         стилями не убрать, поэтому он завернут. */
       '<div class="cab-out"><a href="cabinet">Кабинет</a><span class="cab-sep"> · </span>' +
       '<button type="button" data-act="out">Выйти</button></div></aside>';
   }
@@ -342,7 +342,7 @@
   /* --------------------------------------------------------------- кусочки */
 
   /* cls — необязательный довесок: «wide» растягивает плитку на всю ширину ряда
-     на телефоне (ник в неё влезает целиком, а не переносится по слогам). */
+     на телефоне (ник в нее влезает целиком, а не переносится по слогам). */
   function tile(k, v, s, cls) {
     return '<div class="tile' + (cls ? ' ' + cls : '') + '"><div class="t-k">' + esc(k) + '</div>' +
       '<div class="t-v">' + esc(v) + '</div>' +
@@ -373,7 +373,7 @@
     var tiles =
       tile('На сервере', o.online != null ? String(o.online) : '—', 'игроков прямо сейчас') +
       tile('Обращения', String(t.open || 0),
-        (t.wait ? plural(t.wait, ['ждёт', 'ждут', 'ждут']) + ' ответа игрока' : 'новых нет')) +
+        (t.wait ? plural(t.wait, ['ждет', 'ждут', 'ждут']) + ' ответа игрока' : 'новых нет')) +
       tile('Экзамены', String(e.check || 0), 'сданы и ждут проверки') +
       tile('Заявки', String(s.apply || 0), 'в команду');
 
@@ -425,7 +425,7 @@
 
     var rows = r.map(function (t) {
       var pill = t.status === 'done' ? '<span class="pill">закрыто</span>'
-        : t.status === 'wait' ? '<span class="pill gold">ждёт игрока</span>'
+        : t.status === 'wait' ? '<span class="pill gold">ждет игрока</span>'
           : '<span class="pill green">в работе</span>';
       return row(
         '<a href="#/t/' + esc(t.id) + '">№' + esc(t.id) + ' · ' + esc(t.name || t.cat) + '</a>',
@@ -454,7 +454,7 @@
       '<textarea id="adRep" rows="4" placeholder="Пишем по-человечески: что решили и почему"></textarea></div>' +
       '<div class="form-go">' +
       '<button class="btn btn-primary" data-act="t-reply">Отправить</button>' +
-      '<button class="btn btn-dark" data-act="t-wait">Ждём игрока</button>' +
+      '<button class="btn btn-dark" data-act="t-wait">Ждем игрока</button>' +
       '<button class="btn btn-dark" data-act="t-done">Закрыть обращение</button>' +
       '<span class="fg-note" role="status" id="adTSay"></span></div>';
 
@@ -511,7 +511,7 @@
       '<input id="nTitle" value="' + esc(cur.title || '') + '" placeholder="Коротко, без точки"></div>' +
       '</div>' +
       '<div class="field"><label for="nText">Текст</label>' +
-      '<textarea id="nText" rows="4" placeholder="Два-три предложения: что сделали и что это даёт игроку">' +
+      '<textarea id="nText" rows="4" placeholder="Два-три предложения: что сделали и что это дает игроку">' +
       esc(cur.text || '') + '</textarea></div>' +
       '<div class="form-go">' +
       '<button class="btn btn-primary" data-act="n-save" data-i="' + i + '">' +
@@ -524,7 +524,7 @@
        встала первой, прежняя ушла в общий ряд сама. */
     var hint = '<p class="ad-hint">Первая в списке — самая свежая: на главной ' +
       'она стоит крупной карточкой во всю ширину, остальные идут под ней обычными. ' +
-      'Новая новость встаёт первой сама, прежняя уходит в общий ряд. ' +
+      'Новая новость встает первой сама, прежняя уходит в общий ряд. ' +
       'Кнопка ↑ поднимает новость на строку выше.</p>';
 
     return block('Новости на главной', hint + '<div class="row-list">' + rows + '</div>') +
@@ -559,7 +559,7 @@
     return block('Каналы на странице «Эфиры»', '<div class="row-list">' + rows + '</div>') +
       block('Добавить канал', form) +
       '<p class="cab-hint">Кто сейчас в эфире, служба проверяет сама: список каналов — ' +
-      'это всё, что нужно задать руками.</p>';
+      'это все, что нужно задать руками.</p>';
   }
 
   /* Темы обращений: включить/выключить и переименовать. Поля форм —
@@ -643,7 +643,7 @@
         '" data-n="' + esc(a.nick) + '" data-r="' + esc(a.role) + '">Дать экзамен</button>' +
         '<button class="btn btn-dark btn-sm" data-act="ap-no" data-id="' + esc(a.id) +
         '">Отказать</button>');
-    }).join('') : row('Заявок нет', 'Форма заявки — тема «Стажёр» на странице обращений', '');
+    }).join('') : row('Заявок нет', 'Форма заявки — тема «Стажер» на странице обращений', '');
 
     var revForm = '';
     if (d.rev) {
@@ -722,7 +722,7 @@
       form +
       '<p class="cab-hint">Вариант собирается на сервере под конкретного человека: свой ' +
       'набор вопросов, свой порядок ответов, свои числа в задачах. Готовые ответы от друга ' +
-      'не подойдут — у него был другой вариант. Если вариант всё-таки утёк, жми ' +
+      'не подойдут — у него был другой вариант. Если вариант все-таки утек, жми ' +
       '«Перегенерировать» в карточке: старый гаснет, кандидат получает новый.</p>';
   }
 
@@ -740,7 +740,7 @@
         (e.level ? ' · ' + esc(levelShort(e.level)) : '')) +
       tile('Закрытые', e.auto ? e.auto.got + ' из ' + e.auto.max : '—', 'считает сервер') +
       tile('Итог', e.score != null ? String(e.score) : '—',
-        e.verdict ? esc(verdictName(e.verdict)) : 'ещё не выставлен') +
+        e.verdict ? esc(verdictName(e.verdict)) : 'еще не выставлен') +
       '</div>';
 
     var qh = qs.map(function (q) {
@@ -766,13 +766,13 @@
 
       return '<div class="ad-q" data-q="' + q.n + '"><div class="ad-q-h">' + q.n + '. ' +
         esc(q.text) + '</div>' + ans + mark + '</div>';
-    }).join('') || '<p class="cab-hint">Кандидат ещё не сдал — ответов нет.</p>';
+    }).join('') || '<p class="cab-hint">Кандидат еще не сдал — ответов нет.</p>';
 
     var acts = '<div class="form-go">';
     if (editable) {
       acts += '<button class="btn btn-primary" data-act="ex-pass">Принять</button>' +
         '<button class="btn btn-dark" data-act="ex-redo">На доработку</button>' +
-        '<button class="btn btn-dark" data-act="ex-no">Не прошёл</button>';
+        '<button class="btn btn-dark" data-act="ex-no">Не прошел</button>';
     }
     if (e.state === 'issued') {
       acts += '<button class="btn btn-dark" data-act="ex-regen">Перегенерировать</button>' +
@@ -793,7 +793,7 @@
   }
 
   function verdictName(v) {
-    return v === 'pass' ? 'принят' : v === 'redo' ? 'на доработку' : v === 'no' ? 'не прошёл' : v;
+    return v === 'pass' ? 'принят' : v === 'redo' ? 'на доработку' : v === 'no' ? 'не прошел' : v;
   }
 
   /* answer/correct бывают числом (один вариант) и списком (несколько). */
@@ -821,7 +821,7 @@
     var links = '<div class="row-list">' +
       row('Карта мира', esc(l.map || 'не задана'), '') +
       row('Лаунчер', esc(l.launcher || 'не задан'), '') +
-      row('Приём платежей', esc(l.donate || 'не задан'), '') +
+      row('Прием платежей', esc(l.donate || 'не задан'), '') +
       '</div><p class="cab-hint">Адреса живут в <b>site/js/config.js</b> и правятся файлом: ' +
       'это единственное место, где они записаны, и при переезде на хостинг меняется ' +
       'только оно. Здесь показано, что сейчас видит сайт.</p>';
@@ -831,7 +831,7 @@
       (m.on ? ' checked' : '') + '> Режим техработ: сайт открыт, живые разделы отключены</label></div>' +
       '<div class="field"><label for="mtText">Что написать людям</label>' +
       '<input id="mtText" value="' + esc(m.text || '') +
-      '" placeholder="Например: чиним начисление червонцев, вернёмся к вечеру"></div>' +
+      '" placeholder="Например: чиним начисление червонцев, вернемся к вечеру"></div>' +
       '<div class="form-go"><button class="btn btn-primary" data-act="set-save">Сохранить</button>' +
       '</div></div>';
 
@@ -875,9 +875,9 @@
         admin: !!r.admin, until: r.until || 0
       });
       loading();
-      /* После входа идём не «на главную», а туда, куда показывает адрес: ссылку на
+      /* После входа идем не «на главную», а туда, куда показывает адрес: ссылку на
          обращение или экзамен кидают в личку, и она должна открыться сама. Обзор
-         грузим всё равно — из него берутся цифры на кнопках меню. */
+         грузим все равно — из него берутся цифры на кнопках меню. */
       return loadMe().then(function () {
         if (!me.admin) return paint();
         return A.call('/adm/overview').then(function (r) { d.home = r; }, function () {})
@@ -1091,7 +1091,7 @@
     if (name === 'ex-issue') {
       var eNick = val('exNick');
       var say2 = el('adESay');
-      if (!eNick) { if (say2) say2.textContent = 'Кому выдаём?'; return; }
+      if (!eNick) { if (say2) say2.textContent = 'Кому выдаем?'; return; }
       var free3 = busy(node, 'Собираем вариант…');
       A.call('/adm/exam/issue', {
         body: {

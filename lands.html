@@ -13,23 +13,25 @@
 <meta property="og:locale" content="ru_RU">
 <meta property="og:url" content="https://aegis-smp.com/lands">
 <meta property="og:title" content="Земли и налоги — AEGIS SMP">
-<meta property="og:description" content="Провинции от 10 Ч, суточный налог от 1 до 36 Ч. Понять, куда селиться, можно ещё до входа на сервер.">
+<meta property="og:description" content="Провинции от 10 Ч, суточный налог от 1 до 36 Ч. Понять, куда селиться, можно еще до входа на сервер.">
 <meta property="og:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="AEGIS SMP — сезон 1936">
+<meta property="og:image:alt" content="AEGIS SMP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Земли и налоги — AEGIS SMP">
-<meta name="twitter:description" content="Провинции от 10 Ч, суточный налог от 1 до 36 Ч. Понять, куда селиться, можно ещё до входа на сервер.">
+<meta name="twitter:description" content="Провинции от 10 Ч, суточный налог от 1 до 36 Ч. Понять, куда селиться, можно еще до входа на сервер.">
 <meta name="twitter:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=0925p">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="css/style.css?v=1019r">
 <link rel="stylesheet" href="css/pages.css?v=20260925">
 <noscript><style>/* Скрипт выключен — точки загрузки крутились бы вечно. */
   .loading { display: none; }</style></noscript>
+<link rel="stylesheet" href="css/sector.css?v=1020a">
 </head>
 <body>
 <a class="skip-link" href="#content">К содержанию</a>
@@ -39,7 +41,7 @@
     <a class="brand" href="/"><img src="assets/img/logo.png" alt="AEGIS SMP"></a>
     <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="topnav"><span></span></button>
     <nav class="topnav" id="topnav" aria-label="Основное меню">
-      <a href="/#season">Сезон 1936</a>
+      <a href="/#season">Сезон</a>
       <a href="/#arsenal">Арсенал</a>
       <a href="/#join">Как зайти</a>
       <a class="active" href="lands" aria-current="page">Земли</a>
@@ -56,14 +58,16 @@
 
 <main id="content" tabindex="-1">
 
-<div class="page-hero">
+<div class="page-hero" data-focus="30.5,50.4">
   <div class="container">
     <div class="kicker">Куда селиться</div>
     <h1>Земли и налоги</h1>
     <p class="lead">Карта сезона разрезана на провинции — по настоящим административным
-      границам 1936 года. Строить можно только в своей: её покупают за червонцы и
-      каждые сутки платят налог. Зарабатывать на неё месяц не нужно — но и купить
+      границам 1936 года. Строить можно только в своей: ее покупают за червонцы и
+      каждые сутки платят налог. Зарабатывать на нее месяц не нужно — но и купить
       полстраны и уйти не выйдет.</p>
+    <p class="notice"><b>Это правила и цены прошлого сезона «1936».</b> Земли и налоги
+      нового сезона объявим позже.</p>
   </div>
 </div>
 
@@ -81,7 +85,7 @@
           и на доске заданий, а землю покупают за червонцы</div>
       </div>
       <div class="tile">
-        <div class="t-k">Дешёвая провинция</div>
+        <div class="t-k">Дешевая провинция</div>
         <div class="t-v">от 10 Ч</div>
         <div class="t-s">чем дальше от больших городов и проливов, тем дешевле;
           самая дорогая земля мира — 600 Ч</div>
@@ -90,7 +94,7 @@
         <div class="t-k">Налог</div>
         <div class="t-v">1–36 Ч в сутки</div>
         <div class="t-s">ступенька по цене земли, целыми червонцами, списывается
-          сама в 00:00; ступень берётся всегда, надбавку назначает держава</div>
+          сама в 00:00; ступень берется всегда, надбавку назначает держава</div>
       </div>
       <div class="tile">
         <div class="t-k">Сколько держать</div>
@@ -139,8 +143,8 @@
           <div>
             <div class="rw-t">Не хватило на налог — теряешь провинцию</div>
             <div class="rw-s">Рассрочки нет. В 00:00, когда на казне города и у мэра
-              вместе не хватило, мэр перестаёт быть мэром и остаётся обычным жителем
-              этой же провинции: дом, участок и сундуки при нём. Земля уходит
+              вместе не хватило, мэр перестает быть мэром и остается обычным жителем
+              этой же провинции: дом, участок и сундуки при нем. Земля уходит
               в продажу со скидкой 25%, постройки достаются новому хозяину.</div>
           </div>
           <div class="rw-r">в тот же день</div>
@@ -157,7 +161,7 @@
         <div class="row r2">
           <div>
             <div class="rw-t">Столицу за налог не отбирают</div>
-            <div class="rw-s">Мэр столичной провинции — глава державы, и за её налог
+            <div class="rw-s">Мэр столичной провинции — глава державы, и за ее налог
               платит казна страны. Не хватило и там — это недоимка державы:
               семь суток на то, чтобы закрыть долг, потом глава слагает полномочия.
               Сама провинция в продажу не уходит.</div>
@@ -168,7 +172,7 @@
           <div>
             <div class="rw-t">Соседи поднимают цену</div>
             <div class="rw-s">Каждая проданная провинция державы делает остальные
-              её земли дороже на 6% (потолок — втрое). Первые поселенцы берут дёшево,
+              ее земли дороже на 6% (потолок — втрое). Первые поселенцы берут дешево,
               опоздавшие платят за обжитое место.</div>
           </div>
           <div class="rw-r">+6% за продажу</div>
@@ -199,7 +203,7 @@
         </div>
         <div class="row r2">
           <div><div class="rw-t">Сколько соседей</div>
-            <div class="rw-s">перекрёсток дороже тупика</div></div>
+            <div class="rw-s">перекресток дороже тупика</div></div>
           <div class="rw-r">+5% за соседа</div>
         </div>
         <div class="row r2">
@@ -229,11 +233,11 @@
 
     <div class="nbox">
       <span class="n-ic">!</span>
-      <div>Червонцы <b>переживают вайп</b>, а вещи и постройки — нет. Земля живёт
-        один сезон, счёт — все. Провинцию спокойно берут игрой: обычный вечер
+      <div>Червонцы <b>переживают вайп</b>, а вещи и постройки — нет. Земля живет
+        один сезон, счет — все. Провинцию спокойно берут игрой: обычный вечер
         приносит 90–130 Ч, а половина земель мира стоит дешевле этого. Первый
-        надел новичку вообще не стоит денег — он даётся правом. Дальше держать
-        землю — это <b>суточный налог</b>, и платить его придётся каждый день,
+        надел новичку вообще не стоит денег — он дается правом. Дальше держать
+        землю — это <b>суточный налог</b>, и платить его придется каждый день,
         сколько бы червонцев ни лежало на счету.</div>
     </div>
 
@@ -247,7 +251,7 @@
         </div>
         <div class="row r2">
           <div><div class="rw-t">Свои земли, налог и баланс</div>
-            <div class="rw-s">после входа всё это видно в личном кабинете</div></div>
+            <div class="rw-s">после входа все это видно в личном кабинете</div></div>
           <div class="rw-r"><a class="btn btn-dark btn-sm" href="cabinet">Кабинет</a></div>
         </div>
         <div class="row r2">
@@ -267,7 +271,7 @@
     <div class="foot-in">
       <img src="assets/img/logo.png" alt="AEGIS SMP">
       <div class="foot-links">
-        <a href="/#season">Сезон 1936</a>
+        <a href="/#season">Сезон</a>
         <a href="/#join">Как зайти</a>
         <a href="lands">Земли</a>
         <a href="players">Игроки</a>
@@ -288,7 +292,8 @@
 
 <script src="js/config.js"></script>
 <script src="js/api.js?v=20260925"></script>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=1020a"></script>
+<script src="js/chunkmap.js?v=1020a"></script>
 <script src="js/lands.js"></script>
 </body>
 </html>

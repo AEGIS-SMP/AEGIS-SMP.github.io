@@ -1,0 +1,736 @@
+/* AEGIS SMP — главная страница (новый вид, 19.10.2026).
+
+   Подключается только на index.html, после style.css: общие кнопки,
+   карточки, шапка и подвал живут там, здесь — то, что есть лишь у главной.
+
+   Первый экран — живая мозаика Европы из настоящих чанков (js/chunkmap.js,
+   canvas[data-mosaic]): квадрат = 2×2 чанка, под указателем клетки
+   загораются фирменным градиентом, в углу бегут координаты. Фото-фона
+   больше нет. Без JS и при ошибке загрузки — та же мозаика картинкой
+   (assets/img/mosaic.png).
+
+   Ниже: таймлайн нового сезона, факты, арсенал вкладками с автосменой,
+   «как зайти» с рельсом прогресса и липкой колонкой скачивания, новости,
+   архив сезона «1936» с интерактивной картой, призыв со скином.
+
+   Правила сайта те же: без стекла, белых окантовок и свечения кнопок,
+   карточки под курсором не прыгают, фокус золотой, «меньше движения»
+   выключает всю анимацию, ?shot=1 показывает все сразу. */
+
+/* Без JS появление при скролле некому запустить — показываем все сразу. */
+html:not(.js) .reveal { opacity: 1; transform: none; }
+
+.home section[id] { scroll-margin-top: 84px; }
+
+/* ================= первый экран ================= */
+
+.hero-map {
+  margin-top: -72px;          /* под прозрачную шапку */
+  min-height: 100vh;
+  min-height: 100svh;
+  align-items: center;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.hero-mosaic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  display: block;
+}
+
+/* Затемнение под текстом: слева плотнее (там текст), справа карта видна
+   целиком; сверху — под шапку, снизу — переход в страницу. */
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(14, 14, 16, .75), rgba(14, 14, 16, 0) 160px),
+    linear-gradient(to top, var(--bg), rgba(14, 14, 16, 0) 28%),
+    linear-gradient(90deg, var(--bg) 0, rgba(14, 14, 16, .85) 30%, rgba(14, 14, 16, .2) 60%, rgba(14, 14, 16, 0));
+}
+
+/* Мозаика картинкой: без JS и если europe.png не загрузилась. Центр Европы
+   (клетка 144 картинки, 1011 px от края) ставим туда же, куда его ставит
+   живая мозаика, — на 62 % ширины. */
+html:not(.js) .hero-map,
+.hero-map.mosaic-off {
+  background: url('../assets/img/mosaic.png') calc(62vw - 1011px) 50% no-repeat, var(--bg);
+}
+.hero-map.mosaic-off .hero-mosaic { display: none; }
+
+.hero-map .hero-in {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  padding-top: 170px;
+  padding-bottom: 96px;
+}
+
+.hero-copy { max-width: 660px; }
+
+.hero-map .hero-logo {
+  width: min(300px, 64vw);
+  margin-bottom: 26px;
+}
+
+.hero-map h1 {
+  font-size: clamp(38px, 6vw, 74px);
+  line-height: 1.02;
+  letter-spacing: -.01em;
+}
+
+.hero-map .lead { margin: 20px 0 30px; }
+
+/* Координаты места под фонарем — в правом нижнем углу, по краю контейнера. */
+.hero-hud {
+  position: absolute;
+  right: max(24px, calc((100% - 1200px) / 2 + 24px));
+  bottom: 34px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--f-text);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.hero-hud::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--grad);
+}
+.hero-hud [data-mosaic-hud] {
+  min-width: 25ch;
+  letter-spacing: .04em;
+  text-transform: none;
+  color: #c9c5bd;
+}
+
+/* Текст первого экрана входит по строкам. */
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+.js .hero-copy > * { animation: hero-in .7s cubic-bezier(.22, .61, .36, 1) both; }
+.js .hero-copy > :nth-child(2) { animation-delay: .08s; }
+.js .hero-copy > :nth-child(3) { animation-delay: .16s; }
+.js .hero-copy > :nth-child(4) { animation-delay: .24s; }
+.js .hero-copy > :nth-child(5) { animation-delay: .32s; }
+.js .hero-copy > :nth-child(6) { animation-delay: .40s; }
+.js .hero-hud { animation: hero-in .7s cubic-bezier(.22, .61, .36, 1) .9s both; }
+
+/* ---------- до нового сезона ----------
+   Точного часа нет (OPEN_DATE = null в js/main.js) — вместо табло одна
+   панель: сколько дней примерно осталось и даты сезона. */
+
+.cdown-fb { margin: 0; font-size: 15px; color: var(--muted); }
+
+.ss {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  max-width: 640px;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: linear-gradient(to bottom, #1F1E23, #151417);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .45);
+  overflow: hidden;
+}
+.ss::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 2px;
+  background: var(--grad-h);
+}
+.ss-big { display: flex; align-items: center; gap: 14px; flex: none; }
+.ss-big b {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: 46px;
+  line-height: 1;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+.ss-big span { font-size: 14px; font-weight: 700; line-height: 1.3; color: var(--ink); }
+.ss-big i { font-style: normal; font-weight: 500; font-size: 12.5px; color: var(--muted); }
+.ss-meta {
+  flex: 1 1 260px;
+  min-width: 0;
+  padding-left: 22px;
+  border-left: 1px solid rgba(250, 212, 107, .16);
+}
+.ss-dates { font-size: 14px; font-weight: 600; color: var(--muted); }
+.ss-dates b { color: var(--gold-hi); font-weight: 700; }
+.ss p { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.ss a { color: var(--gold-hi); }
+
+/* ================= новый сезон ================= */
+
+.tl {
+  list-style: none;
+  margin: 0 0 44px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.tl li { position: relative; padding: 34px 22px 0 0; }
+
+/* Отрезок от точки до следующей: серый путь и поверх — пройденная часть. */
+.tl li:not(:last-child)::before,
+.tl li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 0;
+  top: 7px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--panel-3);
+}
+.tl li:not(:last-child)::after {
+  background: none;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .7s cubic-bezier(.22, .61, .36, 1);
+}
+.tl li.is-done:not(:last-child)::after { background: var(--grad-h); }
+.tl li.is-now:not(:last-child)::after {
+  background: linear-gradient(90deg, var(--or), rgba(245, 134, 32, 0) 70%);
+}
+.tl.in li::after { transform: none; }
+.tl.in li:nth-child(1)::after { transition-delay: .25s; }
+.tl.in li:nth-child(2)::after { transition-delay: .9s; }
+.tl.in li:nth-child(3)::after { transition-delay: 1.5s; }
+
+.tl-dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--panel-3);
+  box-shadow: 0 0 0 4px var(--bg);
+}
+.is-done .tl-dot { background: var(--gold); }
+.is-now .tl-dot { background: var(--or); }
+.is-now .tl-dot::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--or);
+  animation: tl-ping 2.2s ease-out infinite;
+}
+@keyframes tl-ping {
+  from { transform: scale(.55); opacity: .9; }
+  to   { transform: scale(1.6); opacity: 0; }
+}
+
+.tl-d {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .12em;
+  color: var(--steel);
+  font-variant-numeric: tabular-nums;
+}
+.is-done .tl-d, .is-now .tl-d { color: var(--gold); }
+.tl b {
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.tl li:not(.is-done):not(.is-now) b { color: #cfcbc3; }
+.tl-t { display: block; font-size: 14px; line-height: 1.5; color: var(--muted); }
+
+.fact .fact-k {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.fact h3 { font-size: 22px; }
+
+/* ================= арсенал ================= */
+
+/* Без JS — обычная сетка из шести карточек. С JS (класс js-tabs) — список
+   слева, одна большая карточка справа; вкладки сменяются сами раз в 7 с,
+   пока человек сам не выберет (тогда автосмена выключается насовсем). */
+.ars-list { display: none; }
+
+.ars.js-tabs {
+  display: grid;
+  grid-template-columns: minmax(250px, 330px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+.ars.js-tabs .ars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ars-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--f-text);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color .2s ease, color .2s ease;
+}
+.ars-tab img { width: 32px; height: 32px; flex: none; object-fit: contain; }
+.ars-tab img.pix { image-rendering: pixelated; }
+.ars-tab:hover { background: var(--panel); color: var(--ink); }
+.ars-tab[aria-selected="true"] { background: var(--panel-2); color: var(--ink); }
+.ars-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--grad-h);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.ars-tab[aria-selected="true"] .ars-bar { transform: none; }
+.ars.is-auto .ars-tab[aria-selected="true"] .ars-bar { animation: ars-bar 7s linear both; }
+.ars.is-auto:hover .ars-bar,
+.ars.is-paused .ars-bar,
+.ars.is-off .ars-bar { animation-play-state: paused; }
+@keyframes ars-bar {
+  from { transform: scaleX(0); }
+  to   { transform: none; }
+}
+
+.ars.js-tabs .ars-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+.ars.js-tabs .ars-panels > .card {
+  grid-area: 1 / 1;
+  padding: 44px 48px;
+  transition: opacity .35s ease, visibility .35s, background .22s ease, box-shadow .22s ease;
+}
+.ars.js-tabs .ars-panels > .card:not(.is-on) { opacity: 0; visibility: hidden; }
+.ars.js-tabs .ars-panels .icon-plate {
+  width: 112px;
+  height: 112px;
+  border-radius: 22px;
+  margin-bottom: 26px;
+}
+.ars.js-tabs .ars-panels .icon-plate img { width: 76px; height: 76px; }
+.ars.js-tabs .ars-panels .icon-plate .pix { width: 80px; height: 80px; }
+.ars.js-tabs .ars-panels h3 { font-size: clamp(24px, 2.6vw, 32px); margin-bottom: 14px; }
+.ars.js-tabs .ars-panels p { font-size: 16.5px; line-height: 1.65; max-width: 620px; }
+.ars.js-tabs .ars-panels .is-on .icon-plate { animation: ars-pop .45s cubic-bezier(.22, .61, .36, 1) both; }
+@keyframes ars-pop {
+  from { transform: scale(.86); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.ars-n {
+  position: absolute;
+  top: 26px;
+  right: 30px;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .16em;
+  color: var(--steel);
+  font-variant-numeric: tabular-nums;
+}
+.ars-n b { color: var(--gold); font-weight: 800; }
+
+/* ================= как зайти ================= */
+
+/* Два столбца: шаги с рельсом прогресса и липкая колонка «сборка + скачать».
+   Рельс заполняется по мере прокрутки (--jp ставит js/main.js), пройденный
+   шаг получает .passed — его точка загорается. */
+@media (min-width: 1021px) {
+  .join-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 410px);
+    gap: 40px;
+    align-items: start;
+  }
+  .join-steps {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding-left: 46px;
+  }
+  .join-steps::before,
+  .join-steps::after {
+    content: '';
+    position: absolute;
+    left: 13px;
+    top: 34px;
+    bottom: 34px;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--panel-3);
+  }
+  .join-steps::after {
+    background: var(--grad);
+    transform: scaleY(var(--jp, 0));
+    transform-origin: center top;
+  }
+  .join-steps .step { position: relative; }
+  .join-steps .step::before {
+    content: '';
+    position: absolute;
+    left: -40px;
+    top: 34px;
+    z-index: 1;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--panel-3);
+    box-shadow: 0 0 0 4px var(--bg);
+    transition: background-color .3s ease;
+  }
+  .join-steps .step.passed::before { background: var(--gold); }
+  .join-steps .step { display: grid; grid-template-columns: 74px minmax(0, 1fr); column-gap: 18px; }
+  .join-steps .step .n { grid-row: 1 / span 9; align-self: start; font-size: 40px; line-height: 1; }
+  .join-steps .step h3 { margin-top: 2px; }
+  .join-steps .step p + p { margin-top: 10px; }
+
+  .join-side { position: sticky; top: 96px; }
+  .join-side .join-note { margin-top: 0; flex-direction: column; align-items: stretch; }
+  .join-side .join-note + .join-note { margin-top: 18px; }
+  .join-side .dl-row .btn { flex: 1 1 0; min-width: 0; }
+}
+@media (max-width: 1020px) {
+  .join-side .join-note { margin-top: 22px; }
+}
+.join-steps .step p + p { margin-top: 10px; }
+
+/* ================= архив «1936» ================= */
+
+.a-nums {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 44px;
+  margin-bottom: 26px;
+}
+.a-nums > div { display: flex; flex-direction: column; }
+.a-nums b {
+  font-family: var(--f-disp);
+  font-weight: 900;
+  font-size: clamp(28px, 3.4vw, 40px);
+  line-height: 1.05;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+.a-nums span { margin-top: 6px; font-size: 13.5px; color: var(--muted); }
+
+.amap {
+  position: relative;
+  aspect-ratio: 2304 / 884;
+  background: #111116;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.amap.zoomed { touch-action: none; }
+.amap.dragging { cursor: grabbing; }
+.amap canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.amap.is-ready canvas { opacity: 1; }
+.amap:not(.is-ready):not(.is-failed)::before {
+  content: 'Загружаем карту…';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--steel);
+}
+.amap.is-failed { background: #111116 url('../assets/img/map_1936.png') center / cover no-repeat; cursor: default; }
+.amap.is-failed .amap-ctl { display: none; }
+
+.amap-tip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  max-width: 260px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--panel-3);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .55);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+  pointer-events: none;
+}
+.amap-tip[hidden] { display: none; }
+.amap-tip b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 14.5px;
+  color: var(--ink);
+}
+.amap-tip b i { width: 12px; height: 12px; flex: none; border-radius: 3px; }
+.amap-tip span { display: block; }
+.amap-tip .amap-tip-n { margin-top: 2px; font-size: 12px; color: var(--steel); font-variant-numeric: tabular-nums; }
+
+.amap-ctl {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+}
+.amap-ctl button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--ink);
+  font-family: var(--f-text);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .4);
+  transition: background-color .2s ease, color .2s ease;
+}
+.amap-ctl button:hover { background: var(--panel-3); color: var(--gold-hi); }
+.amap-hint { margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+
+/* ================= призыв со скином ================= */
+
+.cta-skin .cta-copy { position: relative; z-index: 3; }
+@media (min-width: 1101px) {
+  .cta-skin {
+    display: flex;
+    align-items: center;
+    min-height: 380px;
+    padding-right: 330px;
+    text-align: left;
+  }
+  .cta-skin .hero-cta { justify-content: flex-start; }
+  .cta-skin .cta-copy p { max-width: 520px; }
+}
+.cta-skin .cta-copy p { margin: -10px auto 26px; max-width: 560px; font-size: 16px; color: #d0ccc4; }
+@media (min-width: 1101px) { .cta-skin .cta-copy p { margin-left: 0; } }
+.cta-band .mc-stage { bottom: 0; right: 6%; }
+
+/* ================= рельс разделов ================= */
+
+/* Точки слева на широком экране: где ты на странице и прыжок к разделу.
+   Появляется, когда первый экран ушел вверх. */
+.rail { display: none; }
+@media (min-width: 1360px) {
+  .rail {
+    position: fixed;
+    left: 22px;
+    top: 50%;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transform: translateY(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s ease, visibility .3s;
+  }
+  .rail.on { opacity: 1; visibility: visible; }
+  .rail a {
+    position: relative;
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--panel-3);
+    transition: height .25s ease, background-color .25s ease;
+  }
+  .rail a::before { content: ''; position: absolute; inset: -7px -8px; }
+  .rail a:hover { background: var(--steel); }
+  .rail a.active { height: 28px; background: var(--grad); }
+  .rail a span {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--panel-2);
+    box-shadow: var(--shadow);
+    color: var(--ink);
+    font-family: var(--f-text);
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-6px, -50%);
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .rail a:hover span,
+  .rail a:focus-visible span { opacity: 1; transform: translate(0, -50%); }
+}
+
+/* ================= фонарик на карточках ================= */
+
+/* Под мышью по карточке идет мягкое теплое пятно — то же, что фонарь на
+   карте первого экрана. С 20.10.2026 оно общее для всего сайта и живет
+   в css/sector.css (.fl-on): js/main.js сам пропускает карточки с картинкой
+   фоном, поэтому отдельного правила для главной больше нет. */
+
+/* ================= адаптив ================= */
+
+@media (max-width: 1100px) {
+  .hero-hud { display: none; }
+}
+
+@media (max-width: 1020px) {
+  .ars.js-tabs { grid-template-columns: minmax(0, 1fr); }
+  .ars.js-tabs .ars-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .ars-tab {
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 8px 14px;
+    background: var(--panel);
+    font-size: 13px;
+    text-align: center;
+  }
+  .ars.js-tabs .ars-panels > .card { padding: 32px 30px; }
+  .ars.js-tabs .ars-panels .icon-plate { width: 88px; height: 88px; border-radius: 18px; }
+  .ars.js-tabs .ars-panels .icon-plate img { width: 60px; height: 60px; }
+  .ars.js-tabs .ars-panels .icon-plate .pix { width: 64px; height: 64px; }
+}
+
+@media (max-width: 760px) {
+  .hero-veil {
+    background:
+      linear-gradient(to bottom, rgba(14, 14, 16, .75), rgba(14, 14, 16, 0) 140px),
+      linear-gradient(to top, var(--bg) 10%, rgba(14, 14, 16, .75) 50%, rgba(14, 14, 16, .5));
+  }
+  html:not(.js) .hero-map,
+  .hero-map.mosaic-off {
+    background-position: calc(50vw - 1011px) 50%, 0 0;
+  }
+  .amap { aspect-ratio: 4 / 3; }
+}
+
+@media (max-width: 700px) {
+  .tl { grid-template-columns: minmax(0, 1fr); margin-bottom: 34px; }
+  .tl li { padding: 0 0 26px 34px; }
+  .tl li:last-child { padding-bottom: 0; }
+  .tl li:not(:last-child)::before,
+  .tl li:not(:last-child)::after {
+    left: 7px;
+    right: auto;
+    top: 16px;
+    bottom: 0;
+    width: 2px;
+    height: auto;
+  }
+  .tl li:not(:last-child)::after { transform: scaleY(0); transform-origin: center top; }
+  .tl li.is-now:not(:last-child)::after {
+    background: linear-gradient(to bottom, var(--or), rgba(245, 134, 32, 0) 70%);
+  }
+  .tl li.is-done:not(:last-child)::after { background: var(--grad); }
+  .tl.in li::after { transform: none; }
+  .tl-d { margin-bottom: 4px; }
+
+  .ss { padding: 16px 16px 14px; border-radius: 14px; }
+  .ss-big b { font-size: 40px; }
+  .ss-meta { flex-basis: 100%; padding-left: 0; border-left: 0; }
+}
+
+@media (max-width: 640px) {
+  .hero-map .hero-in { padding-top: 120px; padding-bottom: 48px; }
+  .ars.js-tabs .ars-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ars.js-tabs .ars-panels > .card { padding: 28px 22px; }
+  .ars-n { top: 20px; right: 20px; }
+  .ars.js-tabs .ars-panels p { font-size: 15px; }
+  .a-nums { gap: 16px 28px; }
+  .a-nums > div { flex: 1 1 40%; }
+}
+
+/* ================= съемка и «меньше движения» ================= */
+
+.shotmode .hero-copy > *,
+.shotmode .hero-hud { animation: none; }
+.shotmode .tl li::after { transform: none; transition: none; }
+.shotmode .rail { transition: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .hero-copy > *,
+  .js .hero-hud { animation: none; }
+  .tl li::after { transition: none; }
+  .is-now .tl-dot::after { animation: none; opacity: .5; transform: none; }
+  .ars.is-auto .ars-tab[aria-selected="true"] .ars-bar { animation: none; }
+  .ars.js-tabs .ars-panels > .card { transition: none; }
+  .ars.js-tabs .ars-panels .is-on .icon-plate { animation: none; }
+  .join-steps .step::before { transition: none; }
+  .amap canvas { transition: none; }
+  .rail, .rail a, .rail a span { transition: none; }
+}
