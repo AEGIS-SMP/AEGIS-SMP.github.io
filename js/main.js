@@ -495,7 +495,9 @@ window.aegisReveal = el => io.observe(el);
    стартом; старт — OPEN_DATE, если час уже назван, иначе ориентировочная
    SEASON_START. После финала пройдены все пункты. */
 {
-  const items = [...document.querySelectorAll('.tl li')];
+  /* data-static (11.11.2026, AEGIS заморожен на год): сроков нет, список стоит
+     как в разметке, по датам его не пересчитывать. */
+  const items = [...document.querySelectorAll('.tl:not([data-static]) li')];
   if (items.length === 4) {
     const now = Date.now();
     const start = OPEN_DATE || SEASON_START;

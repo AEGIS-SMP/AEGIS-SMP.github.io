@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AEGIS SMP — военно-политический Minecraft-сервер</title>
-<meta name="description" content="AEGIS — военно-политический Minecraft-сервер на Create. Новый сезон: карта Европы, мир после распада СССР, старт ориентировочно 30 октября 2026 года. Нефть, заводы и артиллерия Create Big Cannons.">
+<meta name="description" content="AEGIS — военно-политический Minecraft-сервер на Create. Проект заморожен на год, Мастерская работает и бесплатна. Следующий сезон: карта Европы, мир после распада СССР, нефть, заводы и артиллерия Create Big Cannons.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="canonical" href="https://aegis-smp.com/">
 <meta name="theme-color" content="#0E0E10">
@@ -18,14 +18,14 @@
 <meta property="og:locale" content="ru_RU">
 <meta property="og:url" content="https://aegis-smp.com/">
 <meta property="og:title" content="AEGIS SMP — военно-политический Minecraft-сервер">
-<meta property="og:description" content="Новый сезон: карта Европы, мир после распада СССР, старт ориентировочно 30 октября 2026 года. Нефть, заводы и артиллерия.">
+<meta property="og:description" content="AEGIS заморожен на год, Мастерская работает и бесплатна. Следующий сезон: карта Европы, мир после распада СССР.">
 <meta property="og:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <meta property="og:image:width" content="1920">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="AEGIS SMP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AEGIS SMP — военно-политический Minecraft-сервер">
-<meta name="twitter:description" content="Новый сезон: карта Европы, мир после распада СССР, старт ориентировочно 30 октября 2026 года. Нефть, заводы и артиллерия.">
+<meta name="twitter:description" content="AEGIS заморожен на год, Мастерская работает и бесплатна. Следующий сезон: карта Европы, мир после распада СССР.">
 <meta name="twitter:image" content="https://aegis-smp.com/assets/img/hero.jpg">
 <!-- Шрифты лежат рядом с сайтом (assets/fonts), не на Google: у части
      игроков СНГ fonts.googleapis.com не открывается. Предзагружаем две
@@ -91,18 +91,23 @@
       <div class="kicker">Военно-политический сервер Minecraft</div>
       <h1>Перекрои карту <span class="grad-text">Европы</span></h1>
       <p class="lead">Новый сезон AEGIS — карта Европы и мир после распада СССР.
-        Державы, союзы и войны, нефть и заводы, артиллерия Create Big Cannons.
-        Старт ориентировочно 30 октября.</p>
+        Державы, союзы и войны, нефть и заводы, артиллерия Create Big Cannons.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="#join">Как зайти</a>
         <a class="btn btn-dark" href="donate">Поддержать проект</a>
       </div>
-      <!-- Табло до открытия рисует js/main.js. Единственная дата сезона лежит
-           там одной строкой (OPEN_DATE). Пока точного часа нет (OPEN_DATE = null),
-           тут панель «примерно столько дней» с датами сезона; без JS — строка ниже. -->
-      <div class="cdown" id="cdown" role="timer">
-        <p class="cdown-fb">Старт нового сезона — ориентировочно 30 октября 2026 года.
-          Точный час объявим в Discord и Telegram.</p>
+      <!-- 11.11.2026, слово владельца: AEGIS заморожен на год. Вместо табло до старта —
+           постоянная панель. id="cdown" снят нарочно: без него js/main.js табло не рисует.
+           Писать только эти факты, без дат и подробностей. -->
+      <div class="cdown">
+        <div class="ss">
+          <div class="ss-big"><b>Пауза</b><span>AEGIS заморожен<br><i>на год</i></span></div>
+          <div class="ss-meta">
+            <div class="ss-dates">Мастерская <b>работает и бесплатна</b></div>
+            <p>Основатель проекта уходит в армию на срочную службу, поэтому проект
+              замораживается на год. <a href="#workshop">Скачать Мастерскую</a></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -117,14 +122,13 @@
       <p class="sub">Первый мир — Земля 1936 года — завершен. Следующий сезон идет
         на карте Европы. Державы, год и правила объявим ближе к старту.</p>
     </div>
-    <!-- Сроки ориентировочные (овнер, 19.10.2026). Какой пункт пройден, а какой
-         идет сейчас, js/main.js пересчитывает по дате (data-date); в разметке —
-         состояние на 19.10, его и видно без JS. -->
-    <ol class="tl reveal">
-      <li class="is-done" data-date="2026-10-17"><i class="tl-dot"></i><span class="tl-d">17.10</span><b>Сезон «1936» завершен</b><span class="tl-t">Первый вайп закрыт, мир ушел в архив.</span></li>
-      <li class="is-now"><i class="tl-dot"></i><span class="tl-d">Сейчас</span><b>Перерыв</b><span class="tl-t">Готовим карту Европы и сборку.</span></li>
-      <li data-date="2026-10-30"><i class="tl-dot"></i><span class="tl-d">~30.10</span><b>Старт нового сезона</b><span class="tl-t">Точный час объявим заранее.</span></li>
-      <li data-date="2026-12-18"><i class="tl-dot"></i><span class="tl-d">~18.12</span><b>Финал сезона</b><span class="tl-t">Ориентировочно, ближе к концу уточним.</span></li>
+    <!-- 11.11.2026: AEGIS заморожен на год, сроков сезона нет. У списка data-static:
+         js/main.js его по датам не пересчитывает — что в разметке, то и видно. -->
+    <ol class="tl reveal" data-static>
+      <li class="is-done"><i class="tl-dot"></i><span class="tl-d">17.10</span><b>Сезон «1936» завершен</b><span class="tl-t">Первый вайп закрыт, мир ушел в архив.</span></li>
+      <li class="is-done"><i class="tl-dot"></i><span class="tl-d">Октябрь</span><b>Перерыв</b><span class="tl-t">Готовили карту Европы и сборку.</span></li>
+      <li class="is-now"><i class="tl-dot"></i><span class="tl-d">Сейчас</span><b>Заморозка на год</b><span class="tl-t">Сервер на паузе, Мастерская работает.</span></li>
+      <li><i class="tl-dot"></i><span class="tl-d">Позже</span><b>Новый сезон</b><span class="tl-t">Карта Европы. Сроки объявим в Discord и Telegram.</span></li>
     </ol>
     <div class="grid-3">
       <div class="card feature fact reveal">
@@ -225,8 +229,8 @@
         <p><a href="reg">Регистрация</a> занимает минуту: имя и пароль. Одно имя
           на человека — второе завести не выйдет. Этим же именем и паролем ты входишь
           в лаунчер, отдельной учетки у него нет. На странице регистрации расписано,
-          чем проверяют. Сейчас сервер на перерыве между вайпами — регистрация
-          откроется вместе с ним.</p>
+          чем проверяют. Сейчас AEGIS заморожен на год — регистрация
+          откроется вместе с сервером.</p>
       </div>
       <div class="step reveal">
         <div class="n">02</div>
@@ -247,8 +251,7 @@
         <h3>Нажми «Играть»</h3>
         <p>Лаунчер сам скачает сборку (около 315 МБ), проверит каждый файл по контрольной
           сумме, поставит NeoForge и запустит игру. Сервер он добавит в список сам.
-          Новый сезон стартует ориентировочно 30 октября — точный час объявим
-          в Discord и Telegram. Пока сервера нет, лаунчер запускает сборку
+          Пока AEGIS заморожен, сервера нет — лаунчер запускает сборку
           в одиночном мире.</p>
       </div>
       <div class="step reveal">
@@ -479,9 +482,9 @@
   <div class="container">
     <div class="cta-band cta-skin reveal">
       <div class="cta-copy">
-        <h2>Новый сезон — <span class="grad-text">скоро</span></h2>
-        <p>Ориентировочно 30 октября. Скачай лаунчер заранее: в день старта
-          останется зарегистрироваться и нажать «Играть».</p>
+        <h2>Новый сезон&nbsp;— <span class="grad-text">позже</span></h2>
+        <p>AEGIS заморожен на год. Мастерская при этом работает и бесплатна&nbsp;—
+          <a href="#workshop">скачать</a>.</p>
         <div class="hero-cta">
         <!-- Ведет в «Как зайти», а не прямо на файл: там сначала регистрация,
              без нее лаунчер не пустит, и уже потом кнопка скачивания. -->
@@ -528,7 +531,7 @@
 <script src="js/config.js"></script>
 <script src="js/api.js?v=20260925"></script>
 <script src="js/chunkmap.js?v=1020a"></script>
-<script src="js/main.js?v=1020a"></script>
+<script src="js/main.js?v=1111a"></script>
 <script src="js/aegis3d.js"></script>
 <script src="js/event.js"></script>
 <script src="js/workshop-dl.js?v=1111a"></script>
