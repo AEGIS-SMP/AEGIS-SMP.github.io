@@ -29,7 +29,7 @@
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <script>document.documentElement.classList.add('js')</script>
-<link rel="stylesheet" href="css/style.css?v=1019r">
+<link rel="stylesheet" href="css/style.css?v=1111w">
 
 <!-- Адреса проекта подключены здесь, в голове, а не внизу страницы: пока лавка
      закрыта (js/config.js, shopClosed), класс на <html> обязан появиться до
@@ -1712,6 +1712,17 @@
         выгрузить файлом .nbt — для обычного Minecraft с Create, другого сервера или createmod.com.</p>
     </div>
 
+    <!-- Кнопка скачивания Мастерской; адрес обновляет js/workshop-dl.js (11.11.2026) -->
+    <div class="join-note join-dl reveal">
+      <div class="txt"><b>Скачать Мастерскую</b>
+        <span class="muted">Для Windows 10 и 11, архив <span data-ws-size>46&nbsp;МБ</span>:
+          распакуй и запусти AEGIS Workshop. Если Windows скажет «неизвестный издатель» —
+          «Подробнее» → «Выполнить в любом случае».</span></div>
+      <div class="dl-row">
+        <a class="btn btn-primary" href="https://github.com/AEGIS-SMP/launcher/releases/download/ws/AEGIS-Workshop-win-06d25f773f7aee10cb5dd3244271d687ff1e4cbd267929f58eb124e0f8dc8522.zip" data-ws-dl download>Скачать Мастерскую</a>
+      </div>
+    </div>
+
     <div class="case-note reveal"><b>Тарифа «Чертежник» больше нет:</b> выгрузка чертежей
       бесплатна для всех, платить за нее не нужно.</div>
   </div>
@@ -2069,5 +2080,6 @@
 <script src="js/shop-closed.js"></script>
 <script src="js/shop-soon.js"></script>
 <script src="js/aegis3d.js"></script>
+<script src="js/workshop-dl.js?v=1111a"></script>
 </body>
 </html>

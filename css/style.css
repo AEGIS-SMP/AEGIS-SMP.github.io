@@ -5537,3 +5537,6 @@ html.shop-closed #cmSpin { margin-left: 0; }
   .upg-buy .price { font-size: 30px; }
   .upg-buy .btn { width: 100%; min-width: 0; }
 }
+
+/* Переход по #workshop и #download: шапка сайта не закрывает начало блока */
+.join-note[id] { scroll-margin-top: 84px; }

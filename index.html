@@ -33,7 +33,7 @@
      только если они реально понадобятся. -->
 <link rel="preload" href="assets/fonts/montserrat-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=1019r">
+<link rel="stylesheet" href="css/style.css?v=1111w">
 <link rel="stylesheet" href="css/home.css?v=1020a">
 <!-- Класс js ставится до отрисовки: без него главная показывает все
      сразу и мозаику картинкой (css/home.css), с ним — анимации. -->
@@ -302,6 +302,21 @@
         <a class="btn btn-dark" data-os="linux" href="https://github.com/AEGIS-SMP/launcher/releases/download/dist/AEGIS-Launcher-linux.deb" download>Для Linux</a>
       </div>
     </div>
+    <!-- Мастерская AEGIS (11.11.2026): прямое скачивание программы для чертежей, бесплатно.
+         Адрес свежего архива и размер js/workshop-dl.js берет из релиза ws на GitHub сам;
+         короткий адрес для постов и роликов — aegis-smp.com/workshop (workshop.html). -->
+    <div class="join-note join-dl reveal" id="workshop">
+      <div class="txt"><b>Мастерская AEGIS</b>
+        <span class="muted">Отдельная программа для чертежей. Собери конструкцию Create,
+          проверь, как она работает, и сохрани в чертеж: его можно поставить на нашем
+          сервере или выгрузить файлом .nbt. Бесплатно, без подписок.</span>
+        <span class="muted">Для Windows 10 и 11, архив <span data-ws-size>46&nbsp;МБ</span>:
+          распакуй и запусти AEGIS Workshop. Если Windows скажет «неизвестный издатель» —
+          «Подробнее» → «Выполнить в любом случае».</span></div>
+      <div class="dl-row">
+        <a class="btn btn-primary" href="https://github.com/AEGIS-SMP/launcher/releases/download/ws/AEGIS-Workshop-win-06d25f773f7aee10cb5dd3244271d687ff1e4cbd267929f58eb124e0f8dc8522.zip" data-ws-dl download>Скачать Мастерскую</a>
+      </div>
+    </div>
     </aside>
     </div>
   </div>
@@ -517,5 +532,6 @@
 <script src="js/main.js?v=1020a"></script>
 <script src="js/aegis3d.js"></script>
 <script src="js/event.js"></script>
+<script src="js/workshop-dl.js?v=1111a"></script>
 </body>
 </html>
